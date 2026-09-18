@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+<defs><filter id="dialogShadow"><feDropShadow dx="0" dy="14" stdDeviation="24" flood-color="#000000" flood-opacity="0.55"/></filter></defs>
+<rect x="0" y="0" width="1600" height="1000" fill="#090E15"/>
+<rect x="16" y="16" width="1568" height="968" fill="#101721" rx="12" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="16" y="16" width="1568" height="48" fill="#111A26" rx="12"/>
+<rect x="16" y="52" width="1568" height="12" fill="#111A26"/>
+<circle cx="39" cy="40" r="6" fill="#EF6A72"/>
+<circle cx="59" cy="40" r="6" fill="#F2B84B"/>
+<circle cx="79" cy="40" r="6" fill="#44C693"/>
+<text x="108" y="45" fill="#E8EDF5" font-size="14" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">续证 Continuum</text>
+<text x="800" y="45" fill="#92A0B4" font-size="13" font-weight="500" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">先锋计划</text>
+<rect x="16" y="64" width="232" height="890" fill="#0D141E"/>
+<line x1="248" y1="64" x2="248" y2="954" stroke="#2B3A4E" stroke-width="1" opacity="1"/>
+<text x="40" y="105" fill="#92A0B4" font-size="13" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">项目概览</text>
+<text x="40" y="153" fill="#92A0B4" font-size="13" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">审查收件箱</text>
+<text x="40" y="201" fill="#E8EDF5" font-size="13" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">资料库</text>
+<text x="40" y="249" fill="#92A0B4" font-size="13" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">项目台账</text>
+<text x="280" y="110" fill="#E8EDF5" font-size="27" font-weight="750" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">先锋计划</text>
+<text x="280" y="144" fill="#92A0B4" font-size="12" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">当前有效决策、承诺、风险与来源变化</text>
+<rect x="280" y="182" width="390" height="115" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="686" y="182" width="390" height="115" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="1092" y="182" width="458" height="115" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="280" y="318" width="795" height="570" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="1092" y="318" width="458" height="570" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="0" y="0" width="1600" height="1000" fill="#03060A" opacity="0.72"/>
+<rect x="475.0" y="290.0" width="650" height="420" fill="#151E2B" rx="12" stroke="#3A4D65" stroke-width="1"/>
+<rect x="475.0" y="290.0" width="5" height="420" fill="#F2B84B" rx="3"/>
+<rect x="503.0" y="315.0" width="38" height="38" fill="#F2B84B" rx="9" opacity="0.15"/><text x="522.0" y="341.0" fill="#F2B84B" font-size="16" font-weight="750" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">09</text>
+<text x="557.0" y="338.0" fill="#E8EDF5" font-size="20" font-weight="750" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">工作区即将自动锁定</text>
+<text x="557.0" y="362.0" fill="#92A0B4" font-size="10" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">由于 15 分钟无操作，工作区将在 60 秒后锁定</text>
+<text x="1097.0" y="333.0" fill="#92A0B4" font-size="18" font-weight="500" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">×</text>
+<line x1="499.0" y1="382.0" x2="1101.0" y2="382.0" stroke="#2B3A4E" stroke-width="1" opacity="1"/>
+<text x="509.0" y="412.0" fill="#68778D" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">当前编辑</text>
+<rect x="509.0" y="423.0" width="582" height="38" fill="#0C131D" rx="7" stroke="#2B3A4E" stroke-width="1"/>
+<text x="522.0" y="447.0" fill="#E8EDF5" font-size="10" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">决策 D-0031 · 修改尚未保存</text>
+<text x="509.0" y="479.0" fill="#68778D" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">后台任务</text>
+<rect x="509.0" y="490.0" width="582" height="38" fill="#0C131D" rx="7" stroke="#2B3A4E" stroke-width="1"/>
+<text x="522.0" y="514.0" fill="#E8EDF5" font-size="10" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">索引任务运行中，将安全暂停</text>
+<rect x="509.0" y="598.0" width="582" height="42" fill="#F2B84B" rx="6" opacity="0.08"/>
+<circle cx="524.0" cy="613.0" r="4" fill="#F2B84B"/>
+<text x="536.0" y="617.0" fill="#92A0B4" font-size="8" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">锁定前会保存草稿并清理剪贴板中的证据文本。</text>
+<rect x="779.0" y="656.0" width="128" height="38" fill="#1A2534" rx="7" stroke="#3A4D65" stroke-width="1"/><text x="843.0" y="681.0" fill="#E8EDF5" font-size="12" font-weight="650" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">立即锁定</text>
+<rect x="919.0" y="656.0" width="172" height="38" fill="#5B8CFF" rx="7" stroke="#5B8CFF" stroke-width="1"/><text x="1005.0" y="681.0" fill="#FFFFFF" font-size="12" font-weight="650" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">继续使用</text>
+<text x="509.0" y="681.0" fill="#68778D" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">D09</text>
+</svg>

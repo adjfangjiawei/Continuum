@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+<defs><filter id="dialogShadow"><feDropShadow dx="0" dy="14" stdDeviation="24" flood-color="#000000" flood-opacity="0.55"/></filter></defs>
+<rect x="0" y="0" width="1600" height="1000" fill="#090E15"/>
+<rect x="16" y="16" width="1568" height="968" fill="#101721" rx="12" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="16" y="16" width="1568" height="48" fill="#111A26" rx="12"/>
+<rect x="16" y="52" width="1568" height="12" fill="#111A26"/>
+<circle cx="39" cy="40" r="6" fill="#EF6A72"/>
+<circle cx="59" cy="40" r="6" fill="#F2B84B"/>
+<circle cx="79" cy="40" r="6" fill="#44C693"/>
+<text x="108" y="45" fill="#E8EDF5" font-size="14" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">续证 Continuum</text>
+<text x="800" y="45" fill="#92A0B4" font-size="13" font-weight="500" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">先锋计划</text>
+<rect x="16" y="64" width="232" height="890" fill="#0D141E"/>
+<line x1="248" y1="64" x2="248" y2="954" stroke="#2B3A4E" stroke-width="1" opacity="1"/>
+<text x="40" y="105" fill="#92A0B4" font-size="13" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">项目概览</text>
+<text x="40" y="153" fill="#92A0B4" font-size="13" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">审查收件箱</text>
+<text x="40" y="201" fill="#E8EDF5" font-size="13" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">资料库</text>
+<text x="40" y="249" fill="#92A0B4" font-size="13" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">项目台账</text>
+<text x="280" y="110" fill="#E8EDF5" font-size="27" font-weight="750" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">先锋计划</text>
+<text x="280" y="144" fill="#92A0B4" font-size="12" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">当前有效决策、承诺、风险与来源变化</text>
+<rect x="280" y="182" width="390" height="115" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="686" y="182" width="390" height="115" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="1092" y="182" width="458" height="115" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="280" y="318" width="795" height="570" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="1092" y="318" width="458" height="570" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="0" y="0" width="1600" height="1000" fill="#03060A" opacity="0.72"/>
+<rect x="440.0" y="225.0" width="720" height="550" fill="#151E2B" rx="12" stroke="#3A4D65" stroke-width="1"/>
+<rect x="440.0" y="225.0" width="5" height="550" fill="#A787FF" rx="3"/>
+<rect x="468.0" y="250.0" width="38" height="38" fill="#A787FF" rx="9" opacity="0.15"/><text x="487.0" y="276.0" fill="#A787FF" font-size="16" font-weight="750" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">03</text>
+<text x="522.0" y="273.0" fill="#E8EDF5" font-size="20" font-weight="750" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">建立关系</text>
+<text x="522.0" y="297.0" fill="#92A0B4" font-size="10" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">在两个项目对象之间创建可追溯关系</text>
+<text x="1132.0" y="268.0" fill="#92A0B4" font-size="18" font-weight="500" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">×</text>
+<line x1="464.0" y1="317.0" x2="1136.0" y2="317.0" stroke="#2B3A4E" stroke-width="1" opacity="1"/>
+<text x="474.0" y="347.0" fill="#68778D" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">源对象</text>
+<rect x="474.0" y="358.0" width="652" height="38" fill="#0C131D" rx="7" stroke="#2B3A4E" stroke-width="1"/>
+<text x="487.0" y="382.0" fill="#E8EDF5" font-size="10" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">D-0031  采用双轨迁移方案</text>
+<text x="474.0" y="414.0" fill="#68778D" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">关系类型</text>
+<rect x="474.0" y="425.0" width="652" height="38" fill="#0C131D" rx="7" stroke="#2B3A4E" stroke-width="1"/>
+<text x="487.0" y="449.0" fill="#E8EDF5" font-size="10" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">影响  ▾</text>
+<text x="474.0" y="481.0" fill="#68778D" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">目标对象</text>
+<rect x="474.0" y="492.0" width="652" height="38" fill="#0C131D" rx="7" stroke="#2B3A4E" stroke-width="1"/>
+<text x="487.0" y="516.0" fill="#E8EDF5" font-size="10" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">R-0018  双轨运行增加审计复杂度</text>
+<text x="474.0" y="548.0" fill="#68778D" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">关系生效时间</text>
+<rect x="474.0" y="559.0" width="652" height="38" fill="#0C131D" rx="7" stroke="#2B3A4E" stroke-width="1"/>
+<text x="487.0" y="583.0" fill="#E8EDF5" font-size="10" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">2026-09-09 14:30</text>
+<rect x="474.0" y="663.0" width="652" height="42" fill="#A787FF" rx="6" opacity="0.08"/>
+<circle cx="489.0" cy="678.0" r="4" fill="#A787FF"/>
+<text x="501.0" y="682.0" fill="#92A0B4" font-size="8" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">关系将写入双方对象历史，并可关联来源证据。</text>
+<rect x="814.0" y="721.0" width="128" height="38" fill="#1A2534" rx="7" stroke="#3A4D65" stroke-width="1"/><text x="878.0" y="746.0" fill="#E8EDF5" font-size="12" font-weight="650" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">取消</text>
+<rect x="954.0" y="721.0" width="172" height="38" fill="#5B8CFF" rx="7" stroke="#5B8CFF" stroke-width="1"/><text x="1040.0" y="746.0" fill="#FFFFFF" font-size="12" font-weight="650" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">建立关系</text>
+<text x="474.0" y="746.0" fill="#68778D" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">D03</text>
+</svg>

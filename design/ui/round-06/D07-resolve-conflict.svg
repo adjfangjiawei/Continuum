@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+<defs><filter id="dialogShadow"><feDropShadow dx="0" dy="14" stdDeviation="24" flood-color="#000000" flood-opacity="0.55"/></filter></defs>
+<rect x="0" y="0" width="1600" height="1000" fill="#090E15"/>
+<rect x="16" y="16" width="1568" height="968" fill="#101721" rx="12" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="16" y="16" width="1568" height="48" fill="#111A26" rx="12"/>
+<rect x="16" y="52" width="1568" height="12" fill="#111A26"/>
+<circle cx="39" cy="40" r="6" fill="#EF6A72"/>
+<circle cx="59" cy="40" r="6" fill="#F2B84B"/>
+<circle cx="79" cy="40" r="6" fill="#44C693"/>
+<text x="108" y="45" fill="#E8EDF5" font-size="14" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">续证 Continuum</text>
+<text x="800" y="45" fill="#92A0B4" font-size="13" font-weight="500" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">先锋计划</text>
+<rect x="16" y="64" width="232" height="890" fill="#0D141E"/>
+<line x1="248" y1="64" x2="248" y2="954" stroke="#2B3A4E" stroke-width="1" opacity="1"/>
+<text x="40" y="105" fill="#92A0B4" font-size="13" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">项目概览</text>
+<text x="40" y="153" fill="#92A0B4" font-size="13" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">审查收件箱</text>
+<text x="40" y="201" fill="#E8EDF5" font-size="13" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">资料库</text>
+<text x="40" y="249" fill="#92A0B4" font-size="13" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">项目台账</text>
+<text x="280" y="110" fill="#E8EDF5" font-size="27" font-weight="750" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">先锋计划</text>
+<text x="280" y="144" fill="#92A0B4" font-size="12" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">当前有效决策、承诺、风险与来源变化</text>
+<rect x="280" y="182" width="390" height="115" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="686" y="182" width="390" height="115" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="1092" y="182" width="458" height="115" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="280" y="318" width="795" height="570" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="1092" y="318" width="458" height="570" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="0" y="0" width="1600" height="1000" fill="#03060A" opacity="0.72"/>
+<rect x="390.0" y="195.0" width="820" height="610" fill="#151E2B" rx="12" stroke="#3A4D65" stroke-width="1"/>
+<rect x="390.0" y="195.0" width="5" height="610" fill="#F28A4B" rx="3"/>
+<rect x="418.0" y="220.0" width="38" height="38" fill="#F28A4B" rx="9" opacity="0.15"/><text x="437.0" y="246.0" fill="#F28A4B" font-size="16" font-weight="750" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">07</text>
+<text x="472.0" y="243.0" fill="#E8EDF5" font-size="20" font-weight="750" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">处理冲突</text>
+<text x="472.0" y="267.0" fill="#92A0B4" font-size="10" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">为交付日期冲突记录人工判断与依据</text>
+<text x="1182.0" y="238.0" fill="#92A0B4" font-size="18" font-weight="500" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">×</text>
+<line x1="414.0" y1="287.0" x2="1186.0" y2="287.0" stroke="#2B3A4E" stroke-width="1" opacity="1"/>
+<text x="424.0" y="317.0" fill="#68778D" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">主张 A</text>
+<rect x="424.0" y="328.0" width="752" height="38" fill="#0C131D" rx="7" stroke="#2B3A4E" stroke-width="1"/>
+<text x="437.0" y="352.0" fill="#E8EDF5" font-size="10" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">2026-10-15</text>
+<text x="424.0" y="384.0" fill="#68778D" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">主张 B</text>
+<rect x="424.0" y="395.0" width="752" height="38" fill="#0C131D" rx="7" stroke="#2B3A4E" stroke-width="1"/>
+<text x="437.0" y="419.0" fill="#E8EDF5" font-size="10" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">2026-11-30</text>
+<text x="424.0" y="451.0" fill="#68778D" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">处理结论</text>
+<rect x="424.0" y="462.0" width="752" height="38" fill="#0C131D" rx="7" stroke="#2B3A4E" stroke-width="1"/>
+<text x="437.0" y="486.0" fill="#E8EDF5" font-size="10" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">主张 B 为当前有效值  ▾</text>
+<text x="424.0" y="518.0" fill="#68778D" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">处理依据</text>
+<rect x="424.0" y="529.0" width="752" height="38" fill="#0C131D" rx="7" stroke="#2B3A4E" stroke-width="1"/>
+<text x="437.0" y="553.0" fill="#E8EDF5" font-size="10" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">新版本需求文件明确调整了交付日期</text>
+<rect x="424.0" y="693.0" width="752" height="42" fill="#F28A4B" rx="6" opacity="0.08"/>
+<circle cx="439.0" cy="708.0" r="4" fill="#F28A4B"/>
+<text x="451.0" y="712.0" fill="#92A0B4" font-size="8" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">相反证据不会被删除，处理结果将写入审计历史。</text>
+<rect x="864.0" y="751.0" width="128" height="38" fill="#1A2534" rx="7" stroke="#3A4D65" stroke-width="1"/><text x="928.0" y="776.0" fill="#E8EDF5" font-size="12" font-weight="650" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">保留冲突</text>
+<rect x="1004.0" y="751.0" width="172" height="38" fill="#5B8CFF" rx="7" stroke="#5B8CFF" stroke-width="1"/><text x="1090.0" y="776.0" fill="#FFFFFF" font-size="12" font-weight="650" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">确认处理</text>
+<text x="424.0" y="776.0" fill="#68778D" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">D07</text>
+</svg>

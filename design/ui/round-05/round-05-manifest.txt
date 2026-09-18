@@ -1,0 +1,13 @@
+续证 Continuum UI 第五轮
+目录：design/ui/round-05
+画布：1600x1000
+编码：UTF-8
+SVG XML：全部通过
+根元素与 viewBox：全部通过
+
+M05-tags-entities.svg | 27526 bytes | SHA256 1eb9714f413157afc69b34786ef0b1c77d9905bc1fedae055612450e05ebd222
+M06-saved-queries.svg | 24829 bytes | SHA256 c95b888e593fbabac5df979d327beb8a82693e71f67e57c2502061ee64384155
+M07-rule-management.svg | 26588 bytes | SHA256 f0bc7f5c61098071f72f39ad8303330f79122f51445124a79cf16cd9bfaf920c
+M08-workspace-settings.svg | 17698 bytes | SHA256 076e4243527ba77ff269e03d4320cfcb4624e2d8daa618a9329ba6747ce6f88b
+M09-global-settings.svg | 20341 bytes | SHA256 e71601c0eea08b0648ac48f0897174e64d1748a97d0c3fba24bec6fcbcf110ad
+M10-diagnostics.svg | 25117 bytes | SHA256 a7f97472ab3edbf6e072a1af2f4fbfdec44daa3a94101ac5a876ef1a40fb4cae

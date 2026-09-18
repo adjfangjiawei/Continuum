@@ -1,0 +1,11 @@
+续证 Continuum UI 第四轮
+画布：1600x1000
+编码：UTF-8
+状态：SVG XML 校验通过
+
+P15-handover-capsule.svg | 31521 bytes | SHA256 53d786c46fabb5de646ea3652a08710838c6f93799e6bfd8c51a3c69e5605d99
+P16-export-validation.svg | 25199 bytes | SHA256 5c9e2ca5a43db3376390c241e4ac65dfa03a699a0002d56e3b0d6cdf65c3b2e3
+P17-recycle-bin.svg | 25013 bytes | SHA256 7da689db86266934bff2a6a2670eb90989e9bedf38ec09e14f85983f51e53ade
+M02-add-source-wizard.svg | 20782 bytes | SHA256 f946217816f58a8baae941b9de7fd398e370da0a0671320922e3189452984d71
+M03-background-tasks.svg | 26541 bytes | SHA256 3af439b42901e5552bd64fdb7020a9829acbbd68798a3c24e06a0e970ee395fd
+M04-backup-snapshots.svg | 23014 bytes | SHA256 2594ddf8ecb53d5795a5fbaf1da7579245b9f49473947fcca36dfbe0172c0545

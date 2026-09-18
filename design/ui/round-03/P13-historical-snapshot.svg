@@ -1,0 +1,178 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+<defs><filter id="shadow"><feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.25"/></filter><linearGradient id="select" x1="0" x2="1"><stop offset="0" stop-color="#5B8CFF" stop-opacity="0.22"/><stop offset="1" stop-color="#5B8CFF" stop-opacity="0.04"/></linearGradient></defs>
+<rect x="0" y="0" width="1600" height="1000" fill="#090E15"/>
+<rect x="16" y="16" width="1568" height="968" fill="#101721" rx="12" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="16" y="16" width="1568" height="48" fill="#111A26" rx="12"/>
+<rect x="16" y="52" width="1568" height="12" fill="#111A26"/>
+<circle cx="39" cy="40" r="6" fill="#EF6A72"/>
+<circle cx="59" cy="40" r="6" fill="#F2B84B"/>
+<circle cx="79" cy="40" r="6" fill="#44C693"/>
+<text x="108" y="45" fill="#E8EDF5" font-size="14" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">续证 Continuum</text>
+<text x="800" y="45" fill="#92A0B4" font-size="13" font-weight="500" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">先锋计划</text>
+<text x="1545" y="45" fill="#92A0B4" font-size="14" font-weight="500" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">—   □   ×</text>
+<rect x="16" y="64" width="232" height="890" fill="#0D141E"/>
+<line x1="248" y1="64" x2="248" y2="954" stroke="#2B3A4E" stroke-width="1" opacity="1"/>
+<text x="40" y="97" fill="#5B8CFF" font-size="11" font-weight="750" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">CONTINUUM</text>
+<text x="40" y="118" fill="#68778D" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">项目记忆取证台</text>
+<text x="47" y="155" fill="#92A0B4" font-size="15" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">⌂</text>
+<text x="77" y="154" fill="#92A0B4" font-size="13" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">项目概览</text>
+<text x="47" y="200" fill="#92A0B4" font-size="15" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">◎</text>
+<text x="77" y="199" fill="#92A0B4" font-size="13" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">审查收件箱</text>
+<rect x="198" y="183" width="27" height="20" fill="#202D3F" rx="10"/>
+<text x="211.5" y="197" fill="#E8EDF5" font-size="10" font-weight="700" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">24</text>
+<text x="47" y="245" fill="#92A0B4" font-size="15" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">▤</text>
+<text x="77" y="244" fill="#92A0B4" font-size="13" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">资料库</text>
+<text x="47" y="290" fill="#92A0B4" font-size="15" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">≣</text>
+<text x="77" y="289" fill="#92A0B4" font-size="13" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">项目台账</text>
+<text x="47" y="335" fill="#92A0B4" font-size="15" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">⚠</text>
+<text x="77" y="334" fill="#92A0B4" font-size="13" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">冲突中心</text>
+<rect x="198" y="318" width="27" height="20" fill="#EF6A72" rx="10"/>
+<text x="211.5" y="332" fill="#E8EDF5" font-size="10" font-weight="700" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">6</text>
+<text x="47" y="380" fill="#92A0B4" font-size="15" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">↺</text>
+<text x="77" y="379" fill="#92A0B4" font-size="13" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">变化审查</text>
+<rect x="198" y="363" width="27" height="20" fill="#202D3F" rx="10"/>
+<text x="211.5" y="377" fill="#E8EDF5" font-size="10" font-weight="700" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">3</text>
+<rect x="29" y="400" width="207" height="40" fill="#5B8CFF" rx="7" opacity="0.16"/>
+<rect x="29" y="400" width="3" height="40" fill="#5B8CFF" rx="2"/>
+<text x="47" y="425" fill="#E8EDF5" font-size="15" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">◷</text>
+<text x="77" y="424" fill="#E8EDF5" font-size="13" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">时间线</text>
+<text x="47" y="470" fill="#92A0B4" font-size="15" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">⌘</text>
+<text x="77" y="469" fill="#92A0B4" font-size="13" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">关系浏览器</text>
+<text x="47" y="515" fill="#92A0B4" font-size="15" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">⬡</text>
+<text x="77" y="514" fill="#92A0B4" font-size="13" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">交接胶囊</text>
+<line x1="35" y1="575" x2="226" y2="575" stroke="#2B3A4E" stroke-width="1" opacity="1"/>
+<text x="40" y="607" fill="#68778D" font-size="11" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">工作区</text>
+<text x="40" y="637" fill="#E8EDF5" font-size="13" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">先锋计划</text>
+<text x="40" y="659" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">本地加密工作区</text>
+<rect x="40" y="680" width="91" height="25" fill="#44C693" rx="12" opacity="0.15"/><circle cx="53" cy="692.5" r="4" fill="#44C693"/><text x="64" y="697" fill="#44C693" font-size="10" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">索引正常</text>
+<text x="40" y="731" fill="#68778D" font-size="11" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">快速视图</text>
+<text x="40" y="760" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">需要复核</text>
+<text x="211" y="760" fill="#F2B84B" font-size="10" font-weight="700" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">11</text>
+<text x="40" y="788" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">存在冲突</text>
+<text x="211" y="788" fill="#EF6A72" font-size="10" font-weight="700" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">6</text>
+<text x="40" y="816" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">来源变化</text>
+<text x="211" y="816" fill="#5B8CFF" font-size="10" font-weight="700" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">3</text>
+<text x="274" y="99" fill="#5B8CFF" font-size="11" font-weight="750" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">P13</text>
+<text x="274" y="132" fill="#E8EDF5" font-size="26" font-weight="750" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">历史时间切片</text>
+<text x="274" y="157" fill="#92A0B4" font-size="12" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">重建指定时刻可知的项目状态，并与当前状态进行比较</text>
+<rect x="274" y="178" width="470" height="39" fill="#0C131D" rx="8" stroke="#2B3A4E" stroke-width="1"/>
+<text x="290" y="203" fill="#68778D" font-size="12" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">⌕  搜索文档、证据、决策或输入命令</text>
+<rect x="1476" y="179" width="74" height="38" fill="#1A2534" rx="7" stroke="#3A4D65" stroke-width="1"/><text x="1513.0" y="204" fill="#E8EDF5" font-size="12" font-weight="650" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">帮助</text>
+<line x1="16" y1="954" x2="1584" y2="954" stroke="#2B3A4E" stroke-width="1" opacity="1"/>
+<text x="34" y="981" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">本地工作区</text>
+<circle cx="125" cy="977" r="4" fill="#44C693"/>
+<text x="137" y="981" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">数据库正常</text>
+<text x="264" y="981" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">后台任务 1</text>
+<text x="1548" y="981" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">缩放 100%</text>
+<rect x="1171" y="179" width="124" height="38" fill="#1A2534" rx="7" stroke="#3A4D65" stroke-width="1"/><text x="1233.0" y="204" fill="#E8EDF5" font-size="12" font-weight="650" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">保存切片</text>
+<rect x="1306" y="179" width="159" height="38" fill="#5B8CFF" rx="7" stroke="#5B8CFF" stroke-width="1"/><text x="1385.5" y="204" fill="#FFFFFF" font-size="12" font-weight="650" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">导出历史报告</text>
+<rect x="274" y="238" width="1276" height="79" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<text x="294" y="262" fill="#68778D" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">目标时间</text>
+<rect x="294" y="271" width="221" height="34" fill="#0C131D" rx="6" stroke="#5B8CFF" stroke-width="1"/>
+<text x="308" y="293" fill="#E8EDF5" font-size="11" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">2026-09-09  16:00</text>
+<text x="532" y="262" fill="#68778D" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">时区</text>
+<rect x="532" y="271" width="210" height="34" fill="#0C131D" rx="6" stroke="#2B3A4E" stroke-width="1"/>
+<text x="546" y="293" fill="#E8EDF5" font-size="10" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">Asia/Shanghai  ▾</text>
+<text x="759" y="262" fill="#68778D" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">知识边界</text>
+<rect x="759" y="271" width="245" height="34" fill="#0C131D" rx="6" stroke="#2B3A4E" stroke-width="1"/>
+<text x="773" y="293" fill="#E8EDF5" font-size="10" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">排除后来补录的信息  ▾</text>
+<rect x="1023" y="279" width="17" height="17" fill="#5B8CFF" rx="4" stroke="#5B8CFF" stroke-width="1"/><text x="1031.5" y="292" fill="#FFFFFF" font-size="11" font-weight="800" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">✓</text>
+<text x="1049" y="292" fill="#92A0B4" font-size="10" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">与当前状态比较</text>
+<rect x="1378" y="270" width="152" height="38" fill="#5B8CFF" rx="7" stroke="#5B8CFF" stroke-width="1"/><text x="1454.0" y="295" fill="#FFFFFF" font-size="12" font-weight="650" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">重新构建</text>
+<rect x="274" y="332" width="394" height="594" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<text x="294" y="364" fill="#E8EDF5" font-size="15" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">当时有效</text>
+<text x="644" y="364" fill="#92A0B4" font-size="10" font-weight="600" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">42 项</text>
+<rect x="291" y="389" width="360" height="73" fill="#1A2534" rx="7" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="306" y="405" width="38" height="38" fill="#44C693" rx="8" opacity="0.15"/>
+<text x="325" y="431" fill="#44C693" font-size="15" font-weight="700" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">18</text>
+<text x="358" y="416" fill="#E8EDF5" font-size="10" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">事实</text>
+<text x="358" y="439" fill="#92A0B4" font-size="9" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">旧协议仍处于支持期</text>
+<text x="632" y="429" fill="#68778D" font-size="16" font-weight="500" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">›</text>
+<rect x="291" y="472" width="360" height="73" fill="#1A2534" rx="7" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="306" y="488" width="38" height="38" fill="#A787FF" rx="8" opacity="0.15"/>
+<text x="325" y="514" fill="#A787FF" font-size="15" font-weight="700" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">7</text>
+<text x="358" y="499" fill="#E8EDF5" font-size="10" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">决策</text>
+<text x="358" y="522" fill="#92A0B4" font-size="9" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">D-0031 当日生效</text>
+<text x="632" y="512" fill="#68778D" font-size="16" font-weight="500" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">›</text>
+<rect x="291" y="555" width="360" height="73" fill="#1A2534" rx="7" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="306" y="571" width="38" height="38" fill="#3FC7C1" rx="8" opacity="0.15"/>
+<text x="325" y="597" fill="#3FC7C1" font-size="15" font-weight="700" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">11</text>
+<text x="358" y="582" fill="#E8EDF5" font-size="10" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">未完成承诺</text>
+<text x="358" y="605" fill="#92A0B4" font-size="9" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">最近截止日期 09-18</text>
+<text x="632" y="595" fill="#68778D" font-size="16" font-weight="500" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">›</text>
+<rect x="291" y="638" width="360" height="73" fill="#1A2534" rx="7" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="306" y="654" width="38" height="38" fill="#EF6A72" rx="8" opacity="0.15"/>
+<text x="325" y="680" fill="#EF6A72" font-size="15" font-weight="700" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">4</text>
+<text x="358" y="665" fill="#E8EDF5" font-size="10" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">活跃风险</text>
+<text x="358" y="688" fill="#92A0B4" font-size="9" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">双轨运行风险已登记</text>
+<text x="632" y="678" fill="#68778D" font-size="16" font-weight="500" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">›</text>
+<rect x="291" y="721" width="360" height="73" fill="#1A2534" rx="7" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="306" y="737" width="38" height="38" fill="#F28A4B" rx="8" opacity="0.15"/>
+<text x="325" y="763" fill="#F28A4B" font-size="15" font-weight="700" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">2</text>
+<text x="358" y="748" fill="#E8EDF5" font-size="10" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">未决问题</text>
+<text x="358" y="771" fill="#92A0B4" font-size="9" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">合作方切换日期未知</text>
+<text x="632" y="761" fill="#68778D" font-size="16" font-weight="500" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">›</text>
+<line x1="291" y1="814" x2="651" y2="814" stroke="#2B3A4E" stroke-width="1" opacity="1"/>
+<text x="294" y="844" fill="#68778D" font-size="10" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">当时可用证据</text>
+<text x="294" y="871" fill="#E8EDF5" font-size="10" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">127 项证据 · 36 个来源文件</text>
+<text x="294" y="894" fill="#92A0B4" font-size="9" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">最后发现时间：2026-09-09 15:42</text>
+<rect x="683" y="332" width="539" height="594" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<text x="703" y="364" fill="#E8EDF5" font-size="15" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">当时状态摘要</text>
+<rect x="1099" y="347" width="101" height="25" fill="#5B8CFF" rx="12" opacity="0.15"/><circle cx="1112" cy="359.5" r="4" fill="#5B8CFF"/><text x="1123" y="364" fill="#5B8CFF" font-size="10" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">历史视图</text>
+<rect x="703" y="387" width="499" height="116" fill="#0C131D" rx="7" stroke="#2B3A4E" stroke-width="1"/>
+<text x="720" y="413" fill="#E8EDF5" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">在 2026 年 9 月 9 日 16:00，团队已经接受</text>
+<text x="720" y="437" fill="#E8EDF5" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">双轨迁移方案，旧协议计划保留至第四季度。</text>
+<text x="720" y="461" fill="#E8EDF5" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">合作方最终切换日期尚未确定，安全复核仍未完成。</text>
+<text x="720" y="486" fill="#44C693" font-size="9" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">以上内容均可回溯至当时已经存在的证据。</text>
+<text x="703" y="535" fill="#68778D" font-size="11" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">关键对象</text>
+<rect x="703" y="552" width="499" height="58" fill="#1A2534" rx="6" stroke="#2B3A4E" stroke-width="1"/>
+<text x="719" y="574" fill="#A787FF" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">D-0031</text>
+<text x="781" y="574" fill="#E8EDF5" font-size="10" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">采用双轨迁移方案</text>
+<rect x="719" y="580" width="79" height="25" fill="#A787FF" rx="12" opacity="0.15"/><circle cx="732" cy="592.5" r="4" fill="#A787FF"/><text x="743" y="597" fill="#A787FF" font-size="10" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">当日生效</text>
+<text x="1183" y="588" fill="#5B8CFF" font-size="9" font-weight="650" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">打开 ›</text>
+<rect x="703" y="619" width="499" height="58" fill="#1A2534" rx="6" stroke="#2B3A4E" stroke-width="1"/>
+<text x="719" y="641" fill="#44C693" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">F-0054</text>
+<text x="781" y="641" fill="#E8EDF5" font-size="10" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">旧协议保留至第四季度</text>
+<rect x="719" y="647" width="79" height="25" fill="#44C693" rx="12" opacity="0.15"/><circle cx="732" cy="659.5" r="4" fill="#44C693"/><text x="743" y="664" fill="#44C693" font-size="10" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">当前有效</text>
+<text x="1183" y="655" fill="#5B8CFF" font-size="9" font-weight="650" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">打开 ›</text>
+<rect x="703" y="686" width="499" height="58" fill="#1A2534" rx="6" stroke="#2B3A4E" stroke-width="1"/>
+<text x="719" y="708" fill="#3FC7C1" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">C-0038</text>
+<text x="781" y="708" fill="#E8EDF5" font-size="10" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">完成合作方环境验证</text>
+<rect x="719" y="714" width="66" height="25" fill="#3FC7C1" rx="12" opacity="0.15"/><circle cx="732" cy="726.5" r="4" fill="#3FC7C1"/><text x="743" y="731" fill="#3FC7C1" font-size="10" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">进行中</text>
+<text x="1183" y="722" fill="#5B8CFF" font-size="9" font-weight="650" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">打开 ›</text>
+<rect x="703" y="753" width="499" height="58" fill="#1A2534" rx="6" stroke="#2B3A4E" stroke-width="1"/>
+<text x="719" y="775" fill="#EF6A72" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">R-0018</text>
+<text x="781" y="775" fill="#E8EDF5" font-size="10" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">双轨运行增加审计复杂度</text>
+<rect x="719" y="781" width="62" height="25" fill="#EF6A72" rx="12" opacity="0.15"/><circle cx="732" cy="793.5" r="4" fill="#EF6A72"/><text x="743" y="798" fill="#EF6A72" font-size="10" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">活跃</text>
+<text x="1183" y="789" fill="#5B8CFF" font-size="9" font-weight="650" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">打开 ›</text>
+<rect x="703" y="845" width="240" height="38" fill="#1A2534" rx="7" stroke="#3A4D65" stroke-width="1"/><text x="823.0" y="870" fill="#E8EDF5" font-size="12" font-weight="650" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">保存为复盘起点</text>
+<rect x="954" y="845" width="248" height="38" fill="#5B8CFF" rx="7" stroke="#5B8CFF" stroke-width="1"/><text x="1078.0" y="870" fill="#FFFFFF" font-size="12" font-weight="650" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">加入交接胶囊</text>
+<text x="703" y="899" fill="#68778D" font-size="9" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">时间切片是查询视图，不复制或修改原始数据</text>
+<rect x="1237" y="332" width="313" height="594" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<text x="1257" y="364" fill="#E8EDF5" font-size="15" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">后来才知道</text>
+<text x="1257" y="388" fill="#92A0B4" font-size="9" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">以下信息在目标时刻尚不可知</text>
+<rect x="1257" y="417" width="273" height="76" fill="#1A2534" rx="7" stroke="#2B3A4E" stroke-width="1"/>
+<circle cx="1273" cy="438" r="5" fill="#EF6A72"/>
+<text x="1287" y="441" fill="#EF6A72" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">9月11日</text>
+<text x="1273" y="466" fill="#E8EDF5" font-size="9" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">合作方要求延长旧协议支持期</text>
+<text x="1511" y="483" fill="#5B8CFF" font-size="8" font-weight="650" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">查看差异 ›</text>
+<rect x="1257" y="504" width="273" height="76" fill="#1A2534" rx="7" stroke="#2B3A4E" stroke-width="1"/>
+<circle cx="1273" cy="525" r="5" fill="#F2B84B"/>
+<text x="1287" y="528" fill="#F2B84B" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">9月12日</text>
+<text x="1273" y="553" fill="#E8EDF5" font-size="9" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">安全复核承诺发生延期</text>
+<text x="1511" y="570" fill="#5B8CFF" font-size="8" font-weight="650" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">查看差异 ›</text>
+<rect x="1257" y="591" width="273" height="76" fill="#1A2534" rx="7" stroke="#2B3A4E" stroke-width="1"/>
+<circle cx="1273" cy="612" r="5" fill="#5B8CFF"/>
+<text x="1287" y="615" fill="#5B8CFF" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">9月18日</text>
+<text x="1273" y="640" fill="#E8EDF5" font-size="9" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">交付日期改为 11月30日</text>
+<text x="1511" y="657" fill="#5B8CFF" font-size="8" font-weight="650" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">查看差异 ›</text>
+<rect x="1257" y="678" width="273" height="76" fill="#1A2534" rx="7" stroke="#2B3A4E" stroke-width="1"/>
+<circle cx="1273" cy="699" r="5" fill="#A787FF"/>
+<text x="1287" y="702" fill="#A787FF" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">9月18日</text>
+<text x="1273" y="727" fill="#E8EDF5" font-size="9" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">旧证据内容在 v7 中变化</text>
+<text x="1511" y="744" fill="#5B8CFF" font-size="8" font-weight="650" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">查看差异 ›</text>
+<rect x="1257" y="782" width="273" height="86" fill="#5B8CFF" rx="7" opacity="0.09"/>
+<text x="1272" y="808" fill="#5B8CFF" font-size="10" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">知识边界保护已启用</text>
+<text x="1272" y="831" fill="#E8EDF5" font-size="9" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">后来出现的信息不会混入当时</text>
+<text x="1272" y="850" fill="#E8EDF5" font-size="9" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">状态，但会在本栏单独列出。</text>
+</svg>

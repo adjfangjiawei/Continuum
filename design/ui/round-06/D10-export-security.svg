@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+<defs><filter id="dialogShadow"><feDropShadow dx="0" dy="14" stdDeviation="24" flood-color="#000000" flood-opacity="0.55"/></filter></defs>
+<rect x="0" y="0" width="1600" height="1000" fill="#090E15"/>
+<rect x="16" y="16" width="1568" height="968" fill="#101721" rx="12" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="16" y="16" width="1568" height="48" fill="#111A26" rx="12"/>
+<rect x="16" y="52" width="1568" height="12" fill="#111A26"/>
+<circle cx="39" cy="40" r="6" fill="#EF6A72"/>
+<circle cx="59" cy="40" r="6" fill="#F2B84B"/>
+<circle cx="79" cy="40" r="6" fill="#44C693"/>
+<text x="108" y="45" fill="#E8EDF5" font-size="14" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">续证 Continuum</text>
+<text x="800" y="45" fill="#92A0B4" font-size="13" font-weight="500" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">先锋计划</text>
+<rect x="16" y="64" width="232" height="890" fill="#0D141E"/>
+<line x1="248" y1="64" x2="248" y2="954" stroke="#2B3A4E" stroke-width="1" opacity="1"/>
+<text x="40" y="105" fill="#92A0B4" font-size="13" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">项目概览</text>
+<text x="40" y="153" fill="#92A0B4" font-size="13" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">审查收件箱</text>
+<text x="40" y="201" fill="#E8EDF5" font-size="13" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">资料库</text>
+<text x="40" y="249" fill="#92A0B4" font-size="13" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">项目台账</text>
+<text x="280" y="110" fill="#E8EDF5" font-size="27" font-weight="750" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">先锋计划</text>
+<text x="280" y="144" fill="#92A0B4" font-size="12" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">当前有效决策、承诺、风险与来源变化</text>
+<rect x="280" y="182" width="390" height="115" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="686" y="182" width="390" height="115" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="1092" y="182" width="458" height="115" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="280" y="318" width="795" height="570" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="1092" y="318" width="458" height="570" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="0" y="0" width="1600" height="1000" fill="#03060A" opacity="0.72"/>
+<rect x="405.0" y="205.0" width="790" height="590" fill="#151E2B" rx="12" stroke="#3A4D65" stroke-width="1"/>
+<rect x="405.0" y="205.0" width="5" height="590" fill="#EF6A72" rx="3"/>
+<rect x="433.0" y="230.0" width="38" height="38" fill="#EF6A72" rx="9" opacity="0.15"/><text x="452.0" y="256.0" fill="#EF6A72" font-size="16" font-weight="750" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">10</text>
+<text x="487.0" y="253.0" fill="#E8EDF5" font-size="20" font-weight="750" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">导出安全检查</text>
+<text x="487.0" y="277.0" fill="#92A0B4" font-size="10" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">导出包可能包含路径、人员信息和原始附件</text>
+<text x="1167.0" y="248.0" fill="#92A0B4" font-size="18" font-weight="500" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">×</text>
+<line x1="429.0" y1="297.0" x2="1171.0" y2="297.0" stroke="#2B3A4E" stroke-width="1" opacity="1"/>
+<text x="439.0" y="327.0" fill="#68778D" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">导出格式</text>
+<rect x="439.0" y="338.0" width="722" height="38" fill="#0C131D" rx="7" stroke="#2B3A4E" stroke-width="1"/>
+<text x="452.0" y="362.0" fill="#E8EDF5" font-size="10" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">ZIP 证据包</text>
+<text x="439.0" y="394.0" fill="#68778D" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">输出位置</text>
+<rect x="439.0" y="405.0" width="722" height="38" fill="#0C131D" rx="7" stroke="#2B3A4E" stroke-width="1"/>
+<text x="452.0" y="429.0" fill="#E8EDF5" font-size="10" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">D:\Exports\Pioneer-handover.zip</text>
+<text x="439.0" y="461.0" fill="#68778D" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">脱敏模板</text>
+<rect x="439.0" y="472.0" width="722" height="38" fill="#0C131D" rx="7" stroke="#2B3A4E" stroke-width="1"/>
+<text x="452.0" y="496.0" fill="#E8EDF5" font-size="10" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">项目交接标准模板  ▾</text>
+<text x="439.0" y="528.0" fill="#68778D" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">相关内容与选项</text>
+<rect x="439.0" y="541.0" width="722" height="34" fill="#1A2534" rx="6" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="450.0" y="549.0" width="17" height="17" fill="#5B8CFF" rx="4" stroke="#5B8CFF" stroke-width="1"/><text x="458.5" y="562.0" fill="#FFFFFF" font-size="11" font-weight="800" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">✓</text>
+<text x="477.0" y="563.0" fill="#92A0B4" font-size="9" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">移除 18 个绝对磁盘路径</text>
+<rect x="439.0" y="579.0" width="722" height="34" fill="#1A2534" rx="6" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="450.0" y="587.0" width="17" height="17" fill="#5B8CFF" rx="4" stroke="#5B8CFF" stroke-width="1"/><text x="458.5" y="600.0" fill="#FFFFFF" font-size="11" font-weight="800" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">✓</text>
+<text x="477.0" y="601.0" fill="#92A0B4" font-size="9" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">隐藏 7 个邮箱地址</text>
+<rect x="439.0" y="683.0" width="722" height="42" fill="#EF6A72" rx="6" opacity="0.08"/>
+<circle cx="454.0" cy="698.0" r="4" fill="#EF6A72"/>
+<text x="466.0" y="702.0" fill="#92A0B4" font-size="8" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">导出后会生成完整性清单，但接收者仍需安全保管口令。</text>
+<rect x="849.0" y="741.0" width="128" height="38" fill="#1A2534" rx="7" stroke="#3A4D65" stroke-width="1"/><text x="913.0" y="766.0" fill="#E8EDF5" font-size="12" font-weight="650" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">返回设置</text>
+<rect x="989.0" y="741.0" width="172" height="38" fill="#5B8CFF" rx="7" stroke="#5B8CFF" stroke-width="1"/><text x="1075.0" y="766.0" fill="#FFFFFF" font-size="12" font-weight="650" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">确认并导出</text>
+<text x="439.0" y="766.0" fill="#68778D" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">D10</text>
+</svg>

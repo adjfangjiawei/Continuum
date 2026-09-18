@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900">
+<defs><filter id="shadow"><feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.25"/></filter></defs>
+<rect x="0" y="0" width="1440" height="900" fill="#0B1018"/>
+<rect x="18" y="18" width="1404" height="864" fill="#101721" rx="12" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="18" y="18" width="1404" height="46" fill="#111A26" rx="12"/>
+<rect x="18" y="52" width="1404" height="12" fill="#111A26"/>
+<circle cx="42" cy="41" r="6" fill="#EF6A72"/>
+<circle cx="62" cy="41" r="6" fill="#F2B84B"/>
+<circle cx="82" cy="41" r="6" fill="#44C693"/>
+<text x="112" y="46" fill="#E8EDF5" font-size="14" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">续证 Continuum</text>
+<text x="720" y="46" fill="#92A0B4" font-size="13" font-weight="500" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">启动中心</text>
+<text x="1370" y="46" fill="#92A0B4" font-size="14" font-weight="500" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">—  □  ×</text>
+<text x="54" y="104" fill="#5B8CFF" font-size="11" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">P01</text>
+<text x="54" y="137" fill="#E8EDF5" font-size="27" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">启动中心</text>
+<text x="54" y="161" fill="#92A0B4" font-size="13" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">创建、打开或恢复一个本地项目工作区</text>
+<rect x="54" y="180" width="430" height="38" fill="#0B1018" rx="8" stroke="#2B3A4E" stroke-width="1"/>
+<text x="70" y="204" fill="#68778D" font-size="13" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">⌕  搜索文档、证据、决策或输入命令</text>
+<rect x="1314" y="182" width="82" height="36" fill="#1A2534" rx="7" stroke="#3A4D65" stroke-width="1"/><text x="1355.0" y="205" fill="#E8EDF5" font-size="13" font-weight="600" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">帮助</text>
+<line x1="18" y1="854" x2="1422" y2="854" stroke="#2B3A4E" stroke-width="1" opacity="1"/>
+<text x="36" y="880" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">本地工作区</text>
+<circle cx="130" cy="876" r="4" fill="#44C693"/>
+<text x="142" y="880" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">数据库正常</text>
+<text x="1386" y="880" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">缩放 100%</text>
+<rect x="54" y="245" width="430" height="555" fill="#151E2B" rx="12" stroke="#2B3A4E" stroke-width="1"/>
+<text x="84" y="288" fill="#E8EDF5" font-size="19" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">开始使用</text>
+<text x="84" y="314" fill="#92A0B4" font-size="12" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">工作区数据完全保存在本机</text>
+<rect x="78" y="346" width="382" height="82" fill="#1A2534" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="96" y="370" width="34" height="34" fill="#5B8CFF" rx="8" opacity="0.18"/><text x="113" y="393" fill="#5B8CFF" font-size="15" font-weight="700" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">＋</text>
+<text x="146" y="379" fill="#E8EDF5" font-size="14" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">新建工作区</text>
+<text x="146" y="402" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">创建普通或加密项目工作区</text>
+<text x="436" y="394" fill="#68778D" font-size="22" font-weight="500" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">›</text>
+<rect x="78" y="442" width="382" height="82" fill="#1A2534" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="96" y="466" width="34" height="34" fill="#3FC7C1" rx="8" opacity="0.18"/><text x="113" y="489" fill="#3FC7C1" font-size="15" font-weight="700" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">↗</text>
+<text x="146" y="475" fill="#E8EDF5" font-size="14" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">打开工作区</text>
+<text x="146" y="498" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">打开已有的 .continuum 工作区</text>
+<text x="436" y="490" fill="#68778D" font-size="22" font-weight="500" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">›</text>
+<rect x="78" y="538" width="382" height="82" fill="#1A2534" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="96" y="562" width="34" height="34" fill="#A787FF" rx="8" opacity="0.18"/><text x="113" y="585" fill="#A787FF" font-size="15" font-weight="700" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">⇩</text>
+<text x="146" y="571" fill="#E8EDF5" font-size="14" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">导入工作区包</text>
+<text x="146" y="594" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">从离线交换包建立工作区</text>
+<text x="436" y="586" fill="#68778D" font-size="22" font-weight="500" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">›</text>
+<rect x="78" y="634" width="382" height="82" fill="#1A2534" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="96" y="658" width="34" height="34" fill="#F2B84B" rx="8" opacity="0.18"/><text x="113" y="681" fill="#F2B84B" font-size="15" font-weight="700" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">↺</text>
+<text x="146" y="667" fill="#E8EDF5" font-size="14" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">从备份恢复</text>
+<text x="146" y="690" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">验证备份并恢复为新工作区</text>
+<text x="436" y="682" fill="#68778D" font-size="22" font-weight="500" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">›</text>
+<rect x="508" y="245" width="888" height="555" fill="#151E2B" rx="12" stroke="#2B3A4E" stroke-width="1"/>
+<text x="538" y="286" fill="#E8EDF5" font-size="19" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">最近工作区</text>
+<text x="538" y="312" fill="#92A0B4" font-size="12" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">按最近打开时间排列</text>
+<rect x="1253" y="267" width="112" height="36" fill="#1A2534" rx="7" stroke="#3A4D65" stroke-width="1"/><text x="1309.0" y="290" fill="#E8EDF5" font-size="13" font-weight="600" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">浏览磁盘</text>
+<rect x="532" y="340" width="840" height="91" fill="#1A2534" rx="9" stroke="#5B8CFF" stroke-width="1"/>
+<rect x="550" y="368" width="34" height="34" fill="#5B8CFF" rx="8" opacity="0.18"/><text x="567" y="391" fill="#5B8CFF" font-size="15" font-weight="700" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">◇</text>
+<text x="600" y="369" fill="#E8EDF5" font-size="14" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">先锋计划</text>
+<text x="600" y="393" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">D:\\Projects\\Pioneer.continuum</text>
+<rect x="600" y="401" width="72" height="25" fill="#A787FF" rx="12" opacity="0.16"/><circle cx="613" cy="413.5" r="4" fill="#A787FF"/><text x="623" y="418" fill="#A787FF" font-size="11" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">加密</text>
+<rect x="682" y="401" width="88" height="25" fill="#44C693" rx="12" opacity="0.16"/><circle cx="695" cy="413.5" r="4" fill="#44C693"/><text x="705" y="418" fill="#44C693" font-size="11" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">正常</text>
+<text x="1338" y="371" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">今天 12:28</text>
+<text x="1338" y="402" fill="#5B8CFF" font-size="12" font-weight="650" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">打开  ›</text>
+<rect x="532" y="445" width="840" height="91" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="550" y="473" width="34" height="34" fill="#92A0B4" rx="8" opacity="0.18"/><text x="567" y="496" fill="#92A0B4" font-size="15" font-weight="700" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">◇</text>
+<text x="600" y="474" fill="#E8EDF5" font-size="14" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">北辰交付审计</text>
+<text x="600" y="498" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">D:\\Evidence\\Polaris.continuum</text>
+<rect x="600" y="506" width="72" height="25" fill="#A787FF" rx="12" opacity="0.16"/><circle cx="613" cy="518.5" r="4" fill="#A787FF"/><text x="623" y="523" fill="#A787FF" font-size="11" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">加密</text>
+<rect x="682" y="506" width="88" height="25" fill="#F2B84B" rx="12" opacity="0.16"/><circle cx="695" cy="518.5" r="4" fill="#F2B84B"/><text x="705" y="523" fill="#F2B84B" font-size="11" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">待复核 3</text>
+<text x="1338" y="476" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">昨天 18:42</text>
+<text x="1338" y="507" fill="#5B8CFF" font-size="12" font-weight="650" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">打开  ›</text>
+<rect x="532" y="550" width="840" height="91" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="550" y="578" width="34" height="34" fill="#92A0B4" rx="8" opacity="0.18"/><text x="567" y="601" fill="#92A0B4" font-size="15" font-weight="700" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">◇</text>
+<text x="600" y="579" fill="#E8EDF5" font-size="14" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">协议迁移研究</text>
+<text x="600" y="603" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">D:\\Research\\Protocol.continuum</text>
+<rect x="600" y="611" width="72" height="25" fill="#A787FF" rx="12" opacity="0.16"/><circle cx="613" cy="623.5" r="4" fill="#A787FF"/><text x="623" y="628" fill="#A787FF" font-size="11" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">普通</text>
+<rect x="682" y="611" width="88" height="25" fill="#44C693" rx="12" opacity="0.16"/><circle cx="695" cy="623.5" r="4" fill="#44C693"/><text x="705" y="628" fill="#44C693" font-size="11" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">正常</text>
+<text x="1338" y="581" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">9月15日</text>
+<text x="1338" y="612" fill="#5B8CFF" font-size="12" font-weight="650" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">打开  ›</text>
+<rect x="532" y="655" width="840" height="91" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="550" y="683" width="34" height="34" fill="#92A0B4" rx="8" opacity="0.18"/><text x="567" y="706" fill="#92A0B4" font-size="15" font-weight="700" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">◇</text>
+<text x="600" y="684" fill="#E8EDF5" font-size="14" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">供应商复盘</text>
+<text x="600" y="708" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">E:\\Archive\\Vendor.continuum</text>
+<rect x="600" y="716" width="72" height="25" fill="#A787FF" rx="12" opacity="0.16"/><circle cx="613" cy="728.5" r="4" fill="#A787FF"/><text x="623" y="733" fill="#A787FF" font-size="11" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">只读</text>
+<rect x="682" y="716" width="88" height="25" fill="#EF6A72" rx="12" opacity="0.16"/><circle cx="695" cy="728.5" r="4" fill="#EF6A72"/><text x="705" y="733" fill="#EF6A72" font-size="11" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">路径失联</text>
+<text x="1338" y="686" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">9月8日</text>
+<text x="1338" y="717" fill="#5B8CFF" font-size="12" font-weight="650" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">打开  ›</text>
+<text x="538" y="783" fill="#68778D" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">提示：工作区打开前会进行轻量完整性检查</text>
+</svg>

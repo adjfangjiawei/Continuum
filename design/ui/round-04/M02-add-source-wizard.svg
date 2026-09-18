@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+<defs><linearGradient id="select" x1="0" x2="1"><stop offset="0" stop-color="#5B8CFF" stop-opacity="0.22"/><stop offset="1" stop-color="#5B8CFF" stop-opacity="0.04"/></linearGradient><filter id="shadow"><feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.25"/></filter></defs>
+<rect x="0" y="0" width="1600" height="1000" fill="#090E15"/>
+<rect x="16" y="16" width="1568" height="968" fill="#101721" rx="12" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="16" y="16" width="1568" height="48" fill="#111A26" rx="12"/>
+<rect x="16" y="52" width="1568" height="12" fill="#111A26"/>
+<circle cx="39" cy="40" r="6" fill="#EF6A72"/>
+<circle cx="59" cy="40" r="6" fill="#F2B84B"/>
+<circle cx="79" cy="40" r="6" fill="#44C693"/>
+<text x="108" y="45" fill="#E8EDF5" font-size="14" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">续证 Continuum</text>
+<text x="800" y="45" fill="#92A0B4" font-size="13" font-weight="500" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">先锋计划</text>
+<text x="1545" y="45" fill="#92A0B4" font-size="14" font-weight="500" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">—   □   ×</text>
+<rect x="16" y="64" width="232" height="890" fill="#0D141E"/>
+<line x1="248" y1="64" x2="248" y2="954" stroke="#2B3A4E" stroke-width="1" opacity="1"/>
+<text x="40" y="97" fill="#5B8CFF" font-size="11" font-weight="750" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">CONTINUUM</text>
+<text x="40" y="118" fill="#68778D" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">项目记忆取证台</text>
+<text x="47" y="155" fill="#92A0B4" font-size="15" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">‹</text>
+<text x="77" y="154" fill="#92A0B4" font-size="13" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">返回工作区</text>
+<rect x="29" y="175" width="207" height="40" fill="#5B8CFF" rx="7" opacity="0.16"/>
+<rect x="29" y="175" width="3" height="40" fill="#5B8CFF" rx="2"/>
+<text x="47" y="200" fill="#E8EDF5" font-size="15" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">▣</text>
+<text x="77" y="199" fill="#E8EDF5" font-size="13" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">数据源管理</text>
+<text x="47" y="245" fill="#92A0B4" font-size="15" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">◉</text>
+<text x="77" y="244" fill="#92A0B4" font-size="13" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">后台任务</text>
+<text x="47" y="290" fill="#92A0B4" font-size="15" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">◆</text>
+<text x="77" y="289" fill="#92A0B4" font-size="13" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">快照与备份</text>
+<text x="47" y="335" fill="#92A0B4" font-size="15" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">♢</text>
+<text x="77" y="334" fill="#92A0B4" font-size="13" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">标签与实体</text>
+<text x="47" y="380" fill="#92A0B4" font-size="15" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">⌕</text>
+<text x="77" y="379" fill="#92A0B4" font-size="13" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">保存的查询</text>
+<text x="47" y="425" fill="#92A0B4" font-size="15" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">⚙</text>
+<text x="77" y="424" fill="#92A0B4" font-size="13" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">规则管理</text>
+<text x="47" y="470" fill="#92A0B4" font-size="15" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">☷</text>
+<text x="77" y="469" fill="#92A0B4" font-size="13" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">工作区设置</text>
+<text x="47" y="515" fill="#92A0B4" font-size="15" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">⊙</text>
+<text x="77" y="514" fill="#92A0B4" font-size="13" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">诊断中心</text>
+<line x1="35" y1="620" x2="226" y2="620" stroke="#2B3A4E" stroke-width="1" opacity="1"/>
+<text x="40" y="651" fill="#68778D" font-size="11" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">工作区</text>
+<text x="40" y="679" fill="#E8EDF5" font-size="13" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">先锋计划</text>
+<text x="40" y="701" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">本地加密工作区</text>
+<rect x="40" y="722" width="91" height="25" fill="#44C693" rx="12" opacity="0.15"/><circle cx="53" cy="734.5" r="4" fill="#44C693"/><text x="64" y="739" fill="#44C693" font-size="10" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">索引正常</text>
+<text x="274" y="99" fill="#5B8CFF" font-size="11" font-weight="750" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">M02</text>
+<text x="274" y="132" fill="#E8EDF5" font-size="26" font-weight="750" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">添加数据源</text>
+<text x="274" y="157" fill="#92A0B4" font-size="12" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">预扫描目录并配置导入、监视、OCR 和版本策略</text>
+<rect x="274" y="178" width="470" height="39" fill="#0C131D" rx="8" stroke="#2B3A4E" stroke-width="1"/>
+<text x="290" y="203" fill="#68778D" font-size="12" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">⌕  搜索文档、证据、决策或输入命令</text>
+<rect x="1476" y="179" width="74" height="38" fill="#1A2534" rx="7" stroke="#3A4D65" stroke-width="1"/><text x="1513.0" y="204" fill="#E8EDF5" font-size="12" font-weight="650" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">帮助</text>
+<line x1="16" y1="954" x2="1584" y2="954" stroke="#2B3A4E" stroke-width="1" opacity="1"/>
+<text x="34" y="981" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">本地工作区</text>
+<circle cx="125" cy="977" r="4" fill="#44C693"/>
+<text x="137" y="981" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">数据库正常</text>
+<text x="264" y="981" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">后台任务 1</text>
+<text x="1548" y="981" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">缩放 100%</text>
+<rect x="1211" y="179" width="109" height="38" fill="#1A2534" rx="7" stroke="#3A4D65" stroke-width="1"/><text x="1265.5" y="204" fill="#E8EDF5" font-size="12" font-weight="650" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">取消</text>
+<rect x="1331" y="179" width="134" height="38" fill="#5B8CFF" rx="7" stroke="#5B8CFF" stroke-width="1"/><text x="1398.0" y="204" fill="#FFFFFF" font-size="12" font-weight="650" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">开始导入</text>
+<circle cx="316" cy="259" r="16" fill="#44C693" stroke="#44C693" stroke-width="2"/>
+<text x="316" y="264" fill="#FFFFFF" font-size="10" font-weight="700" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">✓</text>
+<text x="316" y="292" fill="#92A0B4" font-size="10" font-weight="600" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">选择类型</text>
+<line x1="334" y1="259" x2="542" y2="259" stroke="#3A4D65" stroke-width="2" opacity="1"/>
+<circle cx="560" cy="259" r="16" fill="#44C693" stroke="#44C693" stroke-width="2"/>
+<text x="560" y="264" fill="#FFFFFF" font-size="10" font-weight="700" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">✓</text>
+<text x="560" y="292" fill="#92A0B4" font-size="10" font-weight="600" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">位置与范围</text>
+<line x1="578" y1="259" x2="786" y2="259" stroke="#3A4D65" stroke-width="2" opacity="1"/>
+<circle cx="804" cy="259" r="16" fill="#1A2534" stroke="#5B8CFF" stroke-width="2"/>
+<text x="804" y="264" fill="#92A0B4" font-size="10" font-weight="700" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">3</text>
+<text x="804" y="292" fill="#E8EDF5" font-size="10" font-weight="600" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">解析策略</text>
+<line x1="822" y1="259" x2="1030" y2="259" stroke="#3A4D65" stroke-width="2" opacity="1"/>
+<circle cx="1048" cy="259" r="16" fill="#1A2534" stroke="#3A4D65" stroke-width="2"/>
+<text x="1048" y="264" fill="#92A0B4" font-size="10" font-weight="700" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">4</text>
+<text x="1048" y="292" fill="#92A0B4" font-size="10" font-weight="600" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">预扫描</text>
+<line x1="1066" y1="259" x2="1274" y2="259" stroke="#3A4D65" stroke-width="2" opacity="1"/>
+<circle cx="1292" cy="259" r="16" fill="#1A2534" stroke="#3A4D65" stroke-width="2"/>
+<text x="1292" y="264" fill="#92A0B4" font-size="10" font-weight="700" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">5</text>
+<text x="1292" y="292" fill="#92A0B4" font-size="10" font-weight="600" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">确认添加</text>
+<rect x="274" y="323" width="867" height="603" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<text x="298" y="358" fill="#E8EDF5" font-size="17" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">解析与索引策略</text>
+<text x="298" y="382" fill="#92A0B4" font-size="10" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">数据源：D:\\Pioneer\\docs · 预计 12,846 个文件</text>
+<text x="298" y="423" fill="#68778D" font-size="11" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">文件处理</text>
+<rect x="298" y="447" width="42" height="22" fill="#5B8CFF" rx="11"/><circle cx="328" cy="458" r="8" fill="#FFFFFF"/>
+<text x="353" y="457" fill="#E8EDF5" font-size="10" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">递归扫描子目录</text>
+<text x="353" y="476" fill="#92A0B4" font-size="8" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">导入所有下级目录中的受支持文件</text>
+<rect x="298" y="507" width="42" height="22" fill="#5B8CFF" rx="11"/><circle cx="328" cy="518" r="8" fill="#FFFFFF"/>
+<text x="353" y="517" fill="#E8EDF5" font-size="10" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">持续监视文件变化</text>
+<text x="353" y="536" fill="#92A0B4" font-size="8" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">源文件变化后自动执行增量扫描</text>
+<rect x="298" y="567" width="42" height="22" fill="#5B8CFF" rx="11"/><circle cx="328" cy="578" r="8" fill="#FFFFFF"/>
+<text x="353" y="577" fill="#E8EDF5" font-size="10" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">保留文档历史版本</text>
+<text x="353" y="596" fill="#92A0B4" font-size="8" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">保存被业务对象引用过的内容版本</text>
+<rect x="298" y="627" width="42" height="22" fill="#202D3F" rx="11"/><circle cx="310" cy="638" r="8" fill="#68778D"/>
+<text x="353" y="637" fill="#E8EDF5" font-size="10" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">解析隐藏文件</text>
+<text x="353" y="656" fill="#92A0B4" font-size="8" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">默认跳过 Windows 隐藏文件</text>
+<line x1="298" y1="690" x2="1117" y2="690" stroke="#2B3A4E" stroke-width="1" opacity="1"/>
+<text x="298" y="722" fill="#68778D" font-size="11" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">内容提取</text>
+<text x="298" y="744" fill="#68778D" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">默认文本编码</text><rect x="298" y="755" width="245" height="38" fill="#0C131D" rx="7" stroke="#2B3A4E" stroke-width="1"/><text x="311" y="779" fill="#E8EDF5" font-size="10" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">自动检测  ▾</text>
+<text x="557" y="744" fill="#68778D" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">默认时区</text><rect x="557" y="755" width="245" height="38" fill="#0C131D" rx="7" stroke="#2B3A4E" stroke-width="1"/><text x="570" y="779" fill="#E8EDF5" font-size="10" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">Asia/Shanghai  ▾</text>
+<text x="816" y="744" fill="#68778D" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">单文件大小上限</text><rect x="816" y="755" width="301" height="38" fill="#0C131D" rx="7" stroke="#2B3A4E" stroke-width="1"/><text x="829" y="779" fill="#E8EDF5" font-size="10" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">256 MB</text>
+<text x="298" y="831" fill="#92A0B4" font-size="9" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">扫描文档 OCR</text>
+<rect x="430" y="818" width="42" height="22" fill="#5B8CFF" rx="11"/><circle cx="460" cy="829" r="8" fill="#FFFFFF"/>
+<text x="512" y="831" fill="#92A0B4" font-size="9" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">OCR 语言</text>
+<rect x="585" y="817" width="217" height="37" fill="#0C131D" rx="6" stroke="#2B3A4E" stroke-width="1"/>
+<text x="598" y="841" fill="#E8EDF5" font-size="9" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">简体中文 + 英文  ▾</text>
+<text x="816" y="831" fill="#92A0B4" font-size="9" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">资源策略</text>
+<rect x="882" y="817" width="235" height="37" fill="#0C131D" rx="6" stroke="#2B3A4E" stroke-width="1"/>
+<text x="895" y="841" fill="#E8EDF5" font-size="9" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">空闲时执行重任务  ▾</text>
+<text x="298" y="888" fill="#F2B84B" font-size="9" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">Office 文档解析不执行宏、脚本、嵌入程序或远程资源。</text>
+<rect x="1156" y="323" width="394" height="603" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<text x="1177" y="358" fill="#E8EDF5" font-size="17" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">导入预览</text>
+<rect x="1420" y="341" width="108" height="25" fill="#44C693" rx="12" opacity="0.15"/><circle cx="1433" cy="353.5" r="4" fill="#44C693"/><text x="1444" y="358" fill="#44C693" font-size="10" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">预扫描完成</text>
+<rect x="1177" y="398" width="353" height="50" fill="#1A2534" rx="6" stroke="#2B3A4E" stroke-width="1"/>
+<circle cx="1193" cy="416" r="4" fill="#5B8CFF"/>
+<text x="1206" y="419" fill="#92A0B4" font-size="9" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">发现文件</text>
+<text x="1510" y="429" fill="#5B8CFF" font-size="16" font-weight="700" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">12,846</text>
+<rect x="1177" y="457" width="353" height="50" fill="#1A2534" rx="6" stroke="#2B3A4E" stroke-width="1"/>
+<circle cx="1193" cy="475" r="4" fill="#44C693"/>
+<text x="1206" y="478" fill="#92A0B4" font-size="9" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">支持格式</text>
+<text x="1510" y="488" fill="#44C693" font-size="16" font-weight="700" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">12,531</text>
+<rect x="1177" y="516" width="353" height="50" fill="#1A2534" rx="6" stroke="#2B3A4E" stroke-width="1"/>
+<circle cx="1193" cy="534" r="4" fill="#92A0B4"/>
+<text x="1206" y="537" fill="#92A0B4" font-size="9" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">将被排除</text>
+<text x="1510" y="547" fill="#92A0B4" font-size="16" font-weight="700" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">287</text>
+<rect x="1177" y="575" width="353" height="50" fill="#1A2534" rx="6" stroke="#2B3A4E" stroke-width="1"/>
+<circle cx="1193" cy="593" r="4" fill="#A787FF"/>
+<text x="1206" y="596" fill="#92A0B4" font-size="9" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">需要 OCR</text>
+<text x="1510" y="606" fill="#A787FF" font-size="16" font-weight="700" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">86</text>
+<rect x="1177" y="634" width="353" height="50" fill="#1A2534" rx="6" stroke="#2B3A4E" stroke-width="1"/>
+<circle cx="1193" cy="652" r="4" fill="#F2B84B"/>
+<text x="1206" y="655" fill="#92A0B4" font-size="9" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">存在异常</text>
+<text x="1510" y="665" fill="#F2B84B" font-size="16" font-weight="700" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">3</text>
+<text x="1177" y="708" fill="#68778D" font-size="10" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">预计资源</text>
+<text x="1177" y="736" fill="#92A0B4" font-size="9" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">首次索引时间</text>
+<text x="1510" y="736" fill="#E8EDF5" font-size="9" font-weight="600" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">约 8—14 分钟</text>
+<text x="1177" y="763" fill="#92A0B4" font-size="9" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">工作区新增占用</text>
+<text x="1510" y="763" fill="#E8EDF5" font-size="9" font-weight="600" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">约 418 MB</text>
+<text x="1177" y="790" fill="#92A0B4" font-size="9" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">OCR 后台任务</text>
+<text x="1510" y="790" fill="#E8EDF5" font-size="9" font-weight="600" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">86 项</text>
+<rect x="1177" y="821" width="353" height="54" fill="#F2B84B" rx="6" opacity="0.09"/>
+<text x="1191" y="844" fill="#F2B84B" font-size="9" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">3 个文件权限不足，将跳过并记录诊断。</text>
+<text x="1191" y="862" fill="#92A0B4" font-size="8" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">添加数据源后可单独重试。</text>
+<rect x="1177" y="888" width="353" height="38" fill="#1A2534" rx="7" stroke="#3A4D65" stroke-width="1"/><text x="1353.5" y="913" fill="#E8EDF5" font-size="12" font-weight="650" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">查看完整预扫描清单</text>
+</svg>

@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+<defs>
+<filter id="shadow"><feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.25"/></filter>
+<linearGradient id="selection" x1="0" x2="1"><stop offset="0" stop-color="#5B8CFF" stop-opacity="0.22"/><stop offset="1" stop-color="#5B8CFF" stop-opacity="0.05"/></linearGradient>
+</defs>
+<rect x="0" y="0" width="1600" height="1000" fill="#090E15"/>
+<rect x="16" y="16" width="1568" height="968" fill="#101721" rx="12" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="16" y="16" width="1568" height="48" fill="#111A26" rx="12"/>
+<rect x="16" y="52" width="1568" height="12" fill="#111A26"/>
+<circle cx="39" cy="40" r="6" fill="#EF6A72"/>
+<circle cx="59" cy="40" r="6" fill="#F2B84B"/>
+<circle cx="79" cy="40" r="6" fill="#44C693"/>
+<text x="108" y="45" fill="#E8EDF5" font-size="14" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">续证 Continuum</text>
+<text x="800" y="45" fill="#92A0B4" font-size="13" font-weight="500" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">先锋计划</text>
+<text x="1545" y="45" fill="#92A0B4" font-size="14" font-weight="500" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">—   □   ×</text>
+<rect x="16" y="64" width="232" height="890" fill="#0D141E"/>
+<line x1="248" y1="64" x2="248" y2="954" stroke="#2B3A4E" stroke-width="1" opacity="1"/>
+<text x="40" y="97" fill="#5B8CFF" font-size="11" font-weight="750" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">CONTINUUM</text>
+<text x="40" y="118" fill="#68778D" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">项目记忆取证台</text>
+<text x="47" y="155" fill="#92A0B4" font-size="15" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">⌂</text><text x="77" y="154" fill="#92A0B4" font-size="13" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">项目概览</text>
+<text x="47" y="200" fill="#92A0B4" font-size="15" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">◎</text><text x="77" y="199" fill="#92A0B4" font-size="13" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">审查收件箱</text><rect x="198" y="183" width="27" height="20" fill="#202D3F" rx="10"/><text x="211.5" y="197" fill="#E8EDF5" font-size="10" font-weight="700" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">24</text>
+<text x="47" y="245" fill="#92A0B4" font-size="15" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">▤</text><text x="77" y="244" fill="#92A0B4" font-size="13" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">资料库</text>
+<rect x="29" y="265" width="207" height="40" fill="#5B8CFF" rx="7" opacity="0.16"/><rect x="29" y="265" width="3" height="40" fill="#5B8CFF" rx="2"/><text x="47" y="290" fill="#E8EDF5" font-size="15" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">≣</text><text x="77" y="289" fill="#E8EDF5" font-size="13" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">项目台账</text>
+<text x="47" y="335" fill="#92A0B4" font-size="15" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">⚠</text><text x="77" y="334" fill="#92A0B4" font-size="13" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">冲突中心</text><rect x="198" y="318" width="27" height="20" fill="#EF6A72" rx="10"/><text x="211.5" y="332" fill="#E8EDF5" font-size="10" font-weight="700" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">6</text>
+<text x="47" y="380" fill="#92A0B4" font-size="15" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">↺</text><text x="77" y="379" fill="#92A0B4" font-size="13" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">变化审查</text><rect x="198" y="363" width="27" height="20" fill="#202D3F" rx="10"/><text x="211.5" y="377" fill="#E8EDF5" font-size="10" font-weight="700" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">3</text>
+<text x="47" y="425" fill="#92A0B4" font-size="15" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">◷</text><text x="77" y="424" fill="#92A0B4" font-size="13" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">时间线</text>
+<text x="47" y="470" fill="#92A0B4" font-size="15" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">⌘</text><text x="77" y="469" fill="#92A0B4" font-size="13" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">关系浏览器</text>
+<text x="47" y="515" fill="#92A0B4" font-size="15" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">⬡</text><text x="77" y="514" fill="#92A0B4" font-size="13" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">交接胶囊</text>
+<line x1="35" y1="575" x2="226" y2="575" stroke="#2B3A4E" stroke-width="1" opacity="1"/>
+<text x="40" y="607" fill="#68778D" font-size="11" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">工作区</text>
+<text x="40" y="637" fill="#E8EDF5" font-size="13" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">先锋计划</text>
+<text x="40" y="659" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">本地加密工作区</text>
+<rect x="40" y="680" width="91" height="25" fill="#44C693" rx="12" opacity="0.15"/><circle cx="53" cy="692.5" r="4" fill="#44C693"/><text x="64" y="697" fill="#44C693" font-size="11" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">索引正常</text>
+<text x="40" y="731" fill="#68778D" font-size="11" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">数据源</text>
+<text x="40" y="759" fill="#92A0B4" font-size="12" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">项目文档</text>
+<text x="40" y="785" fill="#92A0B4" font-size="12" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">研发仓库</text>
+<text x="40" y="811" fill="#92A0B4" font-size="12" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">会议资料</text>
+<text x="213" y="759" fill="#68778D" font-size="10" font-weight="500" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">12.8K</text>
+<text x="213" y="785" fill="#68778D" font-size="10" font-weight="500" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">5.3K</text>
+<text x="213" y="811" fill="#68778D" font-size="10" font-weight="500" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">784</text>
+<text x="274" y="99" fill="#5B8CFF" font-size="11" font-weight="750" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">P09</text>
+<text x="274" y="132" fill="#E8EDF5" font-size="26" font-weight="750" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">决策详情</text>
+<text x="274" y="157" fill="#92A0B4" font-size="12" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">D-0031 · 采用双轨迁移方案</text>
+<rect x="274" y="178" width="470" height="39" fill="#0C131D" rx="8" stroke="#2B3A4E" stroke-width="1"/>
+<text x="290" y="203" fill="#68778D" font-size="12" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">⌕  搜索文档、证据、决策或输入命令</text>
+<rect x="1476" y="179" width="74" height="38" fill="#1A2534" rx="7" stroke="#3A4D65" stroke-width="1"/><text x="1513.0" y="204" fill="#E8EDF5" font-size="13" font-weight="650" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">帮助</text>
+<line x1="16" y1="954" x2="1584" y2="954" stroke="#2B3A4E" stroke-width="1" opacity="1"/>
+<text x="34" y="981" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">本地工作区</text>
+<circle cx="125" cy="977" r="4" fill="#44C693"/>
+<text x="137" y="981" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">数据库正常</text>
+<text x="264" y="981" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">后台任务 1</text>
+<text x="1548" y="981" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">缩放 100%</text>
+<rect x="1197" y="179" width="104" height="38" fill="#1A2534" rx="7" stroke="#3A4D65" stroke-width="1"/><text x="1249.0" y="204" fill="#E8EDF5" font-size="13" font-weight="650" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">复制引用</text>
+<rect x="1312" y="179" width="80" height="38" fill="#1A2534" rx="7" stroke="#3A4D65" stroke-width="1"/><text x="1352.0" y="204" fill="#E8EDF5" font-size="13" font-weight="650" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">更多</text>
+<rect x="1403" y="179" width="62" height="38" fill="#5B8CFF" rx="7" stroke="#5B8CFF" stroke-width="1"/><text x="1434.0" y="204" fill="#FFFFFF" font-size="13" font-weight="650" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">编辑</text>
+<rect x="274" y="238" width="873" height="688" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="295" y="258" width="831" height="112" fill="#1A2534" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<rect x="317" y="277" width="117" height="25" fill="#A787FF" rx="12" opacity="0.15"/><circle cx="330" cy="289.5" r="4" fill="#A787FF"/><text x="341" y="294" fill="#A787FF" font-size="11" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">决策 D-0031</text>
+<rect x="447" y="277" width="80" height="25" fill="#44C693" rx="12" opacity="0.15"/><circle cx="460" cy="289.5" r="4" fill="#44C693"/><text x="471" y="294" fill="#44C693" font-size="11" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">已接受</text>
+<rect x="540" y="277" width="99" height="25" fill="#F2B84B" rx="12" opacity="0.15"/><circle cx="553" cy="289.5" r="4" fill="#F2B84B"/><text x="564" y="294" fill="#F2B84B" font-size="11" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">需要复核</text>
+<text x="317" y="330" fill="#E8EDF5" font-size="22" font-weight="750" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">采用双轨迁移方案</text>
+<text x="317" y="353" fill="#92A0B4" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">旧协议保留至第四季度，新协议先用于内部流量。</text>
+<text x="295" y="405" fill="#E8EDF5" font-size="14" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">决策信息</text>
+<text x="295" y="431" fill="#68778D" font-size="10" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">决策者</text>
+<text x="295" y="455" fill="#E8EDF5" font-size="11" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">周启明、技术委员会</text>
+<text x="715" y="431" fill="#68778D" font-size="10" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">决策时间</text>
+<text x="715" y="455" fill="#E8EDF5" font-size="11" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">2026-09-09 14:30  Asia/Shanghai</text>
+<text x="295" y="496" fill="#68778D" font-size="10" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">生效状态</text>
+<text x="295" y="520" fill="#E8EDF5" font-size="11" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">当前有效</text>
+<text x="715" y="496" fill="#68778D" font-size="10" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">前置条件</text>
+<text x="715" y="520" fill="#E8EDF5" font-size="11" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">内部环境审计日志完整</text>
+<text x="295" y="561" fill="#68778D" font-size="10" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">影响范围</text>
+<text x="295" y="585" fill="#E8EDF5" font-size="11" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">通信网关、合作方接口、审计系统</text>
+<text x="715" y="561" fill="#68778D" font-size="10" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">被替代方案</text>
+<text x="715" y="585" fill="#E8EDF5" font-size="11" font-weight="550" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">D-0027  分阶段迁移通信协议</text>
+<line x1="295" y1="624" x2="1126" y2="624" stroke="#2B3A4E" stroke-width="1" opacity="1"/>
+<text x="295" y="657" fill="#E8EDF5" font-size="14" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">决策理由</text>
+<rect x="295" y="675" width="831" height="84" fill="#0C131D" rx="7" stroke="#2B3A4E" stroke-width="1"/>
+<text x="311" y="701" fill="#E8EDF5" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">一次性迁移无法满足合作方兼容要求；双轨方式允许先在内部流量验证</text>
+<text x="311" y="725" fill="#E8EDF5" font-size="11" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">新协议的稳定性，并保留快速回退能力。旧协议需要在第四季度结束前退出。</text>
+<text x="311" y="748" fill="#44C693" font-size="10" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">该理由由 3 项支持证据确认。</text>
+<text x="295" y="794" fill="#E8EDF5" font-size="14" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">关系与影响</text>
+<rect x="295" y="817" width="831" height="29" fill="#1A2534" rx="5"/>
+<text x="309" y="836" fill="#F2B84B" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">替代</text>
+<text x="389" y="836" fill="#E8EDF5" font-size="10" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">D-0027  分阶段迁移通信协议</text>
+<text x="1107" y="836" fill="#5B8CFF" font-size="9" font-weight="650" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">打开 ›</text>
+<rect x="295" y="852" width="831" height="29" fill="#1A2534" rx="5"/>
+<text x="309" y="871" fill="#3FC7C1" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">影响</text>
+<text x="389" y="871" fill="#E8EDF5" font-size="10" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">C-0042  提交安全复核报告</text>
+<text x="1107" y="871" fill="#5B8CFF" font-size="9" font-weight="650" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">打开 ›</text>
+<rect x="295" y="887" width="831" height="29" fill="#1A2534" rx="5"/>
+<text x="309" y="906" fill="#EF6A72" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">关联风险</text>
+<text x="389" y="906" fill="#E8EDF5" font-size="10" font-weight="600" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">R-0018  双轨运行增加审计复杂度</text>
+<text x="1107" y="906" fill="#5B8CFF" font-size="9" font-weight="650" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">打开 ›</text>
+<rect x="1162" y="238" width="388" height="688" fill="#151E2B" rx="9" stroke="#2B3A4E" stroke-width="1"/>
+<text x="1182" y="270" fill="#92A0B4" font-size="11" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">属性</text>
+<text x="1262" y="270" fill="#E8EDF5" font-size="11" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">证据</text>
+<rect x="1260" y="282" width="42" height="2" fill="#5B8CFF"/>
+<text x="1342" y="270" fill="#92A0B4" font-size="11" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">关系</text>
+<text x="1422" y="270" fill="#92A0B4" font-size="11" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">历史</text>
+<line x1="1175" y1="286" x2="1537" y2="286" stroke="#2B3A4E" stroke-width="1" opacity="1"/>
+<text x="1182" y="320" fill="#E8EDF5" font-size="12" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">支持证据</text>
+<text x="1519" y="320" fill="#92A0B4" font-size="10" font-weight="500" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">3 项</text>
+<rect x="1182" y="339" width="347" height="91" fill="#1A2534" rx="7" stroke="#2B3A4E" stroke-width="1"/>
+<text x="1197" y="364" fill="#5B8CFF" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">E-1042</text>
+<text x="1254" y="364" fill="#E8EDF5" font-size="10" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">会议纪要-0909.md</text>
+<text x="1197" y="389" fill="#92A0B4" font-size="9" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">第 42—43 行</text>
+<rect x="1197" y="398" width="84" height="25" fill="#44C693" rx="12" opacity="0.15"/><circle cx="1210" cy="410.5" r="4" fill="#44C693"/><text x="1221" y="415" fill="#44C693" font-size="11" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">锚点正常</text>
+<text x="1508" y="415" fill="#5B8CFF" font-size="9" font-weight="650" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">查看 ›</text>
+<rect x="1182" y="440" width="347" height="91" fill="#1A2534" rx="7" stroke="#2B3A4E" stroke-width="1"/>
+<text x="1197" y="465" fill="#5B8CFF" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">E-1097</text>
+<text x="1254" y="465" fill="#E8EDF5" font-size="10" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">requirements-v7.pdf</text>
+<text x="1197" y="490" fill="#92A0B4" font-size="9" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">第 18 页</text>
+<rect x="1197" y="499" width="98" height="25" fill="#F2B84B" rx="12" opacity="0.15"/><circle cx="1210" cy="511.5" r="4" fill="#F2B84B"/><text x="1221" y="516" fill="#F2B84B" font-size="11" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">内容已修改</text>
+<text x="1508" y="516" fill="#5B8CFF" font-size="9" font-weight="650" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">查看 ›</text>
+<rect x="1182" y="541" width="347" height="91" fill="#1A2534" rx="7" stroke="#2B3A4E" stroke-width="1"/>
+<text x="1197" y="566" fill="#5B8CFF" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">E-1124</text>
+<text x="1254" y="566" fill="#E8EDF5" font-size="10" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">协议评审.eml</text>
+<text x="1197" y="591" fill="#92A0B4" font-size="9" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">正文第 6 段</text>
+<rect x="1197" y="600" width="84" height="25" fill="#44C693" rx="12" opacity="0.15"/><circle cx="1210" cy="612.5" r="4" fill="#44C693"/><text x="1221" y="617" fill="#44C693" font-size="11" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">锚点正常</text>
+<text x="1508" y="617" fill="#5B8CFF" font-size="9" font-weight="650" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">查看 ›</text>
+<text x="1182" y="661" fill="#E8EDF5" font-size="12" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">反对证据</text>
+<text x="1519" y="661" fill="#92A0B4" font-size="10" font-weight="500" text-anchor="end" font-family="Segoe UI, Microsoft YaHei, sans-serif">1 项</text>
+<rect x="1182" y="679" width="347" height="91" fill="#1A2534" rx="7" stroke="#EF6A72" stroke-width="1"/>
+<text x="1197" y="704" fill="#5B8CFF" font-size="9" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">E-1110</text>
+<text x="1254" y="704" fill="#E8EDF5" font-size="10" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">合作方反馈-0911.eml</text>
+<text x="1197" y="729" fill="#92A0B4" font-size="9" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">合作方要求旧协议保留至明年一季度</text>
+<rect x="1197" y="738" width="117" height="25" fill="#EF6A72" rx="12" opacity="0.15"/><circle cx="1210" cy="750.5" r="4" fill="#EF6A72"/><text x="1221" y="755" fill="#EF6A72" font-size="11" font-weight="650" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">存在反对内容</text>
+<rect x="1182" y="794" width="347" height="68" fill="#F2B84B" rx="7" opacity="0.12"/>
+<circle cx="1200" cy="813" r="5" fill="#F2B84B"/>
+<text x="1214" y="817" fill="#F2B84B" font-size="10" font-weight="700" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">需要复核</text>
+<text x="1197" y="840" fill="#E8EDF5" font-size="9" font-weight="400" text-anchor="start" font-family="Segoe UI, Microsoft YaHei, sans-serif">E-1097 在新版本中发生内容变化。</text>
+<rect x="1182" y="875" width="347" height="38" fill="#5B8CFF" rx="7" stroke="#5B8CFF" stroke-width="1"/><text x="1355.5" y="900" fill="#FFFFFF" font-size="13" font-weight="650" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif">打开变化审查</text>
+</svg>
