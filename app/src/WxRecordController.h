@@ -6,6 +6,7 @@
 #include <vector>
 
 #include <wx/event.h>
+#include <wx/listctrl.h>
 #include <wx/window.h>
 
 class wxButton;

@@ -81,6 +81,7 @@ else()
         -Wall
         -Wextra
         -Wpedantic
+        -fno-char8_t
     )
 
     if(CONTINUUM_WARNINGS_AS_ERRORS)

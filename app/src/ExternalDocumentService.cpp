@@ -14,6 +14,8 @@
 #include <thread>
 #include <utility>
 
+#include <sqlite3.h>
+
 namespace continuum
 {
 namespace

@@ -8,6 +8,8 @@
 #include <sstream>
 #include <utility>
 
+#include <sqlite3.h>
+
 #include <wx/button.h>
 #include <wx/listctrl.h>
 #include <wx/msgdlg.h>
@@ -454,7 +456,7 @@ void WxUiBinder::RefreshSearch()
 
     list->Freeze();
 
-    for (const auto& item : response.items)
+    for (const auto& item : response.hits)
     {
         const long row = list->InsertItem(
             list->GetItemCount(),
