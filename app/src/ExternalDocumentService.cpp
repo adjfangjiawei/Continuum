@@ -16,6 +16,16 @@
 
 #include <sqlite3.h>
 
+#define NOMINMAX
+#include <windows.h>
+
+// The Windows SDK maps the name "FindExecutable" to "FindExecutableW" via a
+// macro. Our member function shares that name, so clear the macro to avoid
+// clashing with the Win32 API declaration.
+#ifdef FindExecutable
+#undef FindExecutable
+#endif
+
 namespace continuum
 {
 namespace
@@ -99,6 +109,47 @@ std::string EnvironmentValue(
     return value == nullptr
         ? std::string()
         : std::string(value);
+}
+
+std::wstring Utf8ToWide(const std::string& value)
+{
+    if (value.empty())
+    {
+        return std::wstring();
+    }
+
+    const int length = MultiByteToWideChar(
+        CP_UTF8,
+        MB_ERR_INVALID_CHARS,
+        value.data(),
+        static_cast<int>(value.size()),
+        nullptr,
+        0
+    );
+
+    if (length <= 0)
+    {
+        return std::wstring();
+    }
+
+    std::wstring result(
+        static_cast<std::size_t>(length),
+        L'\0'
+    );
+
+    if (MultiByteToWideChar(
+            CP_UTF8,
+            MB_ERR_INVALID_CHARS,
+            value.data(),
+            static_cast<int>(value.size()),
+            result.data(),
+            length
+        ) != length)
+    {
+        return std::wstring();
+    }
+
+    return result;
 }
 
 std::vector<std::string> SplitPath(
@@ -612,7 +663,6 @@ ExternalDocumentService::RunCommand(
     {
         result.standardError =
             "无法创建外部命令临时目录";
-
         return result;
     }
 
@@ -631,6 +681,63 @@ ExternalDocumentService::RunCommand(
             temporaryDirectory
         ) / "stderr.txt";
 
+    const std::wstring executableWide =
+        Utf8ToWide(executable);
+
+    const std::wstring stdoutWide =
+        Utf8ToWide(stdoutPath.u8string());
+
+    const std::wstring stderrWide =
+        Utf8ToWide(stderrPath.u8string());
+
+    if (executableWide.empty() ||
+        stdoutWide.empty() ||
+        stderrWide.empty())
+    {
+        result.standardError =
+            "外部命令路径不是有效的 UTF-8";
+        return result;
+    }
+
+    SECURITY_ATTRIBUTES security{};
+    security.nLength = sizeof(security);
+    security.bInheritHandle = TRUE;
+
+    HANDLE stdoutHandle = CreateFileW(
+        stdoutWide.c_str(),
+        GENERIC_WRITE,
+        FILE_SHARE_READ,
+        &security,
+        CREATE_ALWAYS,
+        FILE_ATTRIBUTE_NORMAL,
+        nullptr
+    );
+
+    if (stdoutHandle == INVALID_HANDLE_VALUE)
+    {
+        result.standardError =
+            "无法创建外部命令标准输出文件";
+        return result;
+    }
+
+    HANDLE stderrHandle = CreateFileW(
+        stderrWide.c_str(),
+        GENERIC_WRITE,
+        FILE_SHARE_READ,
+        &security,
+        CREATE_ALWAYS,
+        FILE_ATTRIBUTE_NORMAL,
+        nullptr
+    );
+
+    if (stderrHandle == INVALID_HANDLE_VALUE)
+    {
+        CloseHandle(stdoutHandle);
+        result.standardError =
+            "无法创建外部命令错误输出文件";
+        return result;
+    }
+
     std::ostringstream command;
     command << QuoteShellArgument(executable);
 
@@ -641,50 +748,223 @@ ExternalDocumentService::RunCommand(
             << QuoteShellArgument(argument);
     }
 
-    command
-        << " >"
-        << QuoteShellArgument(
-            stdoutPath.u8string()
-        )
-        << " 2>"
-        << QuoteShellArgument(
-            stderrPath.u8string()
-        );
+    std::wstring commandWide =
+        Utf8ToWide(command.str());
+
+    if (commandWide.empty())
+    {
+        CloseHandle(stderrHandle);
+        CloseHandle(stdoutHandle);
+        result.standardError =
+            "无法构造外部命令行";
+        return result;
+    }
+
+    std::vector<wchar_t> commandBuffer(
+        commandWide.begin(),
+        commandWide.end()
+    );
+    commandBuffer.push_back(L'\0');
+
+    STARTUPINFOW startup{};
+    startup.cb = sizeof(startup);
+    startup.dwFlags = STARTF_USESTDHANDLES;
+    startup.hStdInput = GetStdHandle(
+        STD_INPUT_HANDLE
+    );
+    startup.hStdOutput = stdoutHandle;
+    startup.hStdError = stderrHandle;
+
+    PROCESS_INFORMATION process{};
+
+    HANDLE job = CreateJobObjectW(
+        nullptr,
+        nullptr
+    );
+
+    if (job == nullptr)
+    {
+        CloseHandle(stderrHandle);
+        CloseHandle(stdoutHandle);
+        result.standardError =
+            "无法创建外部进程作业对象";
+        return result;
+    }
+
+    JOBOBJECT_EXTENDED_LIMIT_INFORMATION limits{};
+    limits.BasicLimitInformation.LimitFlags =
+        JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+
+    if (!SetInformationJobObject(
+            job,
+            JobObjectExtendedLimitInformation,
+            &limits,
+            sizeof(limits)
+        ))
+    {
+        CloseHandle(job);
+        CloseHandle(stderrHandle);
+        CloseHandle(stdoutHandle);
+        result.standardError =
+            "无法配置外部进程作业对象";
+        return result;
+    }
+
+    const BOOL created = CreateProcessW(
+        executableWide.c_str(),
+        commandBuffer.data(),
+        nullptr,
+        nullptr,
+        TRUE,
+        CREATE_NO_WINDOW | CREATE_SUSPENDED,
+        nullptr,
+        nullptr,
+        &startup,
+        &process
+    );
+
+    if (!created)
+    {
+        const DWORD error = GetLastError();
+
+        CloseHandle(job);
+        CloseHandle(stderrHandle);
+        CloseHandle(stdoutHandle);
+
+        result.standardError =
+            "无法启动外部工具，Windows 错误码: " +
+            std::to_string(error);
+        return result;
+    }
 
     result.started = true;
 
-    auto future = std::async(
-        std::launch::async,
-        [commandText = command.str()]() {
-            return std::system(commandText.c_str());
-        }
-    );
-
-    const auto waitResult = future.wait_for(
-        std::chrono::seconds(
-            std::max(1, timeoutSeconds)
-        )
-    );
-
-    if (waitResult == std::future_status::ready)
+    if (!AssignProcessToJobObject(
+            job,
+            process.hProcess
+        ))
     {
-        result.exitCode = future.get();
+        const DWORD error = GetLastError();
+
+        TerminateProcess(
+            process.hProcess,
+            ERROR_PROCESS_ABORTED
+        );
+        WaitForSingleObject(
+            process.hProcess,
+            INFINITE
+        );
+
+        CloseHandle(process.hThread);
+        CloseHandle(process.hProcess);
+        CloseHandle(job);
+        CloseHandle(stderrHandle);
+        CloseHandle(stdoutHandle);
+
+        result.standardError =
+            "无法将外部工具加入作业对象，Windows 错误码: " +
+            std::to_string(error);
+        return result;
     }
-    else
+
+    if (ResumeThread(process.hThread) ==
+        static_cast<DWORD>(-1))
     {
-        /*
-         * std::system 没有跨平台安全终止接口。
-         * 此处将任务标记超时；future 析构前仍会等待子进程退出。
-         * 后续 Windows 发布层可替换为 Job Object，
-         * POSIX 可替换为 process group + kill。
-         */
+        const DWORD error = GetLastError();
+
+        TerminateJobObject(
+            job,
+            ERROR_PROCESS_ABORTED
+        );
+        WaitForSingleObject(
+            process.hProcess,
+            INFINITE
+        );
+
+        CloseHandle(process.hThread);
+        CloseHandle(process.hProcess);
+        CloseHandle(job);
+        CloseHandle(stderrHandle);
+        CloseHandle(stdoutHandle);
+
+        result.standardError =
+            "无法启动外部工具线程，Windows 错误码: " +
+            std::to_string(error);
+        return result;
+    }
+
+    const auto seconds =
+        static_cast<unsigned long long>(
+            std::max(1, timeoutSeconds)
+        );
+
+    const DWORD timeoutMilliseconds =
+        seconds >
+            static_cast<unsigned long long>(
+                INFINITE - 1
+            ) / 1000ULL
+            ? INFINITE - 1
+            : static_cast<DWORD>(
+                seconds * 1000ULL
+            );
+
+    const DWORD waitResult =
+        WaitForSingleObject(
+            process.hProcess,
+            timeoutMilliseconds
+        );
+
+    if (waitResult == WAIT_TIMEOUT)
+    {
         result.timedOut = true;
         result.standardError =
             "外部工具执行超过时间限制";
 
-        future.wait();
-        result.exitCode = future.get();
+        TerminateJobObject(
+            job,
+            ERROR_TIMEOUT
+        );
+
+        WaitForSingleObject(
+            process.hProcess,
+            INFINITE
+        );
     }
+    else if (waitResult != WAIT_OBJECT_0)
+    {
+        const DWORD error = GetLastError();
+
+        result.standardError =
+            "等待外部工具失败，Windows 错误码: " +
+            std::to_string(error);
+
+        TerminateJobObject(
+            job,
+            ERROR_PROCESS_ABORTED
+        );
+
+        WaitForSingleObject(
+            process.hProcess,
+            INFINITE
+        );
+    }
+
+    DWORD exitCode = ERROR_PROCESS_ABORTED;
+
+    if (GetExitCodeProcess(
+            process.hProcess,
+            &exitCode
+        ))
+    {
+        result.exitCode =
+            static_cast<int>(exitCode);
+    }
+
+    CloseHandle(process.hThread);
+    CloseHandle(process.hProcess);
+    CloseHandle(job);
+    CloseHandle(stderrHandle);
+    CloseHandle(stdoutHandle);
 
     result.standardOutput =
         ReadBinaryText(stdoutPath);

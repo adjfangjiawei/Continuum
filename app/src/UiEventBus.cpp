@@ -35,14 +35,18 @@ void UiEventBus::Start(wxEvtHandler* target)
     }
 
     Stop();
-    target_ = target;
 
-    subscriptionToken_ =
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        target_ = target;
+    }
+
+    const std::uint64_t token =
         UiDataService::Instance().Subscribe(
             [this](const UiChangeEvent& change) {
-                wxEvtHandler* target = target_;
+                std::lock_guard<std::mutex> lock(mutex_);
 
-                if (target == nullptr)
+                if (target_ == nullptr)
                 {
                     return;
                 }
@@ -52,32 +56,50 @@ void UiEventBus::Start(wxEvtHandler* target)
                 );
 
                 event->SetPayload(change);
-
-                /*
-                 * wxQueueEvent 可以从后台线程安全地把事件
-                 * 投递到拥有目标窗口的 wxWidgets 主线程。
-                 */
-                wxQueueEvent(target, event);
+                wxQueueEvent(target_, event);
             }
         );
+
+    bool keepSubscription = false;
+
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+
+        if (target_ == target)
+        {
+            subscriptionToken_ = token;
+            keepSubscription = true;
+        }
+    }
+
+    if (!keepSubscription && token != 0)
+    {
+        UiDataService::Instance().Unsubscribe(token);
+    }
 }
 
 void UiEventBus::Stop()
 {
-    if (subscriptionToken_ != 0)
-    {
-        UiDataService::Instance().Unsubscribe(
-            subscriptionToken_
-        );
+    std::uint64_t token = 0;
 
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+
+        target_ = nullptr;
+        token = subscriptionToken_;
         subscriptionToken_ = 0;
     }
 
-    target_ = nullptr;
+    if (token != 0)
+    {
+        UiDataService::Instance().Unsubscribe(token);
+    }
 }
 
 bool UiEventBus::IsStarted() const
 {
+    std::lock_guard<std::mutex> lock(mutex_);
+
     return target_ != nullptr &&
         subscriptionToken_ != 0;
 }

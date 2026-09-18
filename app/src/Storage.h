@@ -95,21 +95,20 @@ public:
 
     StorageStatus Open(
         const std::string& databasePath,
-        const std::string& key = std::string()
+        const std::string& key = std::string(),
+        bool createIfMissing = true
     );
 
     void Close();
     bool IsOpen() const;
 
     StorageStatus Execute(const std::string& sql);
-    StorageStatus Migrate();
+    StorageStatus CreateSchema();
     StorageStatus CheckIntegrity();
 
     StorageStatus Transaction(
         const std::function<StorageStatus()>& operation
     );
-
-    int UserVersion() const;
     const std::string& Path() const;
     std::string LastError() const;
 

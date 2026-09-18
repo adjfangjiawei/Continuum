@@ -1,16 +1,17 @@
 #include "EvidencePages.h"
 
 #include "Theme.h"
+#include "UiDataService.h"
 
-#include <array>
-#include <tuple>
+#include <string>
+#include <vector>
 
 #include <wx/button.h>
-#include <wx/listbox.h>
+#include <wx/dialog.h>
+#include <wx/listctrl.h>
+#include <wx/msgdlg.h>
 #include <wx/panel.h>
-#include <wx/scrolwin.h>
 #include <wx/sizer.h>
-#include <wx/statline.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
 
@@ -18,6 +19,20 @@ namespace continuum
 {
 namespace
 {
+
+wxString Wx(const std::string& value)
+{
+    return wxString::FromUTF8(value.c_str());
+}
+
+std::string Utf8(const wxString& value)
+{
+    const wxScopedCharBuffer buffer = value.ToUTF8();
+
+    return buffer.data() == nullptr
+        ? std::string()
+        : std::string(buffer.data());
+}
 
 wxStaticText* MakeText(
     wxWindow* parent,
@@ -27,23 +42,14 @@ wxStaticText* MakeText(
     wxFontWeight weight = wxFONTWEIGHT_NORMAL
 )
 {
-    auto* label = new wxStaticText(parent, wxID_ANY, value);
+    auto* label = new wxStaticText(
+        parent,
+        wxID_ANY,
+        value
+    );
+
     label->SetForegroundColour(color);
     label->SetFont(Theme::Font(size, weight));
-    return label;
-}
-
-wxStaticText* MakeWrappedText(
-    wxWindow* parent,
-    const wxString& value,
-    int size,
-    const wxColour& color,
-    int width,
-    wxFontWeight weight = wxFONTWEIGHT_NORMAL
-)
-{
-    auto* label = MakeText(parent, value, size, color, weight);
-    label->Wrap(width);
     return label;
 }
 
@@ -51,8 +57,7 @@ wxButton* MakeButton(
     wxWindow* parent,
     const wxString& label,
     bool primary = false,
-    bool danger = false,
-    int width = -1
+    bool danger = false
 )
 {
     auto* button = new wxButton(
@@ -60,1676 +65,1453 @@ wxButton* MakeButton(
         wxID_ANY,
         label,
         wxDefaultPosition,
-        wxSize(width, 38),
+        wxSize(-1, 38),
         wxBORDER_NONE
     );
 
-    if (danger)
-    {
-        button->SetBackgroundColour(Theme::Red());
-    }
-    else
-    {
-        button->SetBackgroundColour(
-            primary ? Theme::Blue() : Theme::Surface2()
-        );
-    }
+    button->SetBackgroundColour(
+        danger
+            ? Theme::Red()
+            : (
+                primary
+                    ? Theme::Blue()
+                    : Theme::Surface2()
+            )
+    );
 
     button->SetForegroundColour(Theme::Text());
-    button->SetFont(Theme::Font(9, wxFONTWEIGHT_SEMIBOLD));
+    button->SetFont(
+        Theme::Font(
+            9,
+            wxFONTWEIGHT_SEMIBOLD
+        )
+    );
+
     return button;
 }
 
-wxTextCtrl* MakeSearch(
-    wxWindow* parent,
-    const wxString& hint,
-    int width = -1
-)
+wxListCtrl* MakeList(wxWindow* parent)
 {
-    auto* search = new wxTextCtrl(
-        parent,
-        wxID_ANY,
-        wxEmptyString,
-        wxDefaultPosition,
-        wxSize(width, 38),
-        wxBORDER_NONE | wxTE_PROCESS_ENTER
-    );
-
-    search->SetBackgroundColour(Theme::Input());
-    search->SetForegroundColour(Theme::Text());
-    search->SetFont(Theme::Font(10));
-    search->SetHint(hint);
-    return search;
-}
-
-wxPanel* MakeCard(wxWindow* parent)
-{
-    auto* card = new wxPanel(parent, wxID_ANY);
-    Theme::Apply(card, Theme::Surface());
-    return card;
-}
-
-wxPanel* MakeSubCard(wxWindow* parent)
-{
-    auto* card = new wxPanel(parent, wxID_ANY);
-    Theme::Apply(card, Theme::Surface2());
-    return card;
-}
-
-wxPanel* MakeStatusPill(
-    wxWindow* parent,
-    const wxString& label,
-    const wxColour& color,
-    int width = 92
-)
-{
-    auto* panel = new wxPanel(
+    auto* list = new wxListCtrl(
         parent,
         wxID_ANY,
         wxDefaultPosition,
-        wxSize(width, 25)
-    );
-    Theme::Apply(panel, Theme::Surface3());
-
-    auto* layout = new wxBoxSizer(wxHORIZONTAL);
-
-    auto* marker = new wxPanel(
-        panel,
-        wxID_ANY,
-        wxDefaultPosition,
-        wxSize(7, 7)
-    );
-    marker->SetBackgroundColour(color);
-
-    layout->Add(marker, 0, wxALIGN_CENTER_VERTICAL | wxLEFT, 9);
-    layout->Add(
-        MakeText(panel, label, 8, color, wxFONTWEIGHT_BOLD),
-        0,
-        wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT,
-        7
+        wxDefaultSize,
+        wxLC_REPORT |
+            wxLC_SINGLE_SEL |
+            wxBORDER_NONE
     );
 
-    panel->SetSizer(layout);
-    return panel;
+    list->SetBackgroundColour(Theme::Surface());
+    list->SetForegroundColour(Theme::Text());
+    list->SetFont(Theme::Font(9));
+    return list;
 }
 
-wxPanel* MakeMetric(
+void AddHeading(
     wxWindow* parent,
-    const wxString& value,
-    const wxString& title,
-    const wxString& detail,
-    const wxColour& color
-)
-{
-    auto* card = MakeCard(parent);
-    card->SetMinSize(wxSize(170, 91));
-
-    auto* root = new wxBoxSizer(wxHORIZONTAL);
-
-    auto* stripe = new wxPanel(
-        card,
-        wxID_ANY,
-        wxDefaultPosition,
-        wxSize(4, -1)
-    );
-    stripe->SetBackgroundColour(color);
-
-    auto* content = new wxBoxSizer(wxVERTICAL);
-    content->Add(
-        MakeText(card, value, 20, color, wxFONTWEIGHT_BOLD),
-        0,
-        wxBOTTOM,
-        3
-    );
-    content->Add(
-        MakeText(card, title, 9, Theme::Text(), wxFONTWEIGHT_SEMIBOLD),
-        0,
-        wxBOTTOM,
-        4
-    );
-    content->Add(
-        MakeText(card, detail, 8, Theme::Muted()),
-        0
-    );
-
-    root->Add(stripe, 0, wxEXPAND | wxRIGHT, 13);
-    root->Add(content, 1, wxALL, 13);
-    card->SetSizer(root);
-    return card;
-}
-
-wxPanel* MakeQueueRow(
-    wxWindow* parent,
+    wxBoxSizer* root,
     const wxString& code,
     const wxString& title,
-    const wxString& detail,
-    const wxString& state,
-    const wxColour& color,
-    bool selected = false
+    const wxString& subtitle
 )
 {
-    auto* row = new wxPanel(parent, wxID_ANY);
-    Theme::Apply(
-        row,
-        selected ? Theme::Surface3() : Theme::Surface2()
-    );
-    row->SetMinSize(wxSize(-1, 82));
-
-    auto* root = new wxBoxSizer(wxHORIZONTAL);
-
-    auto* stripe = new wxPanel(
-        row,
-        wxID_ANY,
-        wxDefaultPosition,
-        wxSize(selected ? 5 : 3, -1)
-    );
-    stripe->SetBackgroundColour(color);
-
-    auto* content = new wxBoxSizer(wxVERTICAL);
-    content->Add(
-        MakeText(row, code, 8, color, wxFONTWEIGHT_BOLD),
-        0,
-        wxBOTTOM,
-        4
-    );
-    content->Add(
-        MakeText(row, title, 10, Theme::Text(), wxFONTWEIGHT_SEMIBOLD),
-        0,
-        wxBOTTOM,
-        4
-    );
-    content->Add(
-        MakeText(row, detail, 8, Theme::Muted()),
-        0
-    );
-
-    root->Add(stripe, 0, wxEXPAND | wxRIGHT, 12);
-    root->Add(content, 1, wxALL, 11);
     root->Add(
-        MakeStatusPill(row, state, color),
+        MakeText(
+            parent,
+            code,
+            9,
+            Theme::Blue(),
+            wxFONTWEIGHT_BOLD
+        ),
         0,
-        wxALIGN_CENTER_VERTICAL | wxRIGHT,
-        12
+        wxLEFT | wxRIGHT | wxTOP,
+        26
     );
 
-    row->SetSizer(root);
-    return row;
+    root->Add(
+        MakeText(
+            parent,
+            title,
+            22,
+            Theme::Text(),
+            wxFONTWEIGHT_BOLD
+        ),
+        0,
+        wxLEFT | wxRIGHT | wxTOP,
+        26
+    );
+
+    root->Add(
+        MakeText(
+            parent,
+            subtitle,
+            10,
+            Theme::Muted()
+        ),
+        0,
+        wxLEFT | wxRIGHT | wxTOP,
+        26
+    );
 }
 
-void AddPageHeading(
+void ShowFilePreviewDialog(
     wxWindow* parent,
-    wxBoxSizer* root,
-    const wxString& code,
-    const wxString& title,
-    const wxString& subtitle,
-    const wxString& primaryAction
-)
-{
-    auto* row = new wxBoxSizer(wxHORIZONTAL);
-    auto* labels = new wxBoxSizer(wxVERTICAL);
-
-    labels->Add(
-        MakeText(parent, code, 9, Theme::Blue(), wxFONTWEIGHT_BOLD),
-        0,
-        wxBOTTOM,
-        4
-    );
-    labels->Add(
-        MakeText(parent, title, 22, Theme::Text(), wxFONTWEIGHT_BOLD),
-        0,
-        wxBOTTOM,
-        5
-    );
-    labels->Add(
-        MakeText(parent, subtitle, 10, Theme::Muted()),
-        0
-    );
-
-    row->Add(labels, 1, wxEXPAND);
-    row->Add(
-        MakeButton(parent, U("刷新"), false, false, 88),
-        0,
-        wxALIGN_BOTTOM | wxRIGHT,
-        10
-    );
-    row->Add(
-        MakeButton(parent, primaryAction, true, false, 132),
-        0,
-        wxALIGN_BOTTOM
-    );
-
-    root->Add(row, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 26);
-}
-
-void AddMetrics(
-    wxWindow* parent,
-    wxBoxSizer* root,
-    const std::array<
-        std::tuple<wxString, wxString, wxString, wxColour>,
-        4
-    >& values
-)
-{
-    auto* metrics = new wxBoxSizer(wxHORIZONTAL);
-
-    for (std::size_t index = 0; index < values.size(); ++index)
-    {
-        const auto& item = values[index];
-        metrics->Add(
-            MakeMetric(
-                parent,
-                std::get<0>(item),
-                std::get<1>(item),
-                std::get<2>(item),
-                std::get<3>(item)
-            ),
-            1,
-            index + 1 < values.size() ? wxRIGHT : 0,
-            index + 1 < values.size() ? 12 : 0
-        );
-    }
-
-    root->Add(metrics, 0, wxEXPAND | wxALL, 26);
-}
+    const std::string& fileId
+);
 
 class ReviewInboxPage final : public wxPanel
 {
 public:
     explicit ReviewInboxPage(wxWindow* parent)
-        : wxPanel(parent, wxID_ANY)
+        : wxPanel(parent, wxID_ANY),
+          list_(nullptr),
+          detail_(nullptr),
+          status_(nullptr)
     {
         Theme::Apply(this, Theme::Window());
 
         auto* root = new wxBoxSizer(wxVERTICAL);
 
-        AddPageHeading(
+        AddHeading(
             this,
             root,
-            U("P02"),
+            U("P04"),
             U("审查收件箱"),
-            U("处理自动提取结果、来源变化和需要人工确认的项目对象"),
-            U("批量审查")
+            U("审查数据库中真实存在的待确认、已变化或未验证证据")
         );
 
-        AddMetrics(
+        auto* actions = new wxBoxSizer(wxHORIZONTAL);
+
+        auto* refresh = MakeButton(
             this,
-            root,
-            {{
-                {U("24"), U("待审查"), U("今天新增 8 项"), Theme::Blue()},
-                {U("7"), U("高优先级"), U("包含 2 项冲突"), Theme::Red()},
-                {U("11"), U("需要证据"), U("缺少来源确认"), Theme::Yellow()},
-                {U("38"), U("今天完成"), U("确认率 92%"), Theme::Green()}
-            }}
+            U("刷新")
+        );
+
+        auto* reject = MakeButton(
+            this,
+            U("拒绝选中证据"),
+            false,
+            true
+        );
+
+        auto* accept = MakeButton(
+            this,
+            U("接受选中证据"),
+            true
+        );
+
+        actions->Add(refresh, 0, wxRIGHT, 10);
+        actions->Add(reject, 0, wxRIGHT, 10);
+        actions->Add(accept, 0);
+
+        root->Add(
+            actions,
+            0,
+            wxLEFT | wxRIGHT | wxTOP,
+            26
         );
 
         auto* body = new wxBoxSizer(wxHORIZONTAL);
 
-        auto* filters = MakeCard(this);
-        filters->SetMinSize(wxSize(215, -1));
-        auto* filterSizer = new wxBoxSizer(wxVERTICAL);
-
-        filterSizer->Add(
-            MakeText(filters, U("审查队列"), 12, Theme::Text(), wxFONTWEIGHT_BOLD),
+        list_ = MakeList(this);
+        list_->InsertColumn(
             0,
-            wxALL,
-            17
+            U("编号"),
+            wxLIST_FORMAT_LEFT,
+            190
+        );
+        list_->InsertColumn(
+            1,
+            U("标题"),
+            wxLIST_FORMAT_LEFT,
+            280
+        );
+        list_->InsertColumn(
+            2,
+            U("状态"),
+            wxLIST_FORMAT_LEFT,
+            120
+        );
+        list_->InsertColumn(
+            3,
+            U("文件编号"),
+            wxLIST_FORMAT_LEFT,
+            190
+        );
+        list_->InsertColumn(
+            4,
+            U("更新时间"),
+            wxLIST_FORMAT_LEFT,
+            170
         );
 
-        const struct
-        {
-            const char* name;
-            const char* count;
-            wxColour color;
-        } categories[] = {
-            {"全部待审查", "24", Theme::Blue()},
-            {"自动提取", "9", Theme::Purple()},
-            {"来源变化", "5", Theme::Orange()},
-            {"证据不足", "6", Theme::Yellow()},
-            {"可能冲突", "4", Theme::Red()}
-        };
+        detail_ = new wxTextCtrl(
+            this,
+            wxID_ANY,
+            wxEmptyString,
+            wxDefaultPosition,
+            wxSize(420, -1),
+            wxTE_MULTILINE |
+                wxTE_READONLY |
+                wxBORDER_NONE
+        );
 
-        for (const auto& category : categories)
-        {
-            auto* row = MakeSubCard(filters);
-            auto* rowSizer = new wxBoxSizer(wxHORIZONTAL);
+        detail_->SetBackgroundColour(Theme::Input());
+        detail_->SetForegroundColour(Theme::Text());
+        detail_->SetFont(Theme::Font(10));
 
-            rowSizer->Add(
-                MakeText(
-                    row,
-                    U(category.name),
-                    9,
-                    Theme::Text(),
-                    wxFONTWEIGHT_SEMIBOLD
-                ),
-                1,
-                wxALIGN_CENTER_VERTICAL | wxALL,
-                10
-            );
-            rowSizer->Add(
-                MakeText(
-                    row,
-                    U(category.count),
-                    9,
-                    category.color,
-                    wxFONTWEIGHT_BOLD
-                ),
-                0,
-                wxALIGN_CENTER_VERTICAL | wxRIGHT,
-                12
-            );
+        body->Add(list_, 1, wxEXPAND | wxRIGHT, 12);
+        body->Add(detail_, 0, wxEXPAND);
 
-            row->SetSizer(rowSizer);
-            filterSizer->Add(
-                row,
-                0,
-                wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-                10
-            );
-        }
-
-        filterSizer->Add(
-            new wxStaticLine(filters, wxID_ANY),
-            0,
+        root->Add(
+            body,
+            1,
             wxEXPAND | wxALL,
-            16
+            26
         );
-        filterSizer->Add(
-            MakeText(filters, U("严重程度"), 9, Theme::Faint(), wxFONTWEIGHT_BOLD),
+
+        status_ = MakeText(
+            this,
+            wxEmptyString,
+            9,
+            Theme::Muted()
+        );
+
+        root->Add(
+            status_,
             0,
             wxLEFT | wxRIGHT | wxBOTTOM,
-            17
-        );
-        filterSizer->Add(
-            MakeStatusPill(filters, U("高严重度"), Theme::Red(), 105),
-            0,
-            wxLEFT | wxBOTTOM,
-            17
-        );
-        filterSizer->Add(
-            MakeStatusPill(filters, U("中严重度"), Theme::Yellow(), 105),
-            0,
-            wxLEFT | wxBOTTOM,
-            17
-        );
-        filterSizer->Add(
-            MakeStatusPill(filters, U("低严重度"), Theme::Blue(), 105),
-            0,
-            wxLEFT,
-            17
+            26
         );
 
-        filters->SetSizer(filterSizer);
+        SetSizer(root);
 
-        auto* queue = MakeCard(this);
-        queue->SetMinSize(wxSize(455, -1));
-        auto* queueSizer = new wxBoxSizer(wxVERTICAL);
-
-        auto* queueToolbar = new wxBoxSizer(wxHORIZONTAL);
-        queueToolbar->Add(
-            MakeSearch(queue, U("搜索待审查内容"), 265),
-            1,
-            wxRIGHT,
-            10
-        );
-        queueToolbar->Add(
-            MakeButton(queue, U("排序"), false, false, 80),
-            0
-        );
-        queueSizer->Add(queueToolbar, 0, wxEXPAND | wxALL, 16);
-
-        queueSizer->Add(
-            MakeQueueRow(
-                queue,
-                U("R-0241"),
-                U("交付日期被识别为 11 月 30 日"),
-                U("requirements-v7.pdf · 第 8 页"),
-                U("高优先级"),
-                Theme::Red(),
-                true
-            ),
-            0,
-            wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-            10
-        );
-        queueSizer->Add(
-            MakeQueueRow(
-                queue,
-                U("R-0240"),
-                U("旧协议支持期发生变化"),
-                U("内容由确定日期改为第四季度"),
-                U("来源变化"),
-                Theme::Orange()
-            ),
-            0,
-            wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-            10
-        );
-        queueSizer->Add(
-            MakeQueueRow(
-                queue,
-                U("R-0238"),
-                U("提取承诺：完成安全复核"),
-                U("负责人可能为周启明"),
-                U("需确认"),
-                Theme::Yellow()
-            ),
-            0,
-            wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-            10
-        );
-        queueSizer->Add(
-            MakeQueueRow(
-                queue,
-                U("R-0236"),
-                U("识别风险：双轨审计复杂度"),
-                U("会议纪要-0909.md · 第 51 行"),
-                U("自动提取"),
-                Theme::Purple()
-            ),
-            0,
-            wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-            10
-        );
-        queueSizer->Add(
-            MakeQueueRow(
-                queue,
-                U("R-0234"),
-                U("事实缺少明确的生效时间"),
-                U("需要补充日期精度"),
-                U("证据不足"),
-                Theme::Yellow()
-            ),
-            0,
-            wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-            10
+        list_->Bind(
+            wxEVT_LIST_ITEM_SELECTED,
+            [this](wxListEvent& event)
+            {
+                ShowDetail(event.GetIndex());
+            }
         );
 
-        queue->SetSizer(queueSizer);
-
-        auto* inspector = MakeCard(this);
-        inspector->SetMinSize(wxSize(355, -1));
-        auto* inspectorSizer = new wxBoxSizer(wxVERTICAL);
-
-        auto* inspectorHeader = new wxBoxSizer(wxHORIZONTAL);
-        inspectorHeader->Add(
-            MakeText(
-                inspector,
-                U("审查详情"),
-                12,
-                Theme::Text(),
-                wxFONTWEIGHT_BOLD
-            ),
-            1,
-            wxALIGN_CENTER_VERTICAL
-        );
-        inspectorHeader->Add(
-            MakeStatusPill(
-                inspector,
-                U("高优先级"),
-                Theme::Red(),
-                105
-            ),
-            0
-        );
-        inspectorSizer->Add(inspectorHeader, 0, wxEXPAND | wxALL, 17);
-
-        inspectorSizer->Add(
-            MakeText(
-                inspector,
-                U("交付日期被识别为 11 月 30 日"),
-                14,
-                Theme::Text(),
-                wxFONTWEIGHT_BOLD
-            ),
-            0,
-            wxLEFT | wxRIGHT | wxBOTTOM,
-            17
+        refresh->Bind(
+            wxEVT_BUTTON,
+            [this](wxCommandEvent&)
+            {
+                RefreshData();
+            }
         );
 
-        auto* quote = MakeSubCard(inspector);
-        auto* quoteSizer = new wxBoxSizer(wxVERTICAL);
-        quoteSizer->Add(
-            MakeText(quote, U("来源片段"), 8, Theme::Faint(), wxFONTWEIGHT_BOLD),
-            0,
-            wxBOTTOM,
-            8
-        );
-        quoteSizer->Add(
-            MakeWrappedText(
-                quote,
-                U("最终交付日期调整为 2026 年 11 月 30 日，旧计划日期不再适用。"),
-                10,
-                Theme::Text(),
-                285,
-                wxFONTWEIGHT_SEMIBOLD
-            ),
-            0
-        );
-        quote->SetSizer(quoteSizer);
-        inspectorSizer->Add(
-            quote,
-            0,
-            wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-            17
+        accept->Bind(
+            wxEVT_BUTTON,
+            [this](wxCommandEvent&)
+            {
+                ChangeState("verified");
+            }
         );
 
-        inspectorSizer->Add(
-            MakeText(
-                inspector,
-                U("结构化字段"),
-                9,
-                Theme::Faint(),
-                wxFONTWEIGHT_BOLD
-            ),
-            0,
-            wxLEFT | wxRIGHT | wxBOTTOM,
-            17
+        reject->Bind(
+            wxEVT_BUTTON,
+            [this](wxCommandEvent&)
+            {
+                ChangeState("rejected");
+            }
         );
 
-        const std::array<std::pair<wxString, wxString>, 4> fields = {{
-            {U("对象类型"), U("事实")},
-            {U("属性"), U("交付日期")},
-            {U("归一化值"), U("2026-11-30")},
-            {U("置信度"), U("96%")}
-        }};
+        RefreshData();
+    }
 
-        for (const auto& field : fields)
+private:
+    void RefreshData()
+    {
+        records_ =
+            UiDataService::Instance()
+                .EvidenceForReview(500);
+
+        list_->Freeze();
+        list_->DeleteAllItems();
+
+        for (const auto& record : records_)
         {
-            auto* fieldRow = MakeSubCard(inspector);
-            auto* fieldSizer = new wxBoxSizer(wxHORIZONTAL);
-            fieldSizer->Add(
-                MakeText(fieldRow, field.first, 8, Theme::Muted()),
+            const long row = list_->InsertItem(
+                list_->GetItemCount(),
+                Wx(record.id)
+            );
+
+            list_->SetItem(
+                row,
                 1,
-                wxALL,
-                10
+                Wx(record.title)
             );
-            fieldSizer->Add(
-                MakeText(
-                    fieldRow,
-                    field.second,
-                    9,
-                    Theme::Text(),
-                    wxFONTWEIGHT_SEMIBOLD
-                ),
-                0,
-                wxALIGN_CENTER_VERTICAL | wxRIGHT,
-                10
+            list_->SetItem(
+                row,
+                2,
+                Wx(record.reviewState)
             );
-            fieldRow->SetSizer(fieldSizer);
-            inspectorSizer->Add(
-                fieldRow,
-                0,
-                wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-                9
+            list_->SetItem(
+                row,
+                3,
+                Wx(record.fileId)
+            );
+            list_->SetItem(
+                row,
+                4,
+                Wx(record.updatedAt)
             );
         }
 
-        inspectorSizer->AddStretchSpacer();
-        inspectorSizer->Add(
-            MakeButton(inspector, U("拒绝"), false, true),
-            0,
-            wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-            17
-        );
-        inspectorSizer->Add(
-            MakeButton(inspector, U("编辑后接受")),
-            0,
-            wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-            17
-        );
-        inspectorSizer->Add(
-            MakeButton(inspector, U("接受并创建事实"), true),
-            0,
-            wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-            17
+        list_->Thaw();
+
+        status_->SetLabel(
+            U("待审查证据：") +
+            wxString::Format(
+                "%d",
+                static_cast<int>(records_.size())
+            )
         );
 
-        inspector->SetSizer(inspectorSizer);
+        if (records_.empty())
+        {
+            detail_->ChangeValue(
+                U("当前没有待审查证据。")
+            );
+        }
+        else
+        {
+            list_->SetItemState(
+                0,
+                wxLIST_STATE_SELECTED |
+                    wxLIST_STATE_FOCUSED,
+                wxLIST_STATE_SELECTED |
+                    wxLIST_STATE_FOCUSED
+            );
 
-        body->Add(filters, 0, wxEXPAND | wxRIGHT, 12);
-        body->Add(queue, 1, wxEXPAND | wxRIGHT, 12);
-        body->Add(inspector, 0, wxEXPAND);
-
-        root->Add(body, 1, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 26);
-        SetSizer(root);
+            ShowDetail(0);
+        }
     }
+
+    void ShowDetail(long row)
+    {
+        if (row < 0 ||
+            static_cast<std::size_t>(row) >=
+                records_.size())
+        {
+            detail_->ChangeValue(wxEmptyString);
+            return;
+        }
+
+        const auto& record =
+            records_[static_cast<std::size_t>(row)];
+
+        detail_->ChangeValue(
+            U("证据编号：") +
+            Wx(record.id) +
+            U("\n\n标题：") +
+            Wx(record.title) +
+            U("\n\n审查状态：") +
+            Wx(record.reviewState) +
+            U("\n\n数据源编号：") +
+            Wx(record.sourceId) +
+            U("\n\n文件编号：") +
+            Wx(record.fileId) +
+            U("\n\n来源锚点：\n") +
+            Wx(record.anchor) +
+            U("\n\n内容指纹：\n") +
+            Wx(record.fingerprint) +
+            U("\n\n证据原文：\n") +
+            Wx(record.quote)
+        );
+    }
+
+    std::string SelectedId() const
+    {
+        const long selected =
+            list_->GetNextItem(
+                -1,
+                wxLIST_NEXT_ALL,
+                wxLIST_STATE_SELECTED
+            );
+
+        if (selected < 0)
+        {
+            return std::string();
+        }
+
+        return Utf8(
+            list_->GetItemText(selected, 0)
+        );
+    }
+
+    void ChangeState(const std::string& state)
+    {
+        const std::string id = SelectedId();
+
+        if (id.empty())
+        {
+            wxMessageBox(
+                U("请先选择一条证据。"),
+                U("证据审查"),
+                wxOK | wxICON_INFORMATION,
+                this
+            );
+            return;
+        }
+
+        const wxString action =
+            state == "verified"
+                ? U("接受")
+                : U("拒绝");
+
+        if (wxMessageBox(
+                U("确定要") +
+                    action +
+                    U("证据 ") +
+                    Wx(id) +
+                    U(" 吗？"),
+                U("证据审查"),
+                wxYES_NO | wxICON_QUESTION,
+                this
+            ) != wxYES)
+        {
+            return;
+        }
+
+        const auto result =
+            UiDataService::Instance()
+                .SetEvidenceReviewState(
+                    id,
+                    state
+                );
+
+        if (!result.success)
+        {
+            wxMessageBox(
+                Wx(result.message),
+                U("更新证据状态失败"),
+                wxOK | wxICON_ERROR,
+                this
+            );
+            return;
+        }
+
+        RefreshData();
+    }
+
+    wxListCtrl* list_;
+    wxTextCtrl* detail_;
+    wxStaticText* status_;
+    std::vector<EvidenceRecord> records_;
 };
 
 class LibraryPage final : public wxPanel
 {
 public:
     explicit LibraryPage(wxWindow* parent)
-        : wxPanel(parent, wxID_ANY)
+        : wxPanel(parent, wxID_ANY),
+          query_(nullptr),
+          results_(nullptr),
+          status_(nullptr)
     {
         Theme::Apply(this, Theme::Window());
 
         auto* root = new wxBoxSizer(wxVERTICAL);
 
-        AddPageHeading(
+        AddHeading(
             this,
             root,
-            U("P03"),
+            U("P05"),
             U("资料库"),
-            U("浏览数据源、文件、内容块、历史版本和证据引用"),
-            U("添加数据源")
+            U("在真实全文索引中搜索已解析文件")
         );
 
-        auto* toolbar = new wxBoxSizer(wxHORIZONTAL);
-        toolbar->Add(
-            MakeSearch(this, U("搜索文件名、路径或文档内容"), 460),
-            1,
-            wxRIGHT,
-            10
-        );
-        toolbar->Add(
-            MakeButton(this, U("类型：全部"), false, false, 112),
-            0,
-            wxRIGHT,
-            10
-        );
-        toolbar->Add(
-            MakeButton(this, U("状态：全部"), false, false, 112),
-            0,
-            wxRIGHT,
-            10
-        );
-        toolbar->Add(
-            MakeButton(this, U("重新扫描"), false, false, 105),
-            0
-        );
+        auto* searchRow = new wxBoxSizer(wxHORIZONTAL);
 
-        root->Add(toolbar, 0, wxEXPAND | wxALL, 26);
-
-        auto* body = new wxBoxSizer(wxHORIZONTAL);
-
-        auto* sourcePanel = MakeCard(this);
-        sourcePanel->SetMinSize(wxSize(245, -1));
-        auto* sourceSizer = new wxBoxSizer(wxVERTICAL);
-
-        sourceSizer->Add(
-            MakeText(
-                sourcePanel,
-                U("数据源与目录"),
-                12,
-                Theme::Text(),
-                wxFONTWEIGHT_BOLD
-            ),
-            0,
-            wxALL,
-            17
-        );
-
-        wxArrayString sources;
-        sources.Add(U("▾  研发仓库"));
-        sources.Add(U("    ▾  docs"));
-        sources.Add(U("        requirements"));
-        sources.Add(U("        migration"));
-        sources.Add(U("    ▸  source"));
-        sources.Add(U("▾  项目会议资料"));
-        sources.Add(U("    2026-09"));
-        sources.Add(U("▾  邮件归档"));
-        sources.Add(U("    合作方"));
-        sources.Add(U("无法访问的数据源  1"));
-
-        auto* sourceList = new wxListBox(
-            sourcePanel,
+        query_ = new wxTextCtrl(
+            this,
             wxID_ANY,
+            wxEmptyString,
             wxDefaultPosition,
-            wxDefaultSize,
-            sources,
-            wxLB_SINGLE | wxBORDER_NONE
+            wxSize(-1, 38),
+            wxBORDER_NONE | wxTE_PROCESS_ENTER
         );
-        sourceList->SetBackgroundColour(Theme::Surface());
-        sourceList->SetForegroundColour(Theme::Muted());
-        sourceList->SetFont(Theme::Font(9));
-        sourceList->SetSelection(2);
 
-        sourceSizer->Add(
-            sourceList,
-            1,
-            wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-            14
+        query_->SetBackgroundColour(Theme::Input());
+        query_->SetForegroundColour(Theme::Text());
+        query_->SetFont(Theme::Font(10));
+        query_->SetHint(U("输入文件名或文档内容"));
+
+        auto* search = MakeButton(
+            this,
+            U("搜索"),
+            true
         );
-        sourceSizer->Add(
-            MakeButton(sourcePanel, U("管理数据源")),
+
+        searchRow->Add(query_, 1, wxRIGHT, 10);
+        searchRow->Add(search, 0);
+
+        root->Add(
+            searchRow,
             0,
             wxEXPAND | wxALL,
-            16
+            26
         );
-        sourcePanel->SetSizer(sourceSizer);
 
-        auto* filesPanel = MakeCard(this);
-        filesPanel->SetMinSize(wxSize(570, -1));
-        auto* filesSizer = new wxBoxSizer(wxVERTICAL);
-
-        auto* listHeader = new wxBoxSizer(wxHORIZONTAL);
-        listHeader->Add(
-            MakeText(
-                filesPanel,
-                U("文件"),
-                12,
-                Theme::Text(),
-                wxFONTWEIGHT_BOLD
-            ),
-            1,
-            wxALIGN_CENTER_VERTICAL
-        );
-        listHeader->Add(
-            MakeText(filesPanel, U("显示 6 / 2,418"), 8, Theme::Muted()),
+        results_ = MakeList(this);
+        results_->InsertColumn(
             0,
-            wxALIGN_CENTER_VERTICAL
+            U("文件编号"),
+            wxLIST_FORMAT_LEFT,
+            190
         );
-        filesSizer->Add(listHeader, 0, wxEXPAND | wxALL, 17);
+        results_->InsertColumn(
+            1,
+            U("文件名"),
+            wxLIST_FORMAT_LEFT,
+            230
+        );
+        results_->InsertColumn(
+            2,
+            U("相对路径"),
+            wxLIST_FORMAT_LEFT,
+            300
+        );
+        results_->InsertColumn(
+            3,
+            U("类型"),
+            wxLIST_FORMAT_LEFT,
+            130
+        );
+        results_->InsertColumn(
+            4,
+            U("内容摘要"),
+            wxLIST_FORMAT_LEFT,
+            520
+        );
 
-        const struct
-        {
-            const char* name;
-            const char* detail;
-            const char* state;
-            wxColour color;
-        } files[] = {
+        root->Add(
+            results_,
+            1,
+            wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
+            26
+        );
+
+        status_ = MakeText(
+            this,
+            U("请输入搜索内容。当前后端尚未提供无条件列出全部文件的接口。"),
+            9,
+            Theme::Muted()
+        );
+
+        root->Add(
+            status_,
+            0,
+            wxLEFT | wxRIGHT | wxBOTTOM,
+            26
+        );
+
+        SetSizer(root);
+
+        const auto execute =
+            [this]()
             {
-                "requirements-v7.pdf",
-                "PDF · 18 页 · 更新于今天 12:18",
-                "已变化",
-                Theme::Orange()
-            },
+                RunSearch();
+            };
+
+        query_->Bind(
+            wxEVT_TEXT_ENTER,
+            [execute](wxCommandEvent&)
             {
-                "交付计划.xlsx",
-                "Excel · 4 个工作表 · 昨天 18:20",
-                "已索引",
-                Theme::Green()
-            },
-            {
-                "会议纪要-0909.md",
-                "Markdown · 328 行 · 9 月 9 日",
-                "已索引",
-                Theme::Green()
-            },
-            {
-                "协议评审.eml",
-                "电子邮件 · 3 个附件 · 9 月 8 日",
-                "有证据",
-                Theme::Blue()
-            },
-            {
-                "迁移架构图.png",
-                "PNG · 2480 × 1440 · OCR 完成",
-                "OCR",
-                Theme::Purple()
-            },
-            {
-                "legacy-contract.pdf",
-                "PDF · 源路径当前不可访问",
-                "失联",
-                Theme::Red()
+                execute();
             }
-        };
+        );
 
-        for (std::size_t index = 0; index < 6; ++index)
+        search->Bind(
+            wxEVT_BUTTON,
+            [execute](wxCommandEvent&)
+            {
+                execute();
+            }
+        );
+
+        results_->Bind(
+            wxEVT_LIST_ITEM_ACTIVATED,
+            [this](wxListEvent& event)
+            {
+                const long row = event.GetIndex();
+
+                if (row < 0)
+                {
+                    return;
+                }
+
+                const std::string fileId = Utf8(
+                    results_->GetItemText(row, 0)
+                );
+
+                if (!fileId.empty())
+                {
+                    ShowFilePreviewDialog(
+                        this,
+                        fileId
+                    );
+                }
+            }
+        );
+    }
+
+private:
+    void RunSearch()
+    {
+        wxString queryText = query_->GetValue();
+        queryText.Trim(true);
+        queryText.Trim(false);
+
+        const std::string query = Utf8(queryText);
+
+        if (query.empty())
         {
-            filesSizer->Add(
-                MakeQueueRow(
-                    filesPanel,
-                    wxString::Format(U("FILE-%03d"), static_cast<int>(index + 1)),
-                    U(files[index].name),
-                    U(files[index].detail),
-                    U(files[index].state),
-                    files[index].color,
-                    index == 0
-                ),
-                0,
-                wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-                10
+            // 旧查询结果不能继续显示，否则会被误认为是空查询的结果。
+            results_->Freeze();
+            results_->DeleteAllItems();
+            results_->Thaw();
+
+            status_->SetLabel(
+                U("请输入搜索内容。")
             );
+            return;
         }
 
-        filesPanel->SetSizer(filesSizer);
+        SearchRequest request;
+        request.query = query;
+        request.limit = 200;
 
-        auto* preview = MakeCard(this);
-        preview->SetMinSize(wxSize(360, -1));
-        auto* previewSizer = new wxBoxSizer(wxVERTICAL);
+        const auto response =
+            UiDataService::Instance().Search(request);
 
-        previewSizer->Add(
-            MakeText(
-                preview,
-                U("文件检查器"),
-                12,
-                Theme::Text(),
-                wxFONTWEIGHT_BOLD
-            ),
-            0,
-            wxALL,
-            17
-        );
-        previewSizer->Add(
-            MakeText(
-                preview,
-                U("requirements-v7.pdf"),
-                14,
-                Theme::Text(),
-                wxFONTWEIGHT_BOLD
-            ),
-            0,
-            wxLEFT | wxRIGHT | wxBOTTOM,
-            17
-        );
-        previewSizer->Add(
-            MakeStatusPill(preview, U("内容已变化"), Theme::Orange(), 110),
-            0,
-            wxLEFT | wxRIGHT | wxBOTTOM,
-            17
-        );
+        results_->Freeze();
+        results_->DeleteAllItems();
 
-        auto* previewText = new wxTextCtrl(
-            preview,
-            wxID_ANY,
-            U(
-                "第 18 页预览\n\n"
-                "旧协议保留至 2026 年第四季度结束，"
-                "具体关闭日期由交付委员会另行确认。\n\n"
-                "在切换工作完成之前，必须保留紧急回退通道。\n\n"
-                "当前版本：v7\n"
-                "上一版本：v6\n"
-                "检测到 3 处业务相关变化。"
-            ),
-            wxDefaultPosition,
-            wxDefaultSize,
-            wxTE_MULTILINE | wxTE_READONLY | wxBORDER_NONE
-        );
-        previewText->SetBackgroundColour(Theme::Input());
-        previewText->SetForegroundColour(Theme::Text());
-        previewText->SetFont(Theme::Font(10));
+        if (response.status.success)
+        {
+            for (const auto& hit : response.hits)
+            {
+                const long row =
+                    results_->InsertItem(
+                        results_->GetItemCount(),
+                        Wx(hit.fileId)
+                    );
 
-        previewSizer->Add(
-            previewText,
-            1,
-            wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-            17
-        );
+                results_->SetItem(
+                    row,
+                    1,
+                    Wx(hit.displayName)
+                );
+                results_->SetItem(
+                    row,
+                    2,
+                    Wx(hit.relativePath)
+                );
+                results_->SetItem(
+                    row,
+                    3,
+                    Wx(hit.mediaType)
+                );
+                results_->SetItem(
+                    row,
+                    4,
+                    Wx(hit.snippet)
+                );
+            }
+        }
 
-        auto* stats = MakeSubCard(preview);
-        auto* statsSizer = new wxBoxSizer(wxVERTICAL);
-        statsSizer->Add(
-            MakeText(stats, U("内容块  86"), 9, Theme::Text()),
-            0,
-            wxBOTTOM,
-            6
-        );
-        statsSizer->Add(
-            MakeText(stats, U("关联证据  12"), 9, Theme::Text()),
-            0,
-            wxBOTTOM,
-            6
-        );
-        statsSizer->Add(
-            MakeText(stats, U("受影响对象  4"), 9, Theme::Yellow()),
-            0
-        );
-        stats->SetSizer(statsSizer);
-        previewSizer->Add(
-            stats,
-            0,
-            wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-            17
-        );
-        previewSizer->Add(
-            MakeButton(preview, U("打开文件阅读器"), true),
-            0,
-            wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-            17
-        );
+        results_->Thaw();
 
-        preview->SetSizer(previewSizer);
-
-        body->Add(sourcePanel, 0, wxEXPAND | wxRIGHT, 12);
-        body->Add(filesPanel, 1, wxEXPAND | wxRIGHT, 12);
-        body->Add(preview, 0, wxEXPAND);
-
-        root->Add(body, 1, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 26);
-        SetSizer(root);
+        status_->SetLabel(
+            response.status.success
+                ? (
+                    U("找到 ") +
+                    wxString::Format(
+                        "%d",
+                        response.total
+                    ) +
+                    U(" 条真实索引结果。")
+                )
+                : (
+                    U("搜索失败：") +
+                    Wx(response.status.message)
+                )
+        );
     }
+
+    wxTextCtrl* query_;
+    wxListCtrl* results_;
+    wxStaticText* status_;
 };
+
+wxString FileSummary(
+    const ParsedFileContent& data
+)
+{
+    wxString summary =
+        U("文件编号：") + Wx(data.file.id) +
+        U("\n文件名：") + Wx(data.file.displayName) +
+        U("\n相对路径：") + Wx(data.file.relativePath) +
+        U("\n媒体类型：") + Wx(data.file.mediaType) +
+        U("\n解析状态：") + Wx(data.file.parseState) +
+        U("\n文件指纹：") + Wx(data.file.fingerprint) +
+        U("\n正文 UTF-8 字节数：") +
+        wxString::Format(
+            "%lld",
+            static_cast<long long>(
+                data.contentBytes
+            )
+        ) +
+        U("\n解析内容对应当前文件：") +
+        (
+            data.matchesCurrentFileFingerprint
+                ? U("是")
+                : U("否，文件可能已变化或解析结果已过期")
+        );
+
+    if (data.contentTruncated)
+    {
+        summary +=
+            U("\n正文预览已截断，以避免大型文档卡死界面。");
+    }
+
+    if (data.sectionsTruncated)
+    {
+        summary +=
+            U("\n分段列表已截断，仅显示前 500 个分段。");
+    }
+
+    return summary;
+}
+
+void ShowFilePreviewDialog(
+    wxWindow* parent,
+    const std::string& fileId
+)
+{
+    const auto data =
+        UiDataService::Instance().LoadParsedFile(
+            fileId
+        );
+
+    if (!data.status.success)
+    {
+        wxMessageBox(
+            Wx(data.status.message),
+            U("无法打开文件"),
+            wxOK | wxICON_ERROR,
+            parent
+        );
+        return;
+    }
+
+    wxDialog dialog(
+        parent,
+        wxID_ANY,
+        U("文件阅读器 · ") +
+            Wx(data.file.displayName),
+        wxDefaultPosition,
+        wxSize(1100, 760),
+        wxDEFAULT_DIALOG_STYLE |
+            wxRESIZE_BORDER
+    );
+    Theme::Apply(&dialog, Theme::Window());
+
+    auto* root = new wxBoxSizer(wxVERTICAL);
+
+    root->Add(
+        MakeText(
+            &dialog,
+            FileSummary(data),
+            9,
+            data.matchesCurrentFileFingerprint
+                ? Theme::Muted()
+                : Theme::Yellow()
+        ),
+        0,
+        wxEXPAND | wxALL,
+        16
+    );
+
+    auto* content = new wxTextCtrl(
+        &dialog,
+        wxID_ANY,
+        Wx(data.content),
+        wxDefaultPosition,
+        wxDefaultSize,
+        wxTE_MULTILINE |
+            wxTE_READONLY |
+            wxTE_RICH2 |
+            wxBORDER_NONE
+    );
+    content->SetBackgroundColour(Theme::Input());
+    content->SetForegroundColour(Theme::Text());
+    content->SetFont(Theme::Font(10));
+
+    root->Add(
+        content,
+        1,
+        wxEXPAND | wxLEFT | wxRIGHT,
+        16
+    );
+
+    root->Add(
+        new wxButton(
+            &dialog,
+            wxID_OK,
+            U("关闭")
+        ),
+        0,
+        wxALIGN_RIGHT | wxALL,
+        16
+    );
+
+    dialog.SetSizer(root);
+    dialog.ShowModal();
+}
 
 class FileReaderPage final : public wxPanel
 {
 public:
     explicit FileReaderPage(wxWindow* parent)
-        : wxPanel(parent, wxID_ANY)
+        : wxPanel(parent, wxID_ANY),
+          fileId_(nullptr),
+          summary_(nullptr),
+          sections_(nullptr),
+          content_(nullptr)
     {
         Theme::Apply(this, Theme::Window());
 
         auto* root = new wxBoxSizer(wxVERTICAL);
 
-        AddPageHeading(
+        AddHeading(
             this,
             root,
             U("P04"),
             U("文件阅读器"),
-            U("阅读源文档、定位内容块并创建带锚点的证据"),
-            U("创建证据")
+            U("按文件编号阅读真实解析正文和内容分段")
         );
 
-        auto* toolbar = new wxBoxSizer(wxHORIZONTAL);
-        toolbar->Add(
-            MakeButton(this, U("‹ 返回资料库"), false, false, 120),
+        auto* input = new wxBoxSizer(wxHORIZONTAL);
+
+        fileId_ = new wxTextCtrl(
+            this,
+            wxID_ANY,
+            wxEmptyString,
+            wxDefaultPosition,
+            wxSize(-1, 38),
+            wxBORDER_NONE |
+                wxTE_PROCESS_ENTER
+        );
+        fileId_->SetHint(U("输入文件编号"));
+        fileId_->SetBackgroundColour(Theme::Input());
+        fileId_->SetForegroundColour(Theme::Text());
+
+        auto* open = MakeButton(
+            this,
+            U("打开文件"),
+            true
+        );
+
+        input->Add(fileId_, 1, wxRIGHT, 10);
+        input->Add(open, 0);
+
+        root->Add(
+            input,
             0,
-            wxRIGHT,
-            10
+            wxEXPAND | wxALL,
+            26
         );
-        toolbar->Add(
-            MakeSearch(this, U("在当前文档中搜索"), 330),
-            1,
-            wxRIGHT,
-            10
+
+        summary_ = MakeText(
+            this,
+            U("请输入资料库搜索结果中的文件编号。"),
+            9,
+            Theme::Muted()
         );
-        toolbar->Add(
-            MakeButton(this, U("第 18 / 18 页"), false, false, 115),
+
+        root->Add(
+            summary_,
             0,
-            wxRIGHT,
-            10
+            wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
+            26
         );
-        toolbar->Add(
-            MakeButton(this, U("缩放 110%"), false, false, 105),
-            0
-        );
-        root->Add(toolbar, 0, wxEXPAND | wxALL, 26);
 
         auto* body = new wxBoxSizer(wxHORIZONTAL);
 
-        auto* outline = MakeCard(this);
-        outline->SetMinSize(wxSize(230, -1));
-        auto* outlineSizer = new wxBoxSizer(wxVERTICAL);
-
-        outlineSizer->Add(
-            MakeText(outline, U("文档结构"), 12, Theme::Text(), wxFONTWEIGHT_BOLD),
+        sections_ = MakeList(this);
+        sections_->SetMinSize(wxSize(320, -1));
+        sections_->InsertColumn(
             0,
-            wxALL,
-            17
+            U("序号"),
+            wxLIST_FORMAT_LEFT,
+            70
+        );
+        sections_->InsertColumn(
+            1,
+            U("锚点"),
+            wxLIST_FORMAT_LEFT,
+            130
+        );
+        sections_->InsertColumn(
+            2,
+            U("标题"),
+            wxLIST_FORMAT_LEFT,
+            180
         );
 
-        wxArrayString sections;
-        sections.Add(U("1. 项目背景"));
-        sections.Add(U("2. 交付目标"));
-        sections.Add(U("3. 系统边界"));
-        sections.Add(U("4. 迁移策略"));
-        sections.Add(U("5. 双轨运行"));
-        sections.Add(U("6. 风险与控制"));
-        sections.Add(U("7. 交付日期"));
-        sections.Add(U("8. 旧协议退出"));
-        sections.Add(U("9. 验收条件"));
-        sections.Add(U("附录 A 术语"));
-
-        auto* outlineList = new wxListBox(
-            outline,
+        content_ = new wxTextCtrl(
+            this,
             wxID_ANY,
+            wxEmptyString,
             wxDefaultPosition,
             wxDefaultSize,
-            sections,
-            wxLB_SINGLE | wxBORDER_NONE
+            wxTE_MULTILINE |
+                wxTE_READONLY |
+                wxTE_RICH2 |
+                wxBORDER_NONE
         );
-        outlineList->SetBackgroundColour(Theme::Surface());
-        outlineList->SetForegroundColour(Theme::Muted());
-        outlineList->SetFont(Theme::Font(9));
-        outlineList->SetSelection(7);
+        content_->SetBackgroundColour(Theme::Input());
+        content_->SetForegroundColour(Theme::Text());
+        content_->SetFont(Theme::Font(10));
 
-        outlineSizer->Add(
-            outlineList,
-            1,
-            wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-            15
-        );
-
-        outlineSizer->Add(
-            MakeText(outline, U("页面缩略图"), 9, Theme::Faint(), wxFONTWEIGHT_BOLD),
+        body->Add(
+            sections_,
             0,
-            wxLEFT | wxRIGHT | wxBOTTOM,
-            17
-        );
-
-        auto* thumbnail = MakeSubCard(outline);
-        thumbnail->SetMinSize(wxSize(-1, 130));
-        auto* thumbnailSizer = new wxBoxSizer(wxVERTICAL);
-        thumbnailSizer->Add(
-            MakeText(
-                thumbnail,
-                U("第 18 页"),
-                9,
-                Theme::Blue(),
-                wxFONTWEIGHT_BOLD
-            ),
-            0,
-            wxALL,
+            wxEXPAND | wxRIGHT,
             12
         );
-        thumbnailSizer->Add(
-            MakeWrappedText(
-                thumbnail,
-                U("旧协议支持范围与退出条件"),
-                8,
-                Theme::Muted(),
-                165
-            ),
-            0,
-            wxLEFT | wxRIGHT,
-            12
-        );
-        thumbnail->SetSizer(thumbnailSizer);
-        outlineSizer->Add(
-            thumbnail,
-            0,
-            wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-            15
-        );
-
-        outline->SetSizer(outlineSizer);
-
-        auto* documentPanel = MakeCard(this);
-        auto* documentSizer = new wxBoxSizer(wxVERTICAL);
-
-        auto* documentHeader = new wxBoxSizer(wxHORIZONTAL);
-        documentHeader->Add(
-            MakeText(
-                documentPanel,
-                U("requirements-v7.pdf"),
-                11,
-                Theme::Text(),
-                wxFONTWEIGHT_BOLD
-            ),
+        body->Add(
+            content_,
             1,
-            wxALIGN_CENTER_VERTICAL
-        );
-        documentHeader->Add(
-            MakeStatusPill(
-                documentPanel,
-                U("版本 v7"),
-                Theme::Blue(),
-                88
-            ),
-            0
-        );
-        documentSizer->Add(
-            documentHeader,
-            0,
-            wxEXPAND | wxALL,
-            17
+            wxEXPAND
         );
 
-        auto* page = new wxTextCtrl(
-            documentPanel,
-            wxID_ANY,
-            U(
-                "8. 旧协议退出与回退要求\n\n"
-                "8.1 支持期限\n\n"
-                "旧协议保留至 2026 年第四季度结束，具体关闭日期由"
-                "交付委员会另行确认。在合作方切换工作完成之前，"
-                "不得关闭旧接口。\n\n"
-                "8.2 紧急回退\n\n"
-                "在新协议完成连续十四天稳定运行之前，必须保留紧急"
-                "回退通道。回退操作需要安全负责人和交付负责人共同批准。\n\n"
-                "8.3 验收约束\n\n"
-                "最终交付日期调整为 2026 年 11 月 30 日。安全复核、"
-                "合作方环境验证和审计记录迁移必须在最终交付前完成。\n\n"
-                "所选内容块 B-1882\n"
-                "锚点：第 18 页 · 段落 12 · 字符 640—781"
-            ),
-            wxDefaultPosition,
-            wxDefaultSize,
-            wxTE_MULTILINE | wxTE_READONLY | wxBORDER_NONE
-        );
-        page->SetBackgroundColour(wxColour(238, 235, 226));
-        page->SetForegroundColour(wxColour(38, 45, 55));
-        page->SetFont(Theme::Font(11));
-
-        documentSizer->Add(
-            page,
+        root->Add(
+            body,
             1,
             wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-            30
-        );
-        documentPanel->SetSizer(documentSizer);
-
-        auto* evidence = MakeCard(this);
-        evidence->SetMinSize(wxSize(355, -1));
-        auto* evidenceSizer = new wxBoxSizer(wxVERTICAL);
-
-        evidenceSizer->Add(
-            MakeText(
-                evidence,
-                U("证据创建器"),
-                12,
-                Theme::Text(),
-                wxFONTWEIGHT_BOLD
-            ),
-            0,
-            wxALL,
-            17
-        );
-        evidenceSizer->Add(
-            MakeStatusPill(evidence, U("已选择文本"), Theme::Green(), 105),
-            0,
-            wxLEFT | wxRIGHT | wxBOTTOM,
-            17
+            26
         );
 
-        auto* selection = MakeSubCard(evidence);
-        auto* selectionSizer = new wxBoxSizer(wxVERTICAL);
-        selectionSizer->Add(
-            MakeText(selection, U("选中原文"), 8, Theme::Faint(), wxFONTWEIGHT_BOLD),
-            0,
-            wxBOTTOM,
-            8
-        );
-        selectionSizer->Add(
-            MakeWrappedText(
-                selection,
-                U("旧协议保留至 2026 年第四季度结束，具体关闭日期由交付委员会另行确认。"),
-                10,
-                Theme::Text(),
-                285,
-                wxFONTWEIGHT_SEMIBOLD
-            ),
-            0
-        );
-        selection->SetSizer(selectionSizer);
-        evidenceSizer->Add(
-            selection,
-            0,
-            wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-            17
-        );
-
-        evidenceSizer->Add(
-            MakeText(evidence, U("证据角色"), 8, Theme::Faint(), wxFONTWEIGHT_BOLD),
-            0,
-            wxLEFT | wxRIGHT | wxBOTTOM,
-            17
-        );
-        evidenceSizer->Add(
-            MakeButton(evidence, U("支持当前事实  ▾")),
-            0,
-            wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-            17
-        );
-
-        evidenceSizer->Add(
-            MakeText(evidence, U("关联对象"), 8, Theme::Faint(), wxFONTWEIGHT_BOLD),
-            0,
-            wxLEFT | wxRIGHT | wxBOTTOM,
-            17
-        );
-        evidenceSizer->Add(
-            MakeQueueRow(
-                evidence,
-                U("F-0054"),
-                U("旧协议保留至第四季度"),
-                U("当前有效事实"),
-                U("已关联"),
-                Theme::Green(),
-                true
-            ),
-            0,
-            wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-            17
-        );
-
-        evidenceSizer->Add(
-            MakeText(evidence, U("来源锚点"), 8, Theme::Faint(), wxFONTWEIGHT_BOLD),
-            0,
-            wxLEFT | wxRIGHT | wxBOTTOM,
-            17
-        );
-        evidenceSizer->Add(
-            MakeWrappedText(
-                evidence,
-                U("第 18 页 · 段落 12 · 内容块 B-1882\nSHA-256 内容指纹将在保存时计算"),
-                8,
-                Theme::Muted(),
-                300
-            ),
-            0,
-            wxLEFT | wxRIGHT | wxBOTTOM,
-            17
-        );
-
-        evidenceSizer->AddStretchSpacer();
-        evidenceSizer->Add(
-            MakeButton(evidence, U("复制带来源引用的文本")),
-            0,
-            wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-            17
-        );
-        evidenceSizer->Add(
-            MakeButton(evidence, U("创建证据并关联"), true),
-            0,
-            wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-            17
-        );
-        evidence->SetSizer(evidenceSizer);
-
-        body->Add(outline, 0, wxEXPAND | wxRIGHT, 12);
-        body->Add(documentPanel, 1, wxEXPAND | wxRIGHT, 12);
-        body->Add(evidence, 0, wxEXPAND);
-
-        root->Add(body, 1, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 26);
         SetSizer(root);
+
+        const auto load = [this]()
+        {
+            Load();
+        };
+
+        open->Bind(
+            wxEVT_BUTTON,
+            [load](wxCommandEvent&)
+            {
+                load();
+            }
+        );
+
+        fileId_->Bind(
+            wxEVT_TEXT_ENTER,
+            [load](wxCommandEvent&)
+            {
+                load();
+            }
+        );
+
+        sections_->Bind(
+            wxEVT_LIST_ITEM_SELECTED,
+            [this](wxListEvent& event)
+            {
+                const long row = event.GetIndex();
+
+                if (row >= 0 &&
+                    static_cast<std::size_t>(row) <
+                        data_.sections.size())
+                {
+                    content_->ChangeValue(
+                        Wx(
+                            data_.sections[
+                                static_cast<std::size_t>(row)
+                            ].content
+                        )
+                    );
+                }
+            }
+        );
     }
+
+private:
+    void Load()
+    {
+        wxString value = fileId_->GetValue();
+        value.Trim(true);
+        value.Trim(false);
+
+        if (value.empty())
+        {
+            wxMessageBox(
+                U("请输入文件编号。"),
+                U("文件阅读器"),
+                wxOK | wxICON_INFORMATION,
+                this
+            );
+            return;
+        }
+
+        data_ =
+            UiDataService::Instance().LoadParsedFile(
+                Utf8(value)
+            );
+
+        sections_->DeleteAllItems();
+        content_->ChangeValue(wxEmptyString);
+
+        if (!data_.status.success)
+        {
+            summary_->SetLabel(
+                U("打开失败：") +
+                Wx(data_.status.message)
+            );
+            summary_->SetForegroundColour(
+                Theme::Red()
+            );
+            Layout();
+            return;
+        }
+
+        summary_->SetLabel(
+            FileSummary(data_)
+        );
+        summary_->SetForegroundColour(
+            data_.matchesCurrentFileFingerprint
+                ? Theme::Muted()
+                : Theme::Yellow()
+        );
+
+        sections_->Freeze();
+
+        for (const auto& section : data_.sections)
+        {
+            const long row = sections_->InsertItem(
+                sections_->GetItemCount(),
+                wxString::Format(
+                    "%d",
+                    section.ordinal
+                )
+            );
+
+            sections_->SetItem(
+                row,
+                1,
+                Wx(section.anchor)
+            );
+            sections_->SetItem(
+                row,
+                2,
+                Wx(section.heading)
+            );
+        }
+
+        sections_->Thaw();
+
+        if (!data_.sections.empty())
+        {
+            sections_->SetItemState(
+                0,
+                wxLIST_STATE_SELECTED |
+                    wxLIST_STATE_FOCUSED,
+                wxLIST_STATE_SELECTED |
+                    wxLIST_STATE_FOCUSED
+            );
+            content_->ChangeValue(
+                Wx(data_.sections.front().content)
+            );
+        }
+        else
+        {
+            content_->ChangeValue(
+                Wx(data_.content)
+            );
+        }
+
+        Layout();
+    }
+
+    wxTextCtrl* fileId_;
+    wxStaticText* summary_;
+    wxListCtrl* sections_;
+    wxTextCtrl* content_;
+    ParsedFileContent data_;
 };
+
+bool ParseCharacterAnchor(
+    const std::string& anchor,
+    std::size_t& position
+)
+{
+    const std::string prefix = "char:";
+
+    if (anchor.compare(0, prefix.size(), prefix) != 0 ||
+        anchor.size() == prefix.size())
+    {
+        return false;
+    }
+
+    std::size_t value = 0;
+
+    for (std::size_t index = prefix.size();
+         index < anchor.size();
+         ++index)
+    {
+        const char character = anchor[index];
+
+        if (character < '0' || character > '9')
+        {
+            return false;
+        }
+
+        const std::size_t digit =
+            static_cast<std::size_t>(
+                character - '0'
+            );
+
+        if (value >
+            (static_cast<std::size_t>(-1) - digit) / 10)
+        {
+            return false;
+        }
+
+        value = value * 10 + digit;
+    }
+
+    position = value;
+    return true;
+}
 
 class EvidenceInspectorPage final : public wxPanel
 {
 public:
     explicit EvidenceInspectorPage(wxWindow* parent)
+        : wxPanel(parent, wxID_ANY),
+          evidenceId_(nullptr),
+          result_(nullptr)
+    {
+        Theme::Apply(this, Theme::Window());
+
+        auto* root = new wxBoxSizer(wxVERTICAL);
+
+        AddHeading(
+            this,
+            root,
+            U("P05"),
+            U("证据检查器"),
+            U("检查证据原文、来源锚点和当前解析文件的一致性")
+        );
+
+        auto* input = new wxBoxSizer(wxHORIZONTAL);
+
+        evidenceId_ = new wxTextCtrl(
+            this,
+            wxID_ANY,
+            wxEmptyString,
+            wxDefaultPosition,
+            wxSize(-1, 38),
+            wxBORDER_NONE |
+                wxTE_PROCESS_ENTER
+        );
+        evidenceId_->SetHint(U("输入证据编号"));
+        evidenceId_->SetBackgroundColour(Theme::Input());
+        evidenceId_->SetForegroundColour(Theme::Text());
+
+        auto* verify = MakeButton(
+            this,
+            U("验证证据"),
+            true
+        );
+
+        input->Add(evidenceId_, 1, wxRIGHT, 10);
+        input->Add(verify, 0);
+
+        root->Add(
+            input,
+            0,
+            wxEXPAND | wxALL,
+            26
+        );
+
+        result_ = new wxTextCtrl(
+            this,
+            wxID_ANY,
+            U("请输入审查收件箱中的证据编号。"),
+            wxDefaultPosition,
+            wxDefaultSize,
+            wxTE_MULTILINE |
+                wxTE_READONLY |
+                wxTE_RICH2 |
+                wxBORDER_NONE
+        );
+        result_->SetBackgroundColour(Theme::Input());
+        result_->SetForegroundColour(Theme::Text());
+        result_->SetFont(Theme::Font(10));
+
+        root->Add(
+            result_,
+            1,
+            wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
+            26
+        );
+
+        SetSizer(root);
+
+        const auto execute = [this]()
+        {
+            Verify();
+        };
+
+        verify->Bind(
+            wxEVT_BUTTON,
+            [execute](wxCommandEvent&)
+            {
+                execute();
+            }
+        );
+
+        evidenceId_->Bind(
+            wxEVT_TEXT_ENTER,
+            [execute](wxCommandEvent&)
+            {
+                execute();
+            }
+        );
+    }
+
+private:
+    void Verify()
+    {
+        wxString value = evidenceId_->GetValue();
+        value.Trim(true);
+        value.Trim(false);
+
+        if (value.empty())
+        {
+            wxMessageBox(
+                U("请输入证据编号。"),
+                U("证据检查器"),
+                wxOK | wxICON_INFORMATION,
+                this
+            );
+            return;
+        }
+
+        const auto evidence =
+            UiDataService::Instance().FindEvidence(
+                Utf8(value)
+            );
+
+        if (!evidence)
+        {
+            result_->ChangeValue(
+                U("验证失败：证据不存在或已经删除。")
+            );
+            return;
+        }
+
+        wxString report =
+            U("证据编号：") + Wx(evidence->id) +
+            U("\n标题：") + Wx(evidence->title) +
+            U("\n审查状态：") +
+                Wx(evidence->reviewState) +
+            U("\n数据源编号：") +
+                Wx(evidence->sourceId) +
+            U("\n文件编号：") +
+                Wx(evidence->fileId) +
+            U("\n来源锚点：") +
+                Wx(evidence->anchor) +
+            U("\n存储的证据指纹：") +
+                Wx(evidence->fingerprint) +
+            U("\n\n证据原文：\n") +
+                Wx(evidence->quote) +
+            U("\n\n========== 验证结果 ==========\n");
+
+        if (evidence->fileId.empty())
+        {
+            report +=
+                U("失败：该证据没有关联文件，无法验证来源。\n");
+            result_->ChangeValue(report);
+            return;
+        }
+
+        const auto file =
+            UiDataService::Instance().LoadParsedFile(
+                evidence->fileId,
+                4 * 1024 * 1024,
+                1000
+            );
+
+        if (!file.status.success)
+        {
+            report +=
+                U("失败：无法读取关联文件：") +
+                Wx(file.status.message) +
+                U("\n");
+            result_->ChangeValue(report);
+            return;
+        }
+
+        report +=
+            U("文件存在：是\n");
+
+        const bool sourceMatches =
+            evidence->sourceId.empty() ||
+            evidence->sourceId ==
+                file.file.sourceId;
+
+        report +=
+            U("数据源一致：") +
+            (
+                sourceMatches
+                    ? U("是\n")
+                    : U("否\n")
+            );
+
+        report +=
+            U("解析内容对应当前文件指纹：") +
+            (
+                file.matchesCurrentFileFingerprint
+                    ? U("是\n")
+                    : U("否\n")
+            );
+
+        const std::size_t quotePosition =
+            evidence->quote.empty()
+                ? std::string::npos
+                : file.content.find(evidence->quote);
+
+        if (evidence->quote.empty())
+        {
+            report +=
+                U("证据原文检查：失败，证据原文为空\n");
+        }
+        else if (quotePosition != std::string::npos)
+        {
+            report +=
+                U("证据原文仍存在于解析正文：是\n");
+        }
+        else if (file.contentTruncated)
+        {
+            report +=
+                U("证据原文仍存在于解析正文：无法确定，正文预览被截断\n");
+        }
+        else
+        {
+            report +=
+                U("证据原文仍存在于解析正文：否\n");
+        }
+
+        std::size_t anchorPosition = 0;
+
+        if (!ParseCharacterAnchor(
+                evidence->anchor,
+                anchorPosition
+            ))
+        {
+            report +=
+                U("锚点检查：不支持或格式无效；当前支持 char:N\n");
+        }
+        else if (anchorPosition >=
+                 static_cast<std::size_t>(
+                     file.contentBytes
+                 ))
+        {
+            report +=
+                U("锚点检查：失败，锚点超出正文范围\n");
+        }
+        else if (anchorPosition >=
+                 file.content.size())
+        {
+            report +=
+                U("锚点检查：无法确定，锚点位于截断部分\n");
+        }
+        else if (!evidence->quote.empty() &&
+                 file.content.compare(
+                     anchorPosition,
+                     evidence->quote.size(),
+                     evidence->quote
+                 ) == 0)
+        {
+            report +=
+                U("锚点与证据原文一致：是\n");
+        }
+        else
+        {
+            report +=
+                U("锚点与证据原文一致：否\n");
+        }
+
+        report +=
+            U("\n说明：当前未重新计算证据指纹，"
+              "因为存储层尚未声明该字段的标准生成算法。");
+
+        result_->ChangeValue(report);
+    }
+
+    wxTextCtrl* evidenceId_;
+    wxTextCtrl* result_;
+};
+
+class UnsupportedEvidencePage final : public wxPanel
+{
+public:
+    UnsupportedEvidencePage(
+        wxWindow* parent,
+        const wxString& code,
+        const wxString& title,
+        const wxString& reason
+    )
         : wxPanel(parent, wxID_ANY)
     {
         Theme::Apply(this, Theme::Window());
 
         auto* root = new wxBoxSizer(wxVERTICAL);
 
-        AddPageHeading(
+        AddHeading(
             this,
             root,
-            U("P05"),
-            U("证据检查器"),
-            U("验证来源锚点、内容指纹、历史版本和业务对象引用"),
-            U("重新验证")
+            code,
+            title,
+            U("当前功能状态")
         );
 
-        AddMetrics(
-            this,
-            root,
-            {{
-                {U("127"), U("全部证据"), U("来自 36 个文件"), Theme::Blue()},
-                {U("119"), U("锚点正常"), U("可精确重新定位"), Theme::Green()},
-                {U("5"), U("需要复核"), U("来源内容已变化"), Theme::Yellow()},
-                {U("3"), U("来源失联"), U("保留历史快照"), Theme::Red()}
-            }}
-        );
-
-        auto* body = new wxBoxSizer(wxHORIZONTAL);
-
-        auto* evidenceList = MakeCard(this);
-        evidenceList->SetMinSize(wxSize(415, -1));
-        auto* listSizer = new wxBoxSizer(wxVERTICAL);
-
-        auto* toolbar = new wxBoxSizer(wxHORIZONTAL);
-        toolbar->Add(
-            MakeSearch(evidenceList, U("搜索证据编号或内容"), 245),
-            1,
-            wxRIGHT,
-            10
-        );
-        toolbar->Add(
-            MakeButton(evidenceList, U("状态"), false, false, 78),
-            0
-        );
-        listSizer->Add(toolbar, 0, wxEXPAND | wxALL, 16);
-
-        const struct
-        {
-            const char* code;
-            const char* title;
-            const char* source;
-            const char* state;
-            wxColour color;
-        } evidenceRows[] = {
-            {
-                "E-1097",
-                "旧协议保留至第四季度",
-                "requirements-v7.pdf · 第 18 页",
-                "需复核",
-                Theme::Yellow()
-            },
-            {
-                "E-1042",
-                "委员会接受双轨迁移方案",
-                "会议纪要-0909.md · 第 42 行",
-                "正常",
-                Theme::Green()
-            },
-            {
-                "E-1124",
-                "必须保留紧急回退通道",
-                "协议评审.eml · 正文第 6 段",
-                "正常",
-                Theme::Green()
-            },
-            {
-                "E-0841",
-                "旧协议原定 10 月关闭",
-                "legacy-contract.pdf · 第 12 页",
-                "失联",
-                Theme::Red()
-            },
-            {
-                "E-1130",
-                "安全复核截止 9 月 25 日",
-                "安全评审.eml · 正文第 4 段",
-                "正常",
-                Theme::Green()
-            }
-        };
-
-        for (std::size_t index = 0; index < 5; ++index)
-        {
-            listSizer->Add(
-                MakeQueueRow(
-                    evidenceList,
-                    U(evidenceRows[index].code),
-                    U(evidenceRows[index].title),
-                    U(evidenceRows[index].source),
-                    U(evidenceRows[index].state),
-                    evidenceRows[index].color,
-                    index == 0
-                ),
-                0,
-                wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-                10
-            );
-        }
-
-        evidenceList->SetSizer(listSizer);
-
-        auto* verification = MakeCard(this);
-        auto* verificationSizer = new wxBoxSizer(wxVERTICAL);
-
-        auto* header = new wxBoxSizer(wxHORIZONTAL);
-        header->Add(
+        root->Add(
             MakeText(
-                verification,
-                U("E-1097"),
-                9,
-                Theme::Blue(),
-                wxFONTWEIGHT_BOLD
-            ),
-            0,
-            wxALIGN_CENTER_VERTICAL | wxRIGHT,
-            12
-        );
-        header->Add(
-            MakeText(
-                verification,
-                U("证据验证详情"),
-                12,
-                Theme::Text(),
-                wxFONTWEIGHT_BOLD
-            ),
-            1,
-            wxALIGN_CENTER_VERTICAL
-        );
-        header->Add(
-            MakeStatusPill(
-                verification,
-                U("需要复核"),
+                this,
+                reason,
+                11,
                 Theme::Yellow(),
-                105
-            ),
-            0
-        );
-        verificationSizer->Add(header, 0, wxEXPAND | wxALL, 17);
-
-        auto* quote = MakeSubCard(verification);
-        auto* quoteSizer = new wxBoxSizer(wxVERTICAL);
-        quoteSizer->Add(
-            MakeText(quote, U("保存的证据文本"), 8, Theme::Faint(), wxFONTWEIGHT_BOLD),
-            0,
-            wxBOTTOM,
-            9
-        );
-        quoteSizer->Add(
-            MakeWrappedText(
-                quote,
-                U("旧协议保留至 2026 年 10 月 31 日，之后关闭旧接口并撤销回退通道。"),
-                11,
-                Theme::Text(),
-                500,
                 wxFONTWEIGHT_SEMIBOLD
-            ),
-            0
-        );
-        quote->SetSizer(quoteSizer);
-        verificationSizer->Add(
-            quote,
-            0,
-            wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-            17
-        );
-
-        verificationSizer->Add(
-            MakeText(
-                verification,
-                U("当前来源内容"),
-                9,
-                Theme::Faint(),
-                wxFONTWEIGHT_BOLD
-            ),
-            0,
-            wxLEFT | wxRIGHT | wxBOTTOM,
-            17
-        );
-
-        auto* current = MakeSubCard(verification);
-        auto* currentSizer = new wxBoxSizer(wxVERTICAL);
-        currentSizer->Add(
-            MakeWrappedText(
-                current,
-                U("旧协议保留至 2026 年第四季度结束，具体关闭日期由交付委员会另行确认，在此之前必须保留紧急回退通道。"),
-                11,
-                Theme::Text(),
-                500,
-                wxFONTWEIGHT_SEMIBOLD
-            ),
-            0
-        );
-        current->SetSizer(currentSizer);
-        verificationSizer->Add(
-            current,
-            0,
-            wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-            17
-        );
-
-        verificationSizer->Add(
-            MakeText(
-                verification,
-                U("验证检查"),
-                9,
-                Theme::Faint(),
-                wxFONTWEIGHT_BOLD
-            ),
-            0,
-            wxLEFT | wxRIGHT | wxBOTTOM,
-            17
-        );
-
-        const struct
-        {
-            const char* title;
-            const char* value;
-            wxColour color;
-        } checks[] = {
-            {"源文件可访问", "通过", Theme::Green()},
-            {"历史版本快照", "v6 已保留", Theme::Green()},
-            {"内容指纹", "与当前版本不同", Theme::Yellow()},
-            {"精确锚点", "原段落已被修改", Theme::Yellow()},
-            {"相似内容定位", "候选相似度 78%", Theme::Blue()}
-        };
-
-        for (const auto& check : checks)
-        {
-            auto* checkRow = MakeSubCard(verification);
-            auto* checkSizer = new wxBoxSizer(wxHORIZONTAL);
-            checkSizer->Add(
-                MakeText(checkRow, U(check.title), 9, Theme::Muted()),
-                1,
-                wxALL,
-                10
-            );
-            checkSizer->Add(
-                MakeText(
-                    checkRow,
-                    U(check.value),
-                    9,
-                    check.color,
-                    wxFONTWEIGHT_BOLD
-                ),
-                0,
-                wxALIGN_CENTER_VERTICAL | wxRIGHT,
-                10
-            );
-            checkRow->SetSizer(checkSizer);
-            verificationSizer->Add(
-                checkRow,
-                0,
-                wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-                8
-            );
-        }
-
-        verificationSizer->AddStretchSpacer();
-
-        auto* actions = new wxBoxSizer(wxHORIZONTAL);
-        actions->Add(
-            MakeButton(verification, U("保留旧证据")),
-            1,
-            wxRIGHT,
-            10
-        );
-        actions->Add(
-            MakeButton(verification, U("标记为失效")),
-            1,
-            wxRIGHT,
-            10
-        );
-        actions->Add(
-            MakeButton(verification, U("重新锚定"), true),
-            1
-        );
-        verificationSizer->Add(
-            actions,
-            0,
-            wxEXPAND | wxALL,
-            17
-        );
-
-        verification->SetSizer(verificationSizer);
-
-        auto* references = MakeCard(this);
-        references->SetMinSize(wxSize(320, -1));
-        auto* referenceSizer = new wxBoxSizer(wxVERTICAL);
-
-        referenceSizer->Add(
-            MakeText(
-                references,
-                U("引用与影响"),
-                12,
-                Theme::Text(),
-                wxFONTWEIGHT_BOLD
             ),
             0,
             wxALL,
-            17
+            26
         );
 
-        referenceSizer->Add(
-            MakeQueueRow(
-                references,
-                U("F-0054"),
-                U("旧协议保留至第四季度"),
-                U("当前有效事实"),
-                U("支持"),
-                Theme::Green(),
-                true
-            ),
-            0,
-            wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-            12
-        );
-        referenceSizer->Add(
-            MakeQueueRow(
-                references,
-                U("D-0031"),
-                U("采用双轨迁移方案"),
-                U("已接受决策"),
-                U("依据"),
-                Theme::Purple()
-            ),
-            0,
-            wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-            12
-        );
-        referenceSizer->Add(
-            MakeQueueRow(
-                references,
-                U("R-0018"),
-                U("双轨审计复杂度"),
-                U("活跃风险"),
-                U("影响"),
-                Theme::Red()
-            ),
-            0,
-            wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-            12
-        );
-
-        referenceSizer->Add(
-            new wxStaticLine(references, wxID_ANY),
-            0,
-            wxEXPAND | wxALL,
-            17
-        );
-        referenceSizer->Add(
+        root->Add(
             MakeText(
-                references,
-                U("审计记录"),
+                this,
+                U("为避免误导，原先硬编码的文件正文、页码、锚点、指纹和验证结论已移除。"),
                 9,
-                Theme::Faint(),
-                wxFONTWEIGHT_BOLD
+                Theme::Muted()
             ),
             0,
             wxLEFT | wxRIGHT | wxBOTTOM,
-            17
-        );
-        referenceSizer->Add(
-            MakeWrappedText(
-                references,
-                U(
-                    "创建：2026-09-10 09:12\n"
-                    "创建者：周启明\n"
-                    "来源版本：v6\n"
-                    "最后验证：今天 12:31\n"
-                    "状态变更：正常 → 需要复核"
-                ),
-                8,
-                Theme::Muted(),
-                270
-            ),
-            0,
-            wxLEFT | wxRIGHT,
-            17
+            26
         );
 
-        referenceSizer->AddStretchSpacer();
-        referenceSizer->Add(
-            MakeButton(references, U("打开来源版本")),
-            0,
-            wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-            17
-        );
-        referenceSizer->Add(
-            MakeButton(references, U("查看完整审计历史"), true),
-            0,
-            wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
-            17
-        );
-
-        references->SetSizer(referenceSizer);
-
-        body->Add(evidenceList, 0, wxEXPAND | wxRIGHT, 12);
-        body->Add(verification, 1, wxEXPAND | wxRIGHT, 12);
-        body->Add(references, 0, wxEXPAND);
-
-        root->Add(body, 1, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 26);
+        root->AddStretchSpacer();
         SetSizer(root);
     }
 };
@@ -1741,24 +1523,24 @@ wxWindow* CreateEvidenceWorkflowPage(
     const wxString& pageCode
 )
 {
-    if (pageCode == U("P02"))
+    if (pageCode == U("P04"))
     {
         return new ReviewInboxPage(parent);
     }
 
-    if (pageCode == U("P03"))
+    if (pageCode == U("P05"))
     {
         return new LibraryPage(parent);
     }
 
-    if (pageCode == U("P04"))
+    /*
+     * P06 是最终设计中的“文档与证据”上下文页面。
+     * 当前可执行的文件阅读能力由资料库双击记录进入，
+     * 不再在一级导航中制造两个错误页面编号。
+     */
+    if (pageCode == U("P06"))
     {
         return new FileReaderPage(parent);
-    }
-
-    if (pageCode == U("P05"))
-    {
-        return new EvidenceInspectorPage(parent);
     }
 
     return nullptr;

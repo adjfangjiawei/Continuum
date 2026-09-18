@@ -180,17 +180,20 @@ UiDataService::UiDataService()
 
 UiOperationResult UiDataService::Initialize()
 {
+    /*
+     * 数据服务不能自行选择或创建默认工作区。
+     *
+     * 工作区必须由应用启动中心或显式的工作区切换流程先行打开。
+     * 否则在“关闭旧工作区、打开新工作区”的间隙调用本方法时，
+     * 会静默回落到默认数据库，导致后续操作写入错误工作区。
+     */
     if (!workspace_.IsInitialized())
     {
-        const auto status =
-            workspace_.InitializeDefault();
-
-        if (!status.success)
-        {
-            return UiOperationResult::FromStorage(
-                status
-            );
-        }
+        return {
+            false,
+            SQLITE_MISUSE,
+            "工作区尚未初始化，请先创建或打开工作区"
+        };
     }
 
     auto& worker = BackgroundWorker::Instance();
@@ -477,6 +480,255 @@ UiDataService::EvidenceForReview(
     );
 }
 
+std::optional<EvidenceRecord>
+UiDataService::FindEvidence(
+    const std::string& id,
+    bool includeDeleted
+) const
+{
+    if (!workspace_.IsInitialized() || id.empty())
+    {
+        return std::nullopt;
+    }
+
+    return workspace_.Evidence().FindById(
+        id,
+        includeDeleted
+    );
+}
+
+ParsedFileContent UiDataService::LoadParsedFile(
+    const std::string& fileId,
+    int maximumContentCharacters,
+    int maximumSections
+) const
+{
+    ParsedFileContent result;
+
+    if (!workspace_.IsInitialized())
+    {
+        result.status = {
+            false,
+            SQLITE_MISUSE,
+            "工作区尚未初始化"
+        };
+        return result;
+    }
+
+    if (fileId.empty())
+    {
+        result.status = {
+            false,
+            SQLITE_CONSTRAINT,
+            "文件编号不能为空"
+        };
+        return result;
+    }
+
+    const auto file =
+        workspace_.Files().FindById(fileId, false);
+
+    if (!file)
+    {
+        result.status = {
+            false,
+            SQLITE_NOTFOUND,
+            "文件不存在或已经删除"
+        };
+        return result;
+    }
+
+    result.file = *file;
+
+    ParsedContentRepository repository(
+        workspace_.GetDatabase()
+    );
+
+    const auto schemaStatus = repository.EnsureSchema();
+
+    if (!schemaStatus.success)
+    {
+        result.status =
+            UiOperationResult::FromStorage(schemaStatus);
+        return result;
+    }
+
+    maximumContentCharacters = std::max(
+        1,
+        std::min(4 * 1024 * 1024, maximumContentCharacters)
+    );
+    maximumSections = std::max(
+        1,
+        std::min(2000, maximumSections)
+    );
+
+    Database& database = workspace_.GetDatabase();
+
+    std::lock_guard<std::recursive_mutex> lock(
+        database.Mutex()
+    );
+
+    sqlite3* handle = database.Handle();
+
+    if (handle == nullptr)
+    {
+        result.status = {
+            false,
+            SQLITE_MISUSE,
+            "数据库尚未打开"
+        };
+        return result;
+    }
+
+    Statement document(
+        handle,
+        "SELECT fingerprint, "
+        "length(CAST(content AS BLOB)), "
+        "substr(content, 1, ?) "
+        "FROM parsed_documents "
+        "WHERE file_id=? LIMIT 1;"
+    );
+
+    if (!document.IsValid())
+    {
+        result.status = {
+            false,
+            sqlite3_errcode(handle),
+            std::string("无法读取解析正文: ") +
+                sqlite3_errmsg(handle)
+        };
+        return result;
+    }
+
+    sqlite3_bind_int(
+        document.Get(),
+        1,
+        maximumContentCharacters
+    );
+    sqlite3_bind_text(
+        document.Get(),
+        2,
+        fileId.c_str(),
+        -1,
+        SQLITE_TRANSIENT
+    );
+
+    const int documentStep =
+        sqlite3_step(document.Get());
+
+    if (documentStep != SQLITE_ROW)
+    {
+        result.status = {
+            false,
+            documentStep == SQLITE_DONE
+                ? SQLITE_NOTFOUND
+                : documentStep,
+            documentStep == SQLITE_DONE
+                ? "该文件尚无解析正文"
+                : (
+                    std::string("读取解析正文失败: ") +
+                    sqlite3_errmsg(handle)
+                )
+        };
+        return result;
+    }
+
+    const std::string parsedFingerprint =
+        ColumnText(document.Get(), 0);
+
+    result.contentBytes =
+        sqlite3_column_int64(document.Get(), 1);
+    result.content =
+        ColumnText(document.Get(), 2);
+    /*
+     * contentBytes 与 std::string 及 char:N 锚点采用相同的
+     * UTF-8 字节单位。substr(TEXT) 的参数仍按 Unicode
+     * 字符计算，因此以实际返回字节数判断是否截断。
+     */
+    result.contentTruncated =
+        result.contentBytes >
+            static_cast<std::int64_t>(
+                result.content.size()
+            );
+    result.matchesCurrentFileFingerprint =
+        !result.file.fingerprint.empty() &&
+        parsedFingerprint == result.file.fingerprint;
+
+    Statement sections(
+        handle,
+        "SELECT ordinal, heading, anchor, content "
+        "FROM parsed_sections "
+        "WHERE file_id=? "
+        "ORDER BY ordinal LIMIT ?;"
+    );
+
+    if (!sections.IsValid())
+    {
+        result.status = {
+            false,
+            sqlite3_errcode(handle),
+            std::string("无法读取解析分段: ") +
+                sqlite3_errmsg(handle)
+        };
+        return result;
+    }
+
+    sqlite3_bind_text(
+        sections.Get(),
+        1,
+        fileId.c_str(),
+        -1,
+        SQLITE_TRANSIENT
+    );
+    sqlite3_bind_int(
+        sections.Get(),
+        2,
+        maximumSections + 1
+    );
+
+    int sectionStep = SQLITE_ROW;
+
+    while ((sectionStep = sqlite3_step(sections.Get())) ==
+           SQLITE_ROW)
+    {
+        if (static_cast<int>(result.sections.size()) >=
+            maximumSections)
+        {
+            result.sectionsTruncated = true;
+            break;
+        }
+
+        ParsedSection section;
+        section.ordinal =
+            sqlite3_column_int(sections.Get(), 0);
+        section.heading =
+            ColumnText(sections.Get(), 1);
+        section.anchor =
+            ColumnText(sections.Get(), 2);
+        section.content =
+            ColumnText(sections.Get(), 3);
+
+        result.sections.push_back(
+            std::move(section)
+        );
+    }
+
+    if (sectionStep != SQLITE_DONE &&
+        sectionStep != SQLITE_ROW)
+    {
+        result.status = {
+            false,
+            sectionStep,
+            std::string("读取解析分段失败: ") +
+                sqlite3_errmsg(handle)
+        };
+        return result;
+    }
+
+    result.status = UiOperationResult::Ok();
+    return result;
+}
+
 UiOperationResult
 UiDataService::SetEvidenceReviewState(
     const std::string& id,
@@ -490,6 +742,31 @@ UiDataService::SetEvidenceReviewState(
             false,
             SQLITE_MISUSE,
             "工作区尚未初始化"
+        };
+    }
+
+    if (id.empty())
+    {
+        return {
+            false,
+            SQLITE_MISUSE,
+            "证据编号不能为空"
+        };
+    }
+
+    const bool validState =
+        state == "unverified" ||
+        state == "needs_review" ||
+        state == "changed" ||
+        state == "verified" ||
+        state == "rejected";
+
+    if (!validState)
+    {
+        return {
+            false,
+            SQLITE_MISMATCH,
+            "无效的证据审查状态"
         };
     }
 
@@ -890,6 +1167,17 @@ UiDataService::ListBackups() const
 {
     BackupService service(workspace_);
     return service.ListBackups();
+}
+
+std::uint64_t UiDataService::BackupCount() const
+{
+    if (!workspace_.IsInitialized())
+    {
+        return 0;
+    }
+
+    BackupService service(workspace_);
+    return service.CountBackups();
 }
 
 UiOperationResult UiDataService::ValidateBackup(

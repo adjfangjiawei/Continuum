@@ -1,11 +1,18 @@
 #include "MainFrame.h"
 
 #include "Theme.h"
+#include "UiDataService.h"
+#include "WorkspaceService.h"
+
+#include <filesystem>
+#include "WxRecordController.h"
+#include "WxUiBinder.h"
 
 #include <wx/button.h>
 #include <wx/dialog.h>
 #include <wx/display.h>
 #include <wx/listbox.h>
+#include <wx/listctrl.h>
 #include <wx/msgdlg.h>
 #include <wx/scrolwin.h>
 #include <wx/simplebook.h>
@@ -35,24 +42,26 @@ wxStaticText* MakeText(
 
 std::vector<PageDescriptor> BusinessPages()
 {
+    /*
+     * 一级导航严格采用最终设计稿中的工作区导航结构。
+     *
+     * 文档阅读、对象详情、历史切片和导出验证属于带上下文的
+     * 二级页面，必须从资料库、台账或交接流程携带记录编号进入，
+     * 不能作为没有上下文的一级入口。
+     */
     return {
-        {U("P01"), U("项目概览"), U("查看项目当前健康状态与关键变化"), U("核心工作区")},
-        {U("P02"), U("审查收件箱"), U("处理等待人工确认的提取结果"), U("核心工作区")},
-        {U("P03"), U("资料库"), U("浏览文件、内容块、版本和证据"), U("核心工作区")},
-        {U("P04"), U("文件阅读器"), U("阅读文档并创建可追溯证据"), U("核心工作区")},
-        {U("P05"), U("证据检查器"), U("验证来源锚点、内容指纹和引用"), U("核心工作区")},
-        {U("P06"), U("项目台账"), U("管理事实、决策、承诺、风险与问题"), U("核心工作区")},
-        {U("P07"), U("对象详情"), U("查看结构化对象、证据、关系与历史"), U("核心工作区")},
-        {U("P08"), U("决策详情"), U("查看决策依据、替代方案和影响"), U("核心工作区")},
-        {U("P09"), U("承诺详情"), U("管理负责人、截止日期和完成证据"), U("核心工作区")},
+        {U("P03"), U("项目概览"), U("当前状态、近期变化以及需要人工处理的事项"), U("核心工作区")},
+        {U("P04"), U("审查收件箱"), U("确认自动发现的事实、决策、承诺、关系和冲突候选"), U("核心工作区")},
+        {U("P05"), U("资料库"), U("浏览文件、内容块和证据"), U("核心工作区")},
+        {U("P07"), U("全局搜索"), U("跨文档、证据和业务对象进行调查式查询"), U("核心工作区")},
+        {U("P08"), U("项目台账"), U("统一管理事实、决策、承诺、风险、问题、假设和外部依赖"), U("核心工作区")},
         {U("P10"), U("冲突中心"), U("比较相反主张并记录人工裁决"), U("核心工作区")},
         {U("P11"), U("变化审查"), U("比较文件版本并分析业务影响"), U("核心工作区")},
-        {U("P12"), U("项目时间线"), U("按现实发生时间查看项目事件"), U("核心工作区")},
-        {U("P13"), U("历史时间切片"), U("重建指定时刻可知的项目状态"), U("核心工作区")},
+        {U("P12"), U("时间线"), U("按现实发生时间查看项目事件"), U("核心工作区")},
         {U("P14"), U("关系浏览器"), U("调查对象之间的支持和影响关系"), U("核心工作区")},
         {U("P15"), U("交接胶囊"), U("创建可验证的项目交接报告"), U("核心工作区")},
-        {U("P16"), U("导出验证"), U("检查引用、附件和脱敏策略"), U("核心工作区")},
-        {U("P17"), U("回收站"), U("恢复或清理已软删除对象"), U("核心工作区")}
+        {U("P16"), U("导出验证"), U("验证引用、附件、脱敏和离线包完整性"), U("核心工作区")},
+        {U("P17"), U("回收站"), U("恢复或彻底清理已删除内容"), U("核心工作区")}
     };
 }
 
@@ -67,10 +76,10 @@ std::vector<PageDescriptor> ManagementPages()
         {U("M06"), U("保存的查询"), U("管理可复用调查条件和动态视图"), U("管理中心")},
         {U("M07"), U("规则管理"), U("配置提取、冲突和文件过滤规则"), U("管理中心")},
         {U("M08"), U("工作区设置"), U("配置当前工作区行为和安全策略"), U("管理中心")},
-        {U("M09"), U("全局设置"), U("配置界面、语言、性能和快捷键"), U("管理中心")},
-        {U("M10"), U("诊断中心"), U("检查日志、数据库、索引和系统环境"), U("管理中心")},
-        {U("M11"), U("完整性检查"), U("验证数据库、证据锚点和内容指纹"), U("管理中心")},
-        {U("M12"), U("关于与许可"), U("查看版本信息与第三方许可证"), U("管理中心")}
+        {U("M09"), U("安全与加密"), U("查看数据库加密和密钥保护能力"), U("管理中心")},
+        {U("M10"), U("审计日志"), U("查看工作区中的真实审计事件"), U("管理中心")},
+        {U("M11"), U("诊断中心"), U("运行数据库完整性和安全能力检查"), U("管理中心")},
+        {U("M12"), U("关于续证"), U("查看应用说明和当前功能状态"), U("管理中心")}
     };
 }
 
@@ -94,10 +103,40 @@ MainFrame::MainFrame()
     BindKeyboardShortcuts();
     Centre();
 
+    if (workspaceTitle_ != nullptr &&
+        WorkspaceService::Instance().IsInitialized())
+    {
+        const auto directory =
+            std::filesystem::u8path(
+                WorkspaceService::Instance().
+                    WorkspaceDirectory()
+            );
+
+        std::string name =
+            directory.filename().u8string();
+
+        if (name.empty())
+        {
+            name =
+                WorkspaceService::Instance().
+                    WorkspaceDirectory();
+        }
+
+        workspaceTitle_->SetLabel(
+            wxString::FromUTF8(name.c_str())
+        );
+    }
+
     if (!navigation_.empty())
     {
         NavigateTo(0);
     }
+}
+
+MainFrame::~MainFrame()
+{
+    WxRecordController::Instance().Detach();
+    WxUiBinder::Instance().Detach();
 }
 
 void MainFrame::BuildInterface()
@@ -138,7 +177,7 @@ wxPanel* MainFrame::BuildHeader(wxWindow* parent)
 
     workspaceTitle_ = MakeText(
         header,
-        U("先锋计划"),
+        U("本地工作区"),
         10,
         Theme::Muted(),
         wxFONTWEIGHT_SEMIBOLD
@@ -155,7 +194,14 @@ wxPanel* MainFrame::BuildHeader(wxWindow* parent)
     globalSearch_->SetBackgroundColour(Theme::Input());
     globalSearch_->SetForegroundColour(Theme::Text());
     globalSearch_->SetFont(Theme::Font(10));
-    globalSearch_->SetHint(U("搜索文档、证据、决策或输入命令"));
+    globalSearch_->SetHint(U("搜索已解析文档"));
+    globalSearch_->Bind(
+        wxEVT_TEXT_ENTER,
+        [this](wxCommandEvent&)
+        {
+            RunGlobalSearch();
+        }
+    );
 
     auto* commandButton = new wxButton(
         header,
@@ -257,19 +303,36 @@ wxPanel* MainFrame::BuildSidebar(wxWindow* parent)
 
     auto* footerSizer = new wxBoxSizer(wxVERTICAL);
     footerSizer->Add(
-        MakeText(footer, U("先锋计划"), 10, Theme::Text(), wxFONTWEIGHT_BOLD),
+        MakeText(footer, U("本地工作区"), 10, Theme::Text(), wxFONTWEIGHT_BOLD),
+        0,
+        wxLEFT | wxTOP,
+        24
+    );
+    auto* securityStatus = MakeText(
+        footer,
+        U("正在读取数据库安全状态"),
+        8,
+        Theme::Muted()
+    );
+    securityStatus->SetName("app.security_status");
+
+    auto* indexStatus = MakeText(
+        footer,
+        U("正在读取索引状态"),
+        8,
+        Theme::Muted(),
+        wxFONTWEIGHT_BOLD
+    );
+    indexStatus->SetName("app.index_status");
+
+    footerSizer->Add(
+        securityStatus,
         0,
         wxLEFT | wxTOP,
         24
     );
     footerSizer->Add(
-        MakeText(footer, U("本地加密工作区"), 8, Theme::Muted()),
-        0,
-        wxLEFT | wxTOP,
-        24
-    );
-    footerSizer->Add(
-        MakeText(footer, U("●  索引正常"), 8, Theme::Green(), wxFONTWEIGHT_BOLD),
+        indexStatus,
         0,
         wxLEFT | wxTOP | wxBOTTOM,
         24
@@ -325,6 +388,7 @@ void MainFrame::AddNavigationEntry(
 
     const std::size_t index = navigation_.size();
     navigation_.push_back({page, button, controlId});
+    pages_.push_back(nullptr);
 
     button->Bind(wxEVT_BUTTON, [this, index](wxCommandEvent&)
     {
@@ -342,20 +406,44 @@ wxPanel* MainFrame::BuildStatusBar(wxWindow* parent)
 
     auto* layout = new wxBoxSizer(wxHORIZONTAL);
 
+    auto* workspaceStatus = MakeText(
+        status,
+        U("本地工作区"),
+        8,
+        Theme::Muted()
+    );
+    workspaceStatus->SetName("app.workspace_status");
+
+    auto* databaseStatus = MakeText(
+        status,
+        U("正在连接数据库"),
+        8,
+        Theme::Muted()
+    );
+    databaseStatus->SetName("app.database_status");
+
+    auto* jobsStatus = MakeText(
+        status,
+        U("正在读取后台任务"),
+        8,
+        Theme::Muted()
+    );
+    jobsStatus->SetName("app.jobs_status");
+
     layout->Add(
-        MakeText(status, U("本地工作区"), 8, Theme::Muted()),
+        workspaceStatus,
         0,
         wxALIGN_CENTER_VERTICAL | wxLEFT,
         20
     );
     layout->Add(
-        MakeText(status, U("●  数据库正常"), 8, Theme::Green()),
+        databaseStatus,
         0,
         wxALIGN_CENTER_VERTICAL | wxLEFT,
         30
     );
     layout->Add(
-        MakeText(status, U("后台任务 1"), 8, Theme::Muted()),
+        jobsStatus,
         0,
         wxALIGN_CENTER_VERTICAL | wxLEFT,
         30
@@ -379,27 +467,103 @@ void MainFrame::NavigateTo(std::size_t index)
         return;
     }
 
-    selectedIndex_ = index;
     const auto& descriptor = navigation_[index].page;
 
-    while (pageBook_->GetPageCount() <= index)
+    if (pages_.size() != navigation_.size())
     {
-        const std::size_t pageIndex = pageBook_->GetPageCount();
-        pageBook_->AddPage(
-            CreatePage(pageBook_, navigation_[pageIndex].page),
-            navigation_[pageIndex].page.title,
-            false
+        wxMessageBox(
+            U("页面导航状态不一致，无法打开所选页面。"),
+            U("页面导航错误"),
+            wxOK | wxICON_ERROR,
+            this
         );
+        return;
     }
 
-    pageBook_->SetSelection(index);
+    wxWindow*& page = pages_[index];
+    int bookIndex = wxNOT_FOUND;
+
+    if (page == nullptr)
+    {
+        page = CreatePage(pageBook_, descriptor);
+
+        if (page == nullptr)
+        {
+            wxMessageBox(
+                U("页面创建失败。"),
+                U("页面导航错误"),
+                wxOK | wxICON_ERROR,
+                this
+            );
+            return;
+        }
+
+        pageBook_->AddPage(page, descriptor.title, false);
+        bookIndex = static_cast<int>(pageBook_->GetPageCount()) - 1;
+    }
+    else
+    {
+        for (std::size_t candidate = 0;
+             candidate < pageBook_->GetPageCount();
+             ++candidate)
+        {
+            if (pageBook_->GetPage(candidate) == page)
+            {
+                bookIndex = static_cast<int>(candidate);
+                break;
+            }
+        }
+    }
+
+    if (bookIndex == wxNOT_FOUND)
+    {
+        wxMessageBox(
+            U("所选页面已经失效，无法继续导航。"),
+            U("页面导航错误"),
+            wxOK | wxICON_ERROR,
+            this
+        );
+        return;
+    }
+
+    pageBook_->SetSelection(bookIndex);
+    selectedIndex_ = index;
+
     workspaceTitle_->SetLabel(
-        U("先锋计划  ·  ") + descriptor.code + U("  ") + descriptor.title
+        U("本地工作区  ·  ") + descriptor.code + U("  ") + descriptor.title
     );
 
     SetTitle(U("续证 Continuum · ") + descriptor.title);
     UpdateNavigationStyles();
     Layout();
+
+    if (WxUiBinder::Instance().IsAttached())
+    {
+        WxUiBinder::Instance().RefreshAll();
+    }
+
+    if (WxRecordController::Instance().IsAttached())
+    {
+        WxRecordController::Instance().RefreshAll();
+    }
+}
+
+bool MainFrame::NavigateToCode(
+    const wxString& code
+)
+{
+    for (std::size_t index = 0;
+         index < navigation_.size();
+         ++index)
+    {
+        if (navigation_[index].page.code == code)
+        {
+            NavigateTo(index);
+            return true;
+        }
+    }
+
+    return false;
 }
 
 void MainFrame::UpdateNavigationStyles()
@@ -441,7 +605,7 @@ void MainFrame::ShowCommandPalette()
 
     auto* title = MakeText(
         &dialog,
-        U("搜索页面和命令"),
+        U("打开功能页面"),
         16,
         Theme::Text(),
         wxFONTWEIGHT_BOLD
@@ -453,30 +617,38 @@ void MainFrame::ShowCommandPalette()
         wxEmptyString,
         wxDefaultPosition,
         wxSize(-1, 42),
-        wxBORDER_NONE
+        wxBORDER_NONE | wxTE_PROCESS_ENTER
     );
     search->SetBackgroundColour(Theme::Input());
     search->SetForegroundColour(Theme::Text());
     search->SetFont(Theme::Font(11));
-    search->SetHint(U("输入页面、对象或命令名称"));
+    search->SetHint(U("输入页面名称"));
 
-    wxArrayString commands;
-    commands.Add(U("创建决策"));
-    commands.Add(U("创建证据并关联当前对象"));
-    commands.Add(U("添加数据源"));
-    commands.Add(U("运行完整性检查"));
-    commands.Add(U("创建工作区快照"));
-    commands.Add(U("导出交接胶囊"));
-    commands.Add(U("打开冲突中心"));
-    commands.Add(U("打开变化审查"));
-    commands.Add(U("锁定工作区"));
+    std::vector<std::pair<wxString, wxString>> commands;
+    commands.reserve(navigation_.size());
+
+    for (const auto& entry : navigation_)
+    {
+        commands.emplace_back(
+            U("打开 ") + entry.page.title +
+                U("  (") + entry.page.code + U(")"),
+            entry.page.code
+        );
+    }
+
+    wxArrayString labels;
+
+    for (const auto& command : commands)
+    {
+        labels.Add(command.first);
+    }
 
     auto* list = new wxListBox(
         &dialog,
         wxID_ANY,
         wxDefaultPosition,
         wxDefaultSize,
-        commands,
+        labels,
         wxLB_SINGLE | wxBORDER_NONE
     );
     list->SetBackgroundColour(Theme::Surface2());
@@ -486,25 +658,160 @@ void MainFrame::ShowCommandPalette()
 
     auto* hint = MakeText(
         &dialog,
-        U("↑↓ 选择 · Enter 执行 · Esc 关闭"),
+        U("双击或按 Enter 打开 · Esc 关闭"),
         8,
         Theme::Muted()
     );
 
     root->Add(title, 0, wxALL, 22);
-    root->Add(search, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 22);
-    root->Add(list, 1, wxEXPAND | wxLEFT | wxRIGHT, 22);
+    root->Add(
+        search,
+        0,
+        wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,
+        22
+    );
+    root->Add(
+        list,
+        1,
+        wxEXPAND | wxLEFT | wxRIGHT,
+        22
+    );
     root->Add(hint, 0, wxALL, 22);
 
     dialog.SetSizer(root);
+
+    const auto execute =
+        [&dialog, list]() {
+            if (list->GetSelection() != wxNOT_FOUND)
+            {
+                dialog.EndModal(wxID_OK);
+            }
+        };
+
+    list->Bind(
+        wxEVT_LISTBOX_DCLICK,
+        [execute](wxCommandEvent&)
+        {
+            execute();
+        }
+    );
+
+    search->Bind(
+        wxEVT_TEXT,
+        [list, &commands](wxCommandEvent& event)
+        {
+            const wxString query =
+                event.GetString().Lower();
+
+            list->Clear();
+
+            for (const auto& command : commands)
+            {
+                if (query.empty() ||
+                    command.first.Lower().Find(query) !=
+                        wxNOT_FOUND)
+                {
+                    list->Append(
+                        command.first,
+                        new wxStringClientData(
+                            command.second
+                        )
+                    );
+                }
+            }
+
+            if (list->GetCount() > 0)
+            {
+                list->SetSelection(0);
+            }
+        }
+    );
+
+    search->Bind(
+        wxEVT_TEXT_ENTER,
+        [execute](wxCommandEvent&)
+        {
+            execute();
+        }
+    );
+
+    list->Clear();
+
+    for (const auto& command : commands)
+    {
+        list->Append(
+            command.first,
+            new wxStringClientData(command.second)
+        );
+    }
+
+    if (list->GetCount() > 0)
+    {
+        list->SetSelection(0);
+    }
+
     search->SetFocus();
 
-    list->Bind(wxEVT_LISTBOX_DCLICK, [&dialog](wxCommandEvent&)
+    if (dialog.ShowModal() == wxID_OK)
     {
-        dialog.EndModal(wxID_OK);
-    });
+        const int selected = list->GetSelection();
 
-    dialog.ShowModal();
+        if (selected != wxNOT_FOUND)
+        {
+            auto* data = dynamic_cast<wxStringClientData*>(
+                list->GetClientObject(selected)
+            );
+
+            if (data != nullptr)
+            {
+                NavigateToCode(data->GetData());
+            }
+        }
+    }
+}
+
+void MainFrame::RunGlobalSearch()
+{
+    if (globalSearch_ == nullptr)
+    {
+        return;
+    }
+
+    wxString query = globalSearch_->GetValue();
+    query.Trim(true).Trim(false);
+
+    if (query.empty())
+    {
+        globalSearch_->SetFocus();
+        return;
+    }
+
+    if (!NavigateToCode(U("P07")))
+    {
+        return;
+    }
+
+    wxWindow* page = pages_[selectedIndex_];
+    auto* input = dynamic_cast<wxTextCtrl*>(
+        wxWindow::FindWindowByName(
+            U("global.search.query"),
+            page
+        )
+    );
+
+    if (input == nullptr)
+    {
+        return;
+    }
+
+    input->SetValue(query);
+
+    wxCommandEvent searchEvent(
+        wxEVT_TEXT_ENTER,
+        input->GetId()
+    );
+    searchEvent.SetEventObject(input);
+    input->GetEventHandler()->ProcessEvent(searchEvent);
 }
 
 void MainFrame::BindKeyboardShortcuts()

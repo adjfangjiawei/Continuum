@@ -11,6 +11,7 @@
 #include <set>
 #include <sstream>
 #include <system_error>
+#include <unordered_map>
 #include <utility>
 
 #include <sqlite3.h>
@@ -612,12 +613,23 @@ StorageStatus JobRepository::Enqueue(
 
         Statement statement(
             handle,
-            "INSERT OR IGNORE INTO jobs("
+            "INSERT INTO jobs("
             "id, job_type, state, progress, payload, "
             "error_message, created_at"
             ") VALUES("
             "?, ?, ?, ?, ?, ?, "
             "COALESCE(NULLIF(?, ''), CURRENT_TIMESTAMP)"
+            ") ON CONFLICT(id) DO UPDATE SET "
+            "job_type=excluded.job_type, "
+            "state=excluded.state, "
+            "progress=excluded.progress, "
+            "payload=excluded.payload, "
+            "error_message=excluded.error_message, "
+            "created_at=CURRENT_TIMESTAMP, "
+            "started_at=NULL, "
+            "completed_at=NULL "
+            "WHERE jobs.state IN ("
+            "'completed', 'failed', 'blocked', 'cancelled'"
             ");"
         );
 
@@ -657,9 +669,65 @@ StorageStatus JobRepository::Enqueue(
             );
         }
 
-        if (sqlite3_changes(handle) == 0)
+        const bool insertedOrRequeued =
+            sqlite3_changes(handle) > 0;
+
+        if (!insertedOrRequeued)
         {
+            /*
+             * 相同任务仍在 queued、retry 或 running：
+             * 保持去重，不修改当前执行状态。
+             */
             return StorageStatus::Ok();
+        }
+
+        Statement runtimeTable(
+            handle,
+            "SELECT 1 FROM sqlite_master "
+            "WHERE type='table' AND name='job_runtime' "
+            "LIMIT 1;"
+        );
+
+        if (!runtimeTable.IsValid())
+        {
+            return SqliteError(
+                handle,
+                runtimeTable.Status(),
+                "无法检查任务运行表"
+            );
+        }
+
+        if (sqlite3_step(runtimeTable.Get()) == SQLITE_ROW)
+        {
+            Statement resetRuntime(
+                handle,
+                "DELETE FROM job_runtime WHERE job_id=?;"
+            );
+
+            if (!resetRuntime.IsValid())
+            {
+                return SqliteError(
+                    handle,
+                    resetRuntime.Status(),
+                    "无法准备任务运行状态重置"
+                );
+            }
+
+            BindText(
+                resetRuntime.Get(),
+                1,
+                record.id
+            );
+
+            if (sqlite3_step(resetRuntime.Get()) !=
+                SQLITE_DONE)
+            {
+                return SqliteError(
+                    handle,
+                    sqlite3_errcode(handle),
+                    "无法重置任务运行状态"
+                );
+            }
         }
 
         return AuditRepository(database_).Append(
@@ -1080,6 +1148,17 @@ ScanSummary FileScanner::ScanSource(
     const auto knownFiles =
         files_.ListBySource(sourceId, true, 1000000);
 
+    std::unordered_map<std::string, const FileRecord*> knownByPath;
+    knownByPath.reserve(knownFiles.size());
+
+    for (const auto& known : knownFiles)
+    {
+        knownByPath.emplace(
+            Lower(known.relativePath),
+            &known
+        );
+    }
+
     std::set<std::string> seenPaths;
 
     auto processFile =
@@ -1166,12 +1245,13 @@ ScanSummary FileScanner::ScanSource(
                 return;
             }
 
-            const auto existing =
-                files_.FindByPath(
-                    sourceId,
-                    relative,
-                    true
-                );
+            const auto existingIterator =
+                knownByPath.find(Lower(relative));
+
+            const FileRecord* existing =
+                existingIterator == knownByPath.end()
+                    ? nullptr
+                    : existingIterator->second;
 
             FileRecord record;
             record.id = existing
@@ -1380,7 +1460,8 @@ ScanSummary FileScanner::ScanSource(
         });
     }
 
-    if (options.markMissingFiles)
+    if (options.markMissingFiles &&
+        summary.failed == 0)
     {
         for (const auto& known : knownFiles)
         {

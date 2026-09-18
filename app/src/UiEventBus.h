@@ -3,6 +3,7 @@
 #include "UiDataService.h"
 
 #include <cstdint>
+#include <mutex>
 
 #include <wx/event.h>
 #include <wx/window.h>
@@ -32,6 +33,7 @@ private:
     UiEventBus();
     ~UiEventBus();
 
+    mutable std::mutex mutex_;
     wxEvtHandler* target_;
     std::uint64_t subscriptionToken_;
 };

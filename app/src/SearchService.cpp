@@ -212,6 +212,9 @@ CREATE TABLE IF NOT EXISTS search_index_queue (
     operation TEXT NOT NULL DEFAULT 'upsert',
     queued_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX IF NOT EXISTS idx_search_index_queue_order
+ON search_index_queue(queued_at, file_id);
 )sql");
 
     if (!status.success)
@@ -599,7 +602,17 @@ IndexSyncSummary SearchService::SyncPending(
         {
             status = IndexFile(item.fileId, actor);
 
-            if (status.success)
+            if (!status.success &&
+                status.code == SQLITE_NOTFOUND)
+            {
+                status = RemoveFile(item.fileId, actor);
+
+                if (status.success)
+                {
+                    ++summary.removed;
+                }
+            }
+            else if (status.success)
             {
                 ++summary.indexed;
             }
@@ -816,19 +829,6 @@ SearchResponse SearchService::Search(
         return response;
     }
 
-    const auto sync = SyncPending(1000, "search");
-
-    if (sync.failed > 0)
-    {
-        response.status = StorageStatus::Error(
-            SQLITE_ERROR,
-            sync.errors.empty()
-                ? "搜索前索引同步失败"
-                : sync.errors.front()
-        );
-        return response;
-    }
-
     response.normalizedQuery =
         request.advancedSyntax
             ? originalQuery
@@ -910,7 +910,7 @@ SearchResponse SearchService::Search(
         "search_fts.author, "
         "search_fts.subject, "
         "snippet("
-        "search_fts, 4, '<mark>', '</mark>', ' … ', 24"
+        "search_fts, 4, '[', ']', ' … ', 24"
         "), "
         "bm25(search_fts, 0.0, 4.0, 2.0, 2.0, 1.0) "
         "FROM search_fts "

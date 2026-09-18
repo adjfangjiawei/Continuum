@@ -128,13 +128,25 @@ public:
     WorkspaceService(const WorkspaceService&) = delete;
     WorkspaceService& operator=(const WorkspaceService&) = delete;
 
+    /*
+     * 兼容内部恢复流程。路径不存在时允许创建数据库。
+     * 新的用户入口不得调用本接口代替 CreateWorkspace/OpenWorkspace。
+     */
     StorageStatus Initialize(
         const std::string& workspaceDirectory,
         const std::string& key = std::string()
     );
 
+    StorageStatus CreateWorkspace(
+        const std::string& workspaceDirectory,
+        bool encrypted
+    );
+
+    StorageStatus OpenWorkspace(
+        const std::string& workspaceDirectory
+    );
+
     StorageStatus InitializeDefault();
-    StorageStatus EnsureSeedData();
 
     void Shutdown();
 
@@ -153,6 +165,13 @@ public:
 private:
     WorkspaceService();
     ~WorkspaceService();
+
+    StorageStatus InitializeInternal(
+        const std::string& workspaceDirectory,
+        const std::string& key,
+        bool createIfMissing,
+        bool createDirectories
+    );
 
     std::string ResolveDefaultDirectory() const;
 

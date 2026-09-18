@@ -459,6 +459,31 @@ StorageStatus ReadTextFile(
 {
     content.clear();
 
+    constexpr std::uintmax_t maximumTextFileSize =
+        static_cast<std::uintmax_t>(64) * 1024 * 1024;
+
+    std::error_code sizeError;
+    const auto fileSize = std::filesystem::file_size(
+        std::filesystem::u8path(path),
+        sizeError
+    );
+
+    if (sizeError)
+    {
+        return StorageStatus::Error(
+            SQLITE_IOERR_READ,
+            "无法读取待解析文件大小: " + path
+        );
+    }
+
+    if (fileSize > maximumTextFileSize)
+    {
+        return StorageStatus::Error(
+            SQLITE_TOOBIG,
+            "文本文件超过 64 MiB 解析限制: " + path
+        );
+    }
+
     std::ifstream stream(
         std::filesystem::u8path(path),
         std::ios::binary
@@ -1299,23 +1324,26 @@ StorageStatus ParsedContentRepository::Save(
             );
         }
 
+        Statement sectionStatement(
+            handle,
+            "INSERT INTO parsed_sections("
+            "file_id, ordinal, heading, anchor, content"
+            ") VALUES(?, ?, ?, ?, ?);"
+        );
+
+        if (!sectionStatement.IsValid())
+        {
+            return SqliteError(
+                handle,
+                sectionStatement.Status(),
+                "无法准备解析分段保存"
+            );
+        }
+
         for (const auto& section : document.sections)
         {
-            Statement sectionStatement(
-                handle,
-                "INSERT INTO parsed_sections("
-                "file_id, ordinal, heading, anchor, content"
-                ") VALUES(?, ?, ?, ?, ?);"
-            );
-
-            if (!sectionStatement.IsValid())
-            {
-                return SqliteError(
-                    handle,
-                    sectionStatement.Status(),
-                    "无法准备解析分段保存"
-                );
-            }
+            sqlite3_reset(sectionStatement.Get());
+            sqlite3_clear_bindings(sectionStatement.Get());
 
             BindText(sectionStatement.Get(), 1, document.fileId);
             sqlite3_bind_int(
@@ -1606,6 +1634,30 @@ ParseResult ParseService::ParseFile(
         return result;
     }
 
+    std::string currentFingerprint;
+    const auto fingerprintStatus =
+        ContentHasher::Sha256File(
+            absolutePath,
+            currentFingerprint
+        );
+
+    if (!fingerprintStatus.success)
+    {
+        result.status = fingerprintStatus;
+        files_.SetParseState(fileId, "failed", actor);
+        return result;
+    }
+
+    if (currentFingerprint != file->fingerprint)
+    {
+        result.status = StorageStatus::Error(
+            SQLITE_BUSY,
+            "文件在解析期间发生变化"
+        );
+        files_.SetParseState(fileId, "changed", actor);
+        return result;
+    }
+
     const auto saveStatus =
         content_.Save(result.document, actor);
 
@@ -1676,7 +1728,8 @@ std::string ParseService::ExtractJsonString(
 
 StorageStatus ParseService::ExecuteJob(
     const JobRecord& job,
-    const std::string& actor
+    const std::string& actor,
+    bool manageJobState
 )
 {
     if (job.jobType != "parse_file")
@@ -1692,13 +1745,16 @@ StorageStatus ParseService::ExecuteJob(
 
     if (fileId.empty())
     {
-        jobs_.SetState(
-            job.id,
-            "failed",
-            100,
-            "任务缺少 file_id",
-            actor
-        );
+        if (manageJobState)
+        {
+            jobs_.SetState(
+                job.id,
+                "failed",
+                100,
+                "任务缺少 file_id",
+                actor
+            );
+        }
 
         return StorageStatus::Error(
             SQLITE_CONSTRAINT,
@@ -1706,31 +1762,37 @@ StorageStatus ParseService::ExecuteJob(
         );
     }
 
-    const auto runningStatus =
-        jobs_.SetState(
-            job.id,
-            "running",
-            10,
-            std::string(),
-            actor
-        );
-
-    if (!runningStatus.success)
+    if (manageJobState)
     {
-        return runningStatus;
+        const auto runningStatus =
+            jobs_.SetState(
+                job.id,
+                "running",
+                10,
+                std::string(),
+                actor
+            );
+
+        if (!runningStatus.success)
+        {
+            return runningStatus;
+        }
     }
 
     const auto file = files_.FindById(fileId, false);
 
     if (!file)
     {
-        jobs_.SetState(
-            job.id,
-            "failed",
-            100,
-            "文件记录不存在",
-            actor
-        );
+        if (manageJobState)
+        {
+            jobs_.SetState(
+                job.id,
+                "failed",
+                100,
+                "文件记录不存在",
+                actor
+            );
+        }
 
         return StorageStatus::Error(
             SQLITE_NOTFOUND,
@@ -1742,13 +1804,16 @@ StorageStatus ParseService::ExecuteJob(
 
     if (path.empty())
     {
-        jobs_.SetState(
-            job.id,
-            "failed",
-            100,
-            "数据源不存在",
-            actor
-        );
+        if (manageJobState)
+        {
+            jobs_.SetState(
+                job.id,
+                "failed",
+                100,
+                "数据源不存在",
+                actor
+            );
+        }
 
         return StorageStatus::Error(
             SQLITE_NOTFOUND,
@@ -1761,17 +1826,25 @@ StorageStatus ParseService::ExecuteJob(
 
     if (!result.status.success)
     {
-        jobs_.SetState(
-            job.id,
-            result.requiresExternalParser
-                ? "blocked"
-                : "failed",
-            100,
-            result.status.message,
-            actor
-        );
+        if (manageJobState)
+        {
+            jobs_.SetState(
+                job.id,
+                result.requiresExternalParser
+                    ? "blocked"
+                    : "failed",
+                100,
+                result.status.message,
+                actor
+            );
+        }
 
         return result.status;
+    }
+
+    if (!manageJobState)
+    {
+        return StorageStatus::Ok();
     }
 
     return jobs_.SetState(

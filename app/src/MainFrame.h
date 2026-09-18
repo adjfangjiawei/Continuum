@@ -20,6 +20,7 @@ class MainFrame final : public wxFrame
 {
 public:
     MainFrame();
+    ~MainFrame() override;
 
 private:
     struct NavigationEntry final
@@ -48,8 +49,10 @@ private:
     );
 
     void NavigateTo(std::size_t index);
+    bool NavigateToCode(const wxString& code);
     void UpdateNavigationStyles();
     void ShowCommandPalette();
+    void RunGlobalSearch();
     void BindKeyboardShortcuts();
 
     wxSimplebook* pageBook_ = nullptr;
@@ -57,6 +60,8 @@ private:
     wxTextCtrl* globalSearch_ = nullptr;
 
     std::vector<NavigationEntry> navigation_;
+    // 与 navigation_ 一一对应；页面仅在用户第一次访问时创建。
+    std::vector<wxWindow*> pages_;
     std::size_t selectedIndex_ = 0;
 };
 

@@ -113,7 +113,7 @@ private:
         const std::string& actor
     );
 
-    void SynchronizeSearchIndex();
+    bool SynchronizeSearchIndex();
     void WorkerLoop();
 
     static std::string ExtractJsonString(

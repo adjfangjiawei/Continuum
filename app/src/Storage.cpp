@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <array>
+#include <atomic>
 #include <chrono>
 #include <exception>
 #include <iomanip>
@@ -106,13 +107,20 @@ std::string CurrentTimestamp()
 
 std::string MakeIdentifier(const std::string& prefix)
 {
+    static std::atomic<std::uint64_t> sequence{0};
+
     const auto now = std::chrono::system_clock::now();
     const auto value = std::chrono::duration_cast<
         std::chrono::microseconds
     >(now.time_since_epoch()).count();
+    const auto suffix = sequence.fetch_add(
+        1,
+        std::memory_order_relaxed
+    );
 
     std::ostringstream stream;
-    stream << prefix << "-" << std::hex << value;
+    stream << prefix << "-" << std::hex
+           << value << "-" << suffix;
     return stream.str();
 }
 
@@ -217,6 +225,15 @@ const char* EvidenceColumns()
         "review_state, created_at, updated_at, deleted";
 }
 
+bool IsValidEvidenceReviewState(const std::string& state)
+{
+    return state == "unverified" ||
+        state == "needs_review" ||
+        state == "changed" ||
+        state == "verified" ||
+        state == "rejected";
+}
+
 DomainObjectRecord ReadObject(sqlite3_stmt* statement)
 {
     DomainObjectRecord record;
@@ -282,18 +299,26 @@ Database::~Database()
 
 StorageStatus Database::Open(
     const std::string& databasePath,
-    const std::string& key
+    const std::string& key,
+    bool createIfMissing
 )
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
     Close();
 
+    int flags =
+        SQLITE_OPEN_READWRITE |
+        SQLITE_OPEN_FULLMUTEX;
+
+    if (createIfMissing)
+    {
+        flags |= SQLITE_OPEN_CREATE;
+    }
+
     const int result = sqlite3_open_v2(
         databasePath.c_str(),
         &handle_,
-        SQLITE_OPEN_READWRITE |
-        SQLITE_OPEN_CREATE |
-        SQLITE_OPEN_FULLMUTEX,
+        flags,
         nullptr
     );
 
@@ -318,7 +343,7 @@ StorageStatus Database::Open(
         return status;
     }
 
-    status = Migrate();
+    status = CreateSchema();
 
     if (!status.success)
     {
@@ -548,27 +573,9 @@ StorageStatus Database::Transaction(
     }
 }
 
-int Database::UserVersion() const
-{
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
 
-    if (handle_ == nullptr)
-    {
-        return 0;
-    }
 
-    Statement statement(handle_, "PRAGMA user_version;");
-
-    if (!statement.IsValid() ||
-        sqlite3_step(statement.Get()) != SQLITE_ROW)
-    {
-        return 0;
-    }
-
-    return sqlite3_column_int(statement.Get(), 0);
-}
-
-StorageStatus Database::Migrate()
+StorageStatus Database::CreateSchema()
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
 
@@ -578,21 +585,6 @@ StorageStatus Database::Migrate()
             SQLITE_MISUSE,
             "数据库尚未打开"
         );
-    }
-
-    const int version = UserVersion();
-
-    if (version > 1)
-    {
-        return StorageStatus::Error(
-            SQLITE_ERROR,
-            "数据库版本高于当前应用支持版本"
-        );
-    }
-
-    if (version == 1)
-    {
-        return StorageStatus::Ok();
     }
 
     return Transaction([this]() {
@@ -738,6 +730,196 @@ CREATE TABLE IF NOT EXISTS jobs (
     completed_at TEXT
 );
 
+CREATE TABLE IF NOT EXISTS conflicts (
+    id TEXT PRIMARY KEY,
+    conflict_type TEXT NOT NULL,
+    severity TEXT NOT NULL DEFAULT 'medium'
+        CHECK(severity IN ('low', 'medium', 'high')),
+    title TEXT NOT NULL,
+    description TEXT NOT NULL DEFAULT '',
+    subject_object_id TEXT,
+    property_name TEXT NOT NULL DEFAULT '',
+    status TEXT NOT NULL DEFAULT 'open'
+        CHECK(status IN (
+            'open',
+            'retained',
+            'insufficient',
+            'resolved'
+        )),
+    resolution TEXT NOT NULL DEFAULT '',
+    resolution_note TEXT NOT NULL DEFAULT '',
+    detected_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    resolved_at TEXT,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(subject_object_id) REFERENCES objects(id)
+);
+
+CREATE TABLE IF NOT EXISTS conflict_claims (
+    id TEXT PRIMARY KEY,
+    conflict_id TEXT NOT NULL,
+    side_key TEXT NOT NULL,
+    object_id TEXT,
+    evidence_id TEXT,
+    value_text TEXT NOT NULL,
+    source_label TEXT NOT NULL DEFAULT '',
+    valid_from TEXT,
+    valid_to TEXT,
+    known_at TEXT,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(conflict_id) REFERENCES conflicts(id)
+        ON DELETE CASCADE,
+    FOREIGN KEY(object_id) REFERENCES objects(id),
+    FOREIGN KEY(evidence_id) REFERENCES evidence(id),
+    UNIQUE(conflict_id, side_key)
+);
+
+CREATE TABLE IF NOT EXISTS object_relations (
+    id TEXT PRIMARY KEY,
+    source_object_id TEXT NOT NULL,
+    target_object_id TEXT NOT NULL,
+    relation_type TEXT NOT NULL
+        CHECK(relation_type IN (
+            'support',
+            'oppose',
+            'replace',
+            'depend',
+            'block',
+            'impact'
+        )),
+    status TEXT NOT NULL DEFAULT 'confirmed'
+        CHECK(status IN (
+            'candidate',
+            'confirmed',
+            'invalid'
+        )),
+    note TEXT NOT NULL DEFAULT '',
+    valid_from TEXT,
+    valid_to TEXT,
+    created_by TEXT NOT NULL DEFAULT 'system',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(source_object_id) REFERENCES objects(id),
+    FOREIGN KEY(target_object_id) REFERENCES objects(id),
+    CHECK(source_object_id <> target_object_id),
+    UNIQUE(
+        source_object_id,
+        target_object_id,
+        relation_type
+    )
+);
+
+CREATE TABLE IF NOT EXISTS file_versions (
+    id TEXT PRIMARY KEY,
+    file_id TEXT NOT NULL,
+    version_number INTEGER NOT NULL,
+    fingerprint TEXT NOT NULL,
+    size_bytes INTEGER NOT NULL DEFAULT 0,
+    modified_at TEXT,
+    content TEXT NOT NULL DEFAULT '',
+    captured_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(file_id) REFERENCES files(id),
+    UNIQUE(file_id, version_number),
+    UNIQUE(file_id, fingerprint)
+);
+
+CREATE TABLE IF NOT EXISTS change_reviews (
+    id TEXT PRIMARY KEY,
+    file_id TEXT NOT NULL,
+    previous_version_id TEXT,
+    current_version_id TEXT,
+    change_type TEXT NOT NULL
+        CHECK(change_type IN (
+            'created',
+            'modified',
+            'missing',
+            'restored'
+        )),
+    status TEXT NOT NULL DEFAULT 'pending'
+        CHECK(status IN (
+            'pending',
+            'reanchored',
+            'invalidated',
+            'no_impact',
+            'completed'
+        )),
+    resolution_note TEXT NOT NULL DEFAULT '',
+    detected_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    completed_at TEXT,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(file_id) REFERENCES files(id),
+    FOREIGN KEY(previous_version_id) REFERENCES file_versions(id),
+    FOREIGN KEY(current_version_id) REFERENCES file_versions(id)
+);
+
+CREATE TABLE IF NOT EXISTS change_review_evidence (
+    review_id TEXT NOT NULL,
+    evidence_id TEXT NOT NULL,
+    impact_state TEXT NOT NULL DEFAULT 'needs_review'
+        CHECK(impact_state IN (
+            'needs_review',
+            'reanchored',
+            'invalidated',
+            'no_impact'
+        )),
+    old_anchor TEXT NOT NULL DEFAULT '',
+    new_anchor TEXT NOT NULL DEFAULT '',
+    note TEXT NOT NULL DEFAULT '',
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY(review_id, evidence_id),
+    FOREIGN KEY(review_id) REFERENCES change_reviews(id)
+        ON DELETE CASCADE,
+    FOREIGN KEY(evidence_id) REFERENCES evidence(id)
+);
+
+CREATE TABLE IF NOT EXISTS handover_capsules (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL DEFAULT '',
+    status TEXT NOT NULL DEFAULT 'draft'
+        CHECK(status IN (
+            'draft',
+            'ready',
+            'exported',
+            'archived'
+        )),
+    redaction_enabled INTEGER NOT NULL DEFAULT 0,
+    created_by TEXT NOT NULL DEFAULT 'ui',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    exported_at TEXT
+);
+
+CREATE TABLE IF NOT EXISTS handover_sections (
+    id TEXT PRIMARY KEY,
+    capsule_id TEXT NOT NULL,
+    ordinal INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    content TEXT NOT NULL DEFAULT '',
+    section_type TEXT NOT NULL DEFAULT 'custom',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(capsule_id) REFERENCES handover_capsules(id)
+        ON DELETE CASCADE,
+    UNIQUE(capsule_id, ordinal)
+);
+
+CREATE TABLE IF NOT EXISTS handover_items (
+    capsule_id TEXT NOT NULL,
+    object_id TEXT NOT NULL,
+    section_id TEXT,
+    ordinal INTEGER NOT NULL DEFAULT 0,
+    note TEXT NOT NULL DEFAULT '',
+    included INTEGER NOT NULL DEFAULT 1,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY(capsule_id, object_id),
+    FOREIGN KEY(capsule_id) REFERENCES handover_capsules(id)
+        ON DELETE CASCADE,
+    FOREIGN KEY(section_id) REFERENCES handover_sections(id)
+        ON DELETE SET NULL,
+    FOREIGN KEY(object_id) REFERENCES objects(id)
+);
+
 CREATE TABLE IF NOT EXISTS audit_events (
     sequence INTEGER PRIMARY KEY AUTOINCREMENT,
     event_id TEXT NOT NULL UNIQUE,
@@ -773,10 +955,46 @@ ON audit_events(object_type, object_id, sequence DESC);
 CREATE INDEX IF NOT EXISTS idx_jobs_state
 ON jobs(state, created_at);
 
-INSERT OR IGNORE INTO workspace_meta(key, value)
-VALUES ('schema_version', '1');
+CREATE INDEX IF NOT EXISTS idx_conflicts_status
+ON conflicts(status, severity, updated_at DESC);
 
-PRAGMA user_version = 1;
+CREATE INDEX IF NOT EXISTS idx_conflicts_subject
+ON conflicts(subject_object_id, property_name);
+
+CREATE INDEX IF NOT EXISTS idx_conflict_claims_conflict
+ON conflict_claims(conflict_id, side_key);
+
+CREATE INDEX IF NOT EXISTS idx_relations_source
+ON object_relations(
+    source_object_id,
+    status,
+    relation_type
+);
+
+CREATE INDEX IF NOT EXISTS idx_relations_target
+ON object_relations(
+    target_object_id,
+    status,
+    relation_type
+);
+
+CREATE INDEX IF NOT EXISTS idx_file_versions_file
+ON file_versions(file_id, version_number DESC);
+
+CREATE INDEX IF NOT EXISTS idx_change_reviews_status
+ON change_reviews(status, detected_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_change_reviews_file
+ON change_reviews(file_id, detected_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_change_evidence_evidence
+ON change_review_evidence(evidence_id, impact_state);
+
+CREATE INDEX IF NOT EXISTS idx_handover_status
+ON handover_capsules(status, updated_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_handover_sections
+ON handover_sections(capsule_id, ordinal);
 )sql");
     });
 }
@@ -1198,8 +1416,7 @@ StorageStatus ObjectRepository::SoftDelete(
         Statement statement(
             handle,
             "UPDATE objects "
-            "SET deleted=1, status='deleted', "
-            "updated_at=CURRENT_TIMESTAMP "
+            "SET deleted=1, updated_at=CURRENT_TIMESTAMP "
             "WHERE id=? AND deleted=0;"
         );
 
@@ -1252,8 +1469,7 @@ StorageStatus ObjectRepository::Restore(
         Statement statement(
             handle,
             "UPDATE objects "
-            "SET deleted=0, status='active', "
-            "updated_at=CURRENT_TIMESTAMP "
+            "SET deleted=0, updated_at=CURRENT_TIMESTAMP "
             "WHERE id=? AND deleted=1;"
         );
 
@@ -1417,6 +1633,19 @@ StorageStatus EvidenceRepository::Save(
         );
     }
 
+    const std::string reviewState =
+        record.reviewState.empty()
+            ? "unverified"
+            : record.reviewState;
+
+    if (!IsValidEvidenceReviewState(reviewState))
+    {
+        return StorageStatus::Error(
+            SQLITE_CONSTRAINT,
+            "无效的证据审查状态"
+        );
+    }
+
     return database_.Transaction([&]() {
         sqlite3* handle = database_.Handle();
 
@@ -1460,9 +1689,7 @@ StorageStatus EvidenceRepository::Save(
         BindText(
             statement.Get(),
             8,
-            record.reviewState.empty()
-                ? "unverified"
-                : record.reviewState
+            reviewState
         );
         BindText(statement.Get(), 9, record.createdAt);
         sqlite3_bind_int(
@@ -1575,11 +1802,19 @@ StorageStatus EvidenceRepository::SetReviewState(
     const std::string& actor
 )
 {
-    if (state.empty())
+    if (id.empty())
     {
         return StorageStatus::Error(
             SQLITE_CONSTRAINT,
-            "证据审查状态不能为空"
+            "证据编号不能为空"
+        );
+    }
+
+    if (!IsValidEvidenceReviewState(state))
+    {
+        return StorageStatus::Error(
+            SQLITE_CONSTRAINT,
+            "无效的证据审查状态"
         );
     }
 

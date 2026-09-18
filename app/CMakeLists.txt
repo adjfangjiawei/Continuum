@@ -22,14 +22,17 @@ add_executable(
     WIN32
     src/main.cpp
     src/App.cpp
+    src/StartCenter.cpp
     src/MainFrame.cpp
     src/Pages.cpp
     src/EvidencePages.cpp
     src/LedgerPages.cpp
     src/InvestigationPages.cpp
+    src/InvestigationService.cpp
     src/DeliveryPages.cpp
     src/OperationsPages.cpp
     src/GovernancePages.cpp
+    src/CompleteWorkflowPages.cpp
     src/SystemPages.cpp
     src/ApplicationDialogs.cpp
     src/AdvancedDialogs.cpp

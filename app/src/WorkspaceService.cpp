@@ -107,6 +107,414 @@ StorageStatus SqliteError(
     return StorageStatus::Error(code, message);
 }
 
+bool TableExists(
+    sqlite3* database,
+    const std::string& tableName
+)
+{
+    Statement statement(
+        database,
+        "SELECT 1 FROM sqlite_master "
+        "WHERE type IN ('table', 'view') "
+        "AND name=? LIMIT 1;"
+    );
+
+    if (!statement.IsValid())
+    {
+        return false;
+    }
+
+    BindText(statement.Get(), 1, tableName);
+    return sqlite3_step(statement.Get()) == SQLITE_ROW;
+}
+
+StorageStatus InvalidateFileDerivedData(
+    sqlite3* database,
+    const std::string& fileId
+)
+{
+    if (database == nullptr)
+    {
+        return StorageStatus::Error(
+            SQLITE_MISUSE,
+            "数据库尚未打开"
+        );
+    }
+
+    /*
+     * 解析正文由解析服务按需创建。
+     * 删除正文会将对应索引删除操作加入队列。
+     */
+    if (TableExists(database, "parsed_documents"))
+    {
+        Statement removeDocument(
+            database,
+            "DELETE FROM parsed_documents "
+            "WHERE file_id=?;"
+        );
+
+        if (!removeDocument.IsValid())
+        {
+            return SqliteError(
+                database,
+                removeDocument.Status(),
+                "无法准备旧解析正文失效"
+            );
+        }
+
+        BindText(removeDocument.Get(), 1, fileId);
+
+        const int result =
+            sqlite3_step(removeDocument.Get());
+
+        if (result != SQLITE_DONE)
+        {
+            return SqliteError(
+                database,
+                result,
+                "无法使旧解析正文失效"
+            );
+        }
+    }
+
+    /*
+     * 队列同步存在时间差，因此立即清除 FTS 条目，
+     * 避免变化或缺失文件的旧正文继续出现在搜索结果中。
+     */
+    if (TableExists(database, "search_fts"))
+    {
+        Statement removeIndex(
+            database,
+            "DELETE FROM search_fts "
+            "WHERE file_id=?;"
+        );
+
+        if (!removeIndex.IsValid())
+        {
+            return SqliteError(
+                database,
+                removeIndex.Status(),
+                "无法准备旧全文索引失效"
+            );
+        }
+
+        BindText(removeIndex.Get(), 1, fileId);
+
+        const int result =
+            sqlite3_step(removeIndex.Get());
+
+        if (result != SQLITE_DONE)
+        {
+            return SqliteError(
+                database,
+                result,
+                "无法使旧全文索引失效"
+            );
+        }
+    }
+
+    /*
+     * 来源文件改变或消失后，先前通过的证据必须重新进入人工审查。
+     * rejected 保持拒绝状态，避免把已经明确拒绝的证据重新激活。
+     */
+    Statement changeEvidence(
+        database,
+        "UPDATE evidence "
+        "SET review_state='changed', "
+        "updated_at=CURRENT_TIMESTAMP "
+        "WHERE file_id=? "
+        "AND deleted=0 "
+        "AND review_state NOT IN ('changed', 'rejected');"
+    );
+
+    if (!changeEvidence.IsValid())
+    {
+        return SqliteError(
+            database,
+            changeEvidence.Status(),
+            "无法准备关联证据失效"
+        );
+    }
+
+    BindText(changeEvidence.Get(), 1, fileId);
+
+    const int evidenceResult =
+        sqlite3_step(changeEvidence.Get());
+
+    if (evidenceResult != SQLITE_DONE)
+    {
+        return SqliteError(
+            database,
+            evidenceResult,
+            "无法使关联证据失效"
+        );
+    }
+
+    return StorageStatus::Ok();
+}
+
+
+StorageStatus CaptureFileChange(
+    sqlite3* database,
+    const std::string& fileId,
+    const std::string& nextFingerprint,
+    const std::string& changeType
+)
+{
+    if (database == nullptr)
+    {
+        return StorageStatus::Error(
+            SQLITE_MISUSE,
+            "数据库尚未打开"
+        );
+    }
+
+    Statement oldFile(
+        database,
+        "SELECT fingerprint, size_bytes, modified_at "
+        "FROM files WHERE id=? LIMIT 1;"
+    );
+
+    if (!oldFile.IsValid())
+    {
+        return SqliteError(
+            database,
+            oldFile.Status(),
+            "无法准备文件变化记录"
+        );
+    }
+
+    BindText(oldFile.Get(), 1, fileId);
+
+    const int oldFileResult =
+        sqlite3_step(oldFile.Get());
+
+    if (oldFileResult == SQLITE_DONE)
+    {
+        return StorageStatus::Ok();
+    }
+
+    if (oldFileResult != SQLITE_ROW)
+    {
+        return SqliteError(
+            database,
+            oldFileResult,
+            "无法读取文件变化前状态"
+        );
+    }
+
+    const std::string oldFingerprint =
+        ColumnText(oldFile.Get(), 0);
+
+    const std::int64_t oldSize =
+        sqlite3_column_int64(oldFile.Get(), 1);
+
+    const std::string oldModifiedAt =
+        ColumnText(oldFile.Get(), 2);
+
+    if (oldFingerprint.empty())
+    {
+        return StorageStatus::Ok();
+    }
+
+    std::string oldContent;
+
+    if (TableExists(database, "parsed_documents"))
+    {
+        Statement parsed(
+            database,
+            "SELECT content FROM parsed_documents "
+            "WHERE file_id=? LIMIT 1;"
+        );
+
+        if (!parsed.IsValid())
+        {
+            return SqliteError(
+                database,
+                parsed.Status(),
+                "无法准备旧解析正文读取"
+            );
+        }
+
+        BindText(parsed.Get(), 1, fileId);
+
+        const int parsedResult =
+            sqlite3_step(parsed.Get());
+
+        if (parsedResult == SQLITE_ROW)
+        {
+            oldContent =
+                ColumnText(parsed.Get(), 0);
+        }
+        else if (parsedResult != SQLITE_DONE)
+        {
+            return SqliteError(
+                database,
+                parsedResult,
+                "无法读取旧解析正文"
+            );
+        }
+    }
+
+    const std::string versionId =
+        "FV-" + fileId + "-" + oldFingerprint;
+
+    Statement saveVersion(
+        database,
+        "INSERT INTO file_versions("
+        "id, file_id, version_number, fingerprint, "
+        "size_bytes, modified_at, content"
+        ") VALUES("
+        "?, ?, "
+        "COALESCE(("
+        "SELECT max(version_number)+1 "
+        "FROM file_versions WHERE file_id=?"
+        "), 1), "
+        "?, ?, NULLIF(?,''), ?"
+        ") ON CONFLICT(file_id, fingerprint) "
+        "DO UPDATE SET "
+        "content=CASE "
+        "WHEN file_versions.content='' "
+        "THEN excluded.content "
+        "ELSE file_versions.content END;"
+    );
+
+    if (!saveVersion.IsValid())
+    {
+        return SqliteError(
+            database,
+            saveVersion.Status(),
+            "无法准备文件版本保存"
+        );
+    }
+
+    BindText(saveVersion.Get(), 1, versionId);
+    BindText(saveVersion.Get(), 2, fileId);
+    BindText(saveVersion.Get(), 3, fileId);
+    BindText(saveVersion.Get(), 4, oldFingerprint);
+    sqlite3_bind_int64(
+        saveVersion.Get(),
+        5,
+        oldSize
+    );
+    BindText(
+        saveVersion.Get(),
+        6,
+        oldModifiedAt
+    );
+    BindText(
+        saveVersion.Get(),
+        7,
+        oldContent
+    );
+
+    const int versionResult =
+        sqlite3_step(saveVersion.Get());
+
+    if (versionResult != SQLITE_DONE)
+    {
+        return SqliteError(
+            database,
+            versionResult,
+            "无法保存文件版本"
+        );
+    }
+
+    const std::string reviewFingerprint =
+        nextFingerprint.empty()
+            ? "missing"
+            : nextFingerprint;
+
+    const std::string reviewId =
+        "CR-" + fileId + "-" + reviewFingerprint;
+
+    Statement saveReview(
+        database,
+        "INSERT INTO change_reviews("
+        "id, file_id, previous_version_id, "
+        "current_version_id, change_type, status"
+        ") VALUES("
+        "?, ?, ?, NULL, ?, 'pending'"
+        ") ON CONFLICT(id) DO UPDATE SET "
+        "previous_version_id=excluded.previous_version_id, "
+        "change_type=excluded.change_type, "
+        "status='pending', "
+        "completed_at=NULL, "
+        "updated_at=CURRENT_TIMESTAMP;"
+    );
+
+    if (!saveReview.IsValid())
+    {
+        return SqliteError(
+            database,
+            saveReview.Status(),
+            "无法准备变化审查记录"
+        );
+    }
+
+    BindText(saveReview.Get(), 1, reviewId);
+    BindText(saveReview.Get(), 2, fileId);
+    BindText(saveReview.Get(), 3, versionId);
+    BindText(saveReview.Get(), 4, changeType);
+
+    const int reviewResult =
+        sqlite3_step(saveReview.Get());
+
+    if (reviewResult != SQLITE_DONE)
+    {
+        return SqliteError(
+            database,
+            reviewResult,
+            "无法保存变化审查记录"
+        );
+    }
+
+    Statement saveImpacts(
+        database,
+        "INSERT INTO change_review_evidence("
+        "review_id, evidence_id, impact_state, "
+        "old_anchor, new_anchor, note"
+        ") "
+        "SELECT ?, id, 'needs_review', "
+        "anchor, '', '' "
+        "FROM evidence "
+        "WHERE file_id=? AND deleted=0 "
+        "ON CONFLICT(review_id, evidence_id) "
+        "DO UPDATE SET "
+        "impact_state='needs_review', "
+        "old_anchor=excluded.old_anchor, "
+        "new_anchor='', "
+        "note='', "
+        "updated_at=CURRENT_TIMESTAMP;"
+    );
+
+    if (!saveImpacts.IsValid())
+    {
+        return SqliteError(
+            database,
+            saveImpacts.Status(),
+            "无法准备变化影响保存"
+        );
+    }
+
+    BindText(saveImpacts.Get(), 1, reviewId);
+    BindText(saveImpacts.Get(), 2, fileId);
+
+    const int impactResult =
+        sqlite3_step(saveImpacts.Get());
+
+    if (impactResult != SQLITE_DONE)
+    {
+        return SqliteError(
+            database,
+            impactResult,
+            "无法保存受影响证据"
+        );
+    }
+
+    return StorageStatus::Ok();
+}
+
 DataSourceRecord ReadDataSource(sqlite3_stmt* statement)
 {
     DataSourceRecord record;
@@ -479,6 +887,80 @@ StorageStatus FileRepository::Save(
 
     return database_.Transaction([&]() {
         sqlite3* handle = database_.Handle();
+        bool invalidateDerivedData = false;
+        std::string detectedChangeType;
+
+        /*
+         * 更新文件记录前读取旧指纹。新文件没有旧派生内容；
+         * 指纹变化或缺失文件重新出现时必须使旧派生内容失效。
+         */
+        Statement existing(
+            handle,
+            "SELECT fingerprint, deleted, parse_state "
+            "FROM files WHERE id=? LIMIT 1;"
+        );
+
+        if (!existing.IsValid())
+        {
+            return SqliteError(
+                handle,
+                existing.Status(),
+                "无法准备旧文件状态查询"
+            );
+        }
+
+        BindText(existing.Get(), 1, record.id);
+
+        const int existingResult =
+            sqlite3_step(existing.Get());
+
+        if (existingResult == SQLITE_ROW)
+        {
+            const std::string oldFingerprint =
+                ColumnText(existing.Get(), 0);
+            const bool wasDeleted =
+                sqlite3_column_int(existing.Get(), 1) != 0;
+            const std::string oldParseState =
+                ColumnText(existing.Get(), 2);
+
+            invalidateDerivedData =
+                oldFingerprint != record.fingerprint ||
+                wasDeleted ||
+                oldParseState == "missing";
+
+            if (invalidateDerivedData)
+            {
+                detectedChangeType =
+                    wasDeleted ||
+                    oldParseState == "missing"
+                        ? "restored"
+                        : "modified";
+            }
+        }
+        else if (existingResult != SQLITE_DONE)
+        {
+            return SqliteError(
+                handle,
+                existingResult,
+                "无法读取旧文件状态"
+            );
+        }
+
+        if (invalidateDerivedData)
+        {
+            const auto captureStatus =
+                CaptureFileChange(
+                    handle,
+                    record.id,
+                    record.fingerprint,
+                    detectedChangeType
+                );
+
+            if (!captureStatus.success)
+            {
+                return captureStatus;
+            }
+        }
 
         Statement statement(
             handle,
@@ -547,6 +1029,20 @@ StorageStatus FileRepository::Save(
                 result,
                 "无法保存文件"
             );
+        }
+
+        if (invalidateDerivedData)
+        {
+            const auto invalidateStatus =
+                InvalidateFileDerivedData(
+                    handle,
+                    record.id
+                );
+
+            if (!invalidateStatus.success)
+            {
+                return invalidateStatus;
+            }
         }
 
         return AuditRepository(database_).Append(
@@ -803,6 +1299,19 @@ StorageStatus FileRepository::MarkMissing(
     return database_.Transaction([&]() {
         sqlite3* handle = database_.Handle();
 
+        const auto captureStatus =
+            CaptureFileChange(
+                handle,
+                id,
+                std::string(),
+                "missing"
+            );
+
+        if (!captureStatus.success)
+        {
+            return captureStatus;
+        }
+
         Statement statement(
             handle,
             "UPDATE files SET parse_state='missing', "
@@ -840,6 +1349,17 @@ StorageStatus FileRepository::MarkMissing(
             );
         }
 
+        const auto invalidateStatus =
+            InvalidateFileDerivedData(
+                handle,
+                id
+            );
+
+        if (!invalidateStatus.success)
+        {
+            return invalidateStatus;
+        }
+
         return AuditRepository(database_).Append(
             actor,
             "file",
@@ -873,9 +1393,11 @@ WorkspaceService::~WorkspaceService()
     Shutdown();
 }
 
-StorageStatus WorkspaceService::Initialize(
+StorageStatus WorkspaceService::InitializeInternal(
     const std::string& workspaceDirectory,
-    const std::string& key
+    const std::string& key,
+    bool createIfMissing,
+    bool createDirectories
 )
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
@@ -888,8 +1410,66 @@ StorageStatus WorkspaceService::Initialize(
         );
     }
 
+    std::filesystem::path directory;
+    std::filesystem::path databasePath;
+
+    try
+    {
+        directory =
+            std::filesystem::absolute(
+                std::filesystem::u8path(workspaceDirectory)
+            ).lexically_normal();
+
+        databasePath = directory / "continuum.db";
+
+        if (!createIfMissing)
+        {
+            std::error_code error;
+
+            if (!std::filesystem::is_directory(directory, error) ||
+                error)
+            {
+                return StorageStatus::Error(
+                    SQLITE_CANTOPEN,
+                    "工作区目录不存在或不可访问"
+                );
+            }
+
+            error.clear();
+
+            if (!std::filesystem::is_regular_file(
+                    databasePath,
+                    error
+                ) ||
+                error)
+            {
+                return StorageStatus::Error(
+                    SQLITE_CANTOPEN,
+                    "所选目录不是有效工作区：缺少 continuum.db"
+                );
+            }
+        }
+
+        if (createDirectories)
+        {
+            std::filesystem::create_directories(directory);
+            std::filesystem::create_directories(directory / "content");
+            std::filesystem::create_directories(directory / "index");
+            std::filesystem::create_directories(directory / "backups");
+            std::filesystem::create_directories(directory / "logs");
+        }
+    }
+    catch (const std::exception& exception)
+    {
+        return StorageStatus::Error(
+            SQLITE_CANTOPEN,
+            std::string("无法访问工作区目录: ") +
+                exception.what()
+        );
+    }
+
     if (initialized_ &&
-        workspaceDirectory_ == workspaceDirectory &&
+        workspaceDirectory_ == directory.u8string() &&
         database_.IsOpen())
     {
         return StorageStatus::Ok();
@@ -897,28 +1477,86 @@ StorageStatus WorkspaceService::Initialize(
 
     Shutdown();
 
-    try
-    {
-        const std::filesystem::path directory =
-            std::filesystem::u8path(workspaceDirectory);
+    const auto status = database_.Open(
+        databasePath.u8string(),
+        key,
+        createIfMissing
+    );
 
-        std::filesystem::create_directories(directory);
-        std::filesystem::create_directories(directory / "content");
-        std::filesystem::create_directories(directory / "index");
-        std::filesystem::create_directories(directory / "backups");
-        std::filesystem::create_directories(directory / "logs");
-
-        const std::filesystem::path databasePath =
-            directory / "continuum.db";
-
-        workspaceDirectory_ = directory.u8string();
-        databasePath_ = databasePath.u8string();
-    }
-    catch (const std::exception& exception)
+    if (!status.success)
     {
         workspaceDirectory_.clear();
         databasePath_.clear();
+        initialized_ = false;
+        return status;
+    }
 
+    workspaceDirectory_ = directory.u8string();
+    databasePath_ = databasePath.u8string();
+    initialized_ = true;
+    return StorageStatus::Ok();
+}
+
+StorageStatus WorkspaceService::Initialize(
+    const std::string& workspaceDirectory,
+    const std::string& key
+)
+{
+    return InitializeInternal(
+        workspaceDirectory,
+        key,
+        true,
+        true
+    );
+}
+
+StorageStatus WorkspaceService::CreateWorkspace(
+    const std::string& workspaceDirectory,
+    bool encrypted
+)
+{
+    if (workspaceDirectory.empty())
+    {
+        return StorageStatus::Error(
+            SQLITE_CANTOPEN,
+            "工作区目录不能为空"
+        );
+    }
+
+    std::filesystem::path directory;
+
+    try
+    {
+        directory =
+            std::filesystem::absolute(
+                std::filesystem::u8path(workspaceDirectory)
+            ).lexically_normal();
+
+        std::error_code error;
+        const auto databasePath = directory / "continuum.db";
+
+        if (std::filesystem::exists(databasePath, error) &&
+            !error)
+        {
+            return StorageStatus::Error(
+                SQLITE_CONSTRAINT,
+                "目标目录已经包含工作区数据库"
+            );
+        }
+
+        if (error)
+        {
+            return StorageStatus::Error(
+                SQLITE_IOERR,
+                "无法检查目标工作区目录: " +
+                    error.message()
+            );
+        }
+
+        std::filesystem::create_directories(directory);
+    }
+    catch (const std::exception& exception)
+    {
         return StorageStatus::Error(
             SQLITE_CANTOPEN,
             std::string("无法创建工作区目录: ") +
@@ -926,33 +1564,135 @@ StorageStatus WorkspaceService::Initialize(
         );
     }
 
-    auto status = database_.Open(databasePath_, key);
+    std::string key;
+    bool keyCreated = false;
+
+    if (encrypted)
+    {
+        if (!DatabaseSecurity::IsSqlCipherAvailable())
+        {
+            return StorageStatus::Error(
+                SQLITE_AUTH,
+                "当前 SQLite 未启用 SQLCipher，不能创建加密工作区"
+            );
+        }
+
+        SecureKeyStore keyStore(directory.u8string());
+
+        auto keyResult =
+            keyStore.LoadOrCreateDatabaseKey();
+
+        if (!keyResult.status.success)
+        {
+            return keyResult.status;
+        }
+
+        key = std::move(keyResult.key);
+        keyCreated = keyResult.created;
+    }
+
+    auto status = InitializeInternal(
+        directory.u8string(),
+        key,
+        true,
+        true
+    );
+
+    std::fill(key.begin(), key.end(), '\0');
+    key.clear();
+
+    if (!status.success && keyCreated)
+    {
+        SecureKeyStore(
+            directory.u8string()
+        ).RemoveDatabaseKey();
+    }
+
+    return status;
+}
+
+StorageStatus WorkspaceService::OpenWorkspace(
+    const std::string& workspaceDirectory
+)
+{
+    if (workspaceDirectory.empty())
+    {
+        return StorageStatus::Error(
+            SQLITE_CANTOPEN,
+            "工作区目录不能为空"
+        );
+    }
+
+    std::filesystem::path directory;
+
+    try
+    {
+        directory =
+            std::filesystem::absolute(
+                std::filesystem::u8path(workspaceDirectory)
+            ).lexically_normal();
+    }
+    catch (const std::exception& exception)
+    {
+        return StorageStatus::Error(
+            SQLITE_CANTOPEN,
+            std::string("工作区路径无效: ") +
+                exception.what()
+        );
+    }
+
+    std::string key;
+    SecureKeyStore keyStore(directory.u8string());
+
+    if (keyStore.Exists())
+    {
+        if (!DatabaseSecurity::IsSqlCipherAvailable())
+        {
+            return StorageStatus::Error(
+                SQLITE_AUTH,
+                "该工作区包含数据库密钥，但当前 SQLite 不支持 SQLCipher"
+            );
+        }
+
+        const auto keyStatus =
+            keyStore.LoadDatabaseKey(key);
+
+        if (!keyStatus.success)
+        {
+            return StorageStatus::Error(
+                keyStatus.code,
+                "无法解锁工作区: " +
+                    keyStatus.message
+            );
+        }
+    }
+
+    auto status = InitializeInternal(
+        directory.u8string(),
+        key,
+        false,
+        false
+    );
+
+    std::fill(key.begin(), key.end(), '\0');
+    key.clear();
 
     if (!status.success)
     {
-        workspaceDirectory_.clear();
-        databasePath_.clear();
         return status;
     }
 
-    status = database_.CheckIntegrity();
+    const auto integrity = database_.CheckIntegrity();
 
-    if (!status.success)
-    {
-        database_.Close();
-        workspaceDirectory_.clear();
-        databasePath_.clear();
-        return status;
-    }
-
-    initialized_ = true;
-
-    status = EnsureSeedData();
-
-    if (!status.success)
+    if (!integrity.success)
     {
         Shutdown();
-        return status;
+
+        return StorageStatus::Error(
+            integrity.code,
+            "工作区完整性检查失败: " +
+                integrity.message
+        );
     }
 
     return StorageStatus::Ok();
@@ -994,7 +1734,7 @@ StorageStatus WorkspaceService::InitializeDefault()
 
     SecureKeyStore keyStore(directory);
 
-    const auto keyResult =
+    auto keyResult =
         keyStore.LoadOrCreateDatabaseKey();
 
     if (!keyResult.status.success)
@@ -1011,14 +1751,12 @@ StorageStatus WorkspaceService::InitializeDefault()
         keyResult.key
     );
 
-    std::string temporaryKey =
-        keyResult.key;
-
     std::fill(
-        temporaryKey.begin(),
-        temporaryKey.end(),
+        keyResult.key.begin(),
+        keyResult.key.end(),
         '\0'
     );
+    keyResult.key.clear();
 
     return status;
 }
@@ -1065,115 +1803,6 @@ std::string WorkspaceService::ResolveDefaultDirectory() const
         "data" /
         "workspace"
     ).u8string();
-}
-
-StorageStatus WorkspaceService::EnsureSeedData()
-{
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-
-    if (!initialized_ || !database_.IsOpen())
-    {
-        return StorageStatus::Error(
-            SQLITE_MISUSE,
-            "工作区尚未初始化"
-        );
-    }
-
-    const auto sources = dataSources_.List(true, 1);
-
-    if (!sources.empty())
-    {
-        return StorageStatus::Ok();
-    }
-
-    DataSourceRecord source;
-    source.id = "SRC-001";
-    source.name = "示例项目文档";
-    source.sourceType = "local_folder";
-    source.rootPath = (
-        std::filesystem::u8path(workspaceDirectory_) /
-        "sample-documents"
-    ).u8string();
-    source.enabled = true;
-
-    auto status = dataSources_.Save(source, "bootstrap");
-
-    if (!status.success)
-    {
-        return status;
-    }
-
-    FileRecord file;
-    file.id = "FILE-0001";
-    file.sourceId = source.id;
-    file.relativePath = "README.md";
-    file.displayName = "README.md";
-    file.mediaType = "text/markdown";
-    file.sizeBytes = 0;
-    file.parseState = "pending";
-
-    status = files_.Save(file, "bootstrap");
-
-    if (!status.success)
-    {
-        return status;
-    }
-
-    DomainObjectRecord object;
-    object.id = "F-0001";
-    object.objectType = "fact";
-    object.title = "工作区初始化完成";
-    object.description =
-        "这是首次启动时创建的示例事实，可在接入真实数据后删除。";
-    object.status = "active";
-    object.priority = "normal";
-    object.owner = "system";
-    object.timePrecision = "exact";
-
-    status = objects_.Save(object, "bootstrap");
-
-    if (!status.success)
-    {
-        return status;
-    }
-
-    EvidenceRecord evidence;
-    evidence.id = "E-0001";
-    evidence.sourceId = source.id;
-    evidence.fileId = file.id;
-    evidence.title = "工作区初始化记录";
-    evidence.quote = "Continuum workspace initialized.";
-    evidence.anchor = "README.md";
-    evidence.reviewState = "verified";
-
-    status = evidence_.Save(evidence, "bootstrap");
-
-    if (!status.success)
-    {
-        return status;
-    }
-
-    EvidenceLinkRecord link;
-    link.objectId = object.id;
-    link.evidenceId = evidence.id;
-    link.role = "support";
-    link.note = "初始化事实的系统证据";
-
-    status = objects_.LinkEvidence(link, "bootstrap");
-
-    if (!status.success)
-    {
-        return status;
-    }
-
-    return audit_.Append(
-        "bootstrap",
-        "workspace",
-        "initialize",
-        "workspace",
-        "default",
-        "{}"
-    );
 }
 
 void WorkspaceService::Shutdown()

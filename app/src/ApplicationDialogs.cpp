@@ -315,30 +315,34 @@ void AddDialogActions(
     }
 
     actions->AddStretchSpacer();
-    actions->Add(
-        MakeButton(
-            dialog,
-            wxID_CANCEL,
-            U("取消"),
-            false,
-            false,
-            100
-        ),
-        0,
-        wxRIGHT,
-        10
+    auto* cancelButton = MakeButton(
+        dialog,
+        wxID_CANCEL,
+        U("取消"),
+        false,
+        false,
+        100
     );
-    actions->Add(
-        MakeButton(
-            dialog,
-            wxID_OK,
-            confirmLabel,
-            !danger,
-            danger,
-            145
-        ),
-        0
+    actions->Add(cancelButton, 0, wxRIGHT, 10);
+
+    auto* confirmButton = MakeButton(
+        dialog,
+        wxID_OK,
+        confirmLabel,
+        !danger,
+        danger,
+        145
     );
+    actions->Add(confirmButton, 0);
+
+    /*
+     * 不依赖平台默认的标准按钮识别。所有应用对话框都明确支持
+     * Enter 确认和 Esc 取消；具体业务提交仍由调用方或派生对话框
+     * 在读取并验证输入后处理。
+     */
+    dialog->SetAffirmativeId(wxID_OK);
+    dialog->SetEscapeId(wxID_CANCEL);
+    confirmButton->SetDefault();
 
     root->Add(actions, 0, wxEXPAND | wxALL, 18);
 }

@@ -88,6 +88,18 @@ struct UiJobRecord
     std::string completedAt;
 };
 
+struct ParsedFileContent
+{
+    UiOperationResult status;
+    FileRecord file;
+    std::string content;
+    std::vector<ParsedSection> sections;
+    std::int64_t contentBytes = 0;
+    bool contentTruncated = false;
+    bool sectionsTruncated = false;
+    bool matchesCurrentFileFingerprint = false;
+};
+
 class UiDataService final
 {
 public:
@@ -129,6 +141,17 @@ public:
 
     std::vector<EvidenceRecord> EvidenceForReview(
         int limit = 200
+    ) const;
+
+    std::optional<EvidenceRecord> FindEvidence(
+        const std::string& id,
+        bool includeDeleted = false
+    ) const;
+
+    ParsedFileContent LoadParsedFile(
+        const std::string& fileId,
+        int maximumContentCharacters = 2 * 1024 * 1024,
+        int maximumSections = 500
     ) const;
 
     UiOperationResult SetEvidenceReviewState(
@@ -184,6 +207,8 @@ public:
     );
 
     std::vector<BackupRecord> ListBackups() const;
+
+    std::uint64_t BackupCount() const;
 
     UiOperationResult ValidateBackup(
         const std::string& backupDirectory,

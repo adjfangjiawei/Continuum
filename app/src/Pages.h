@@ -37,29 +37,6 @@ private:
     );
 };
 
-class ModulePage final : public wxPanel
-{
-public:
-    ModulePage(wxWindow* parent, const PageDescriptor& descriptor);
-
-private:
-    wxPanel* CreateMetric(
-        wxWindow* parent,
-        const wxString& value,
-        const wxString& title,
-        const wxString& description,
-        const wxColour& accent
-    );
-
-    wxPanel* CreateListRow(
-        wxWindow* parent,
-        const wxString& identifier,
-        const wxString& title,
-        const wxString& detail,
-        const wxString& state,
-        const wxColour& accent
-    );
-};
 
 wxWindow* CreatePage(wxWindow* parent, const PageDescriptor& descriptor);
 

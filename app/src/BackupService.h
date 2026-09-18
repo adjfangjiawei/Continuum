@@ -19,7 +19,7 @@ struct BackupRecord
     std::string createdAt;
     std::string databaseSha256;
     std::uintmax_t databaseSize = 0;
-    int schemaVersion = 0;
+    int schemaVersion = 1;
     bool valid = false;
     std::string validationMessage;
 };
@@ -70,6 +70,9 @@ public:
 
     std::vector<BackupRecord> ListBackups() const;
 
+    // 仅统计已提交的备份目录，不执行 SHA-256 或 quick_check。
+    std::uint64_t CountBackups() const;
+
     StorageStatus PruneBackups(
         int retainLatest
     );
@@ -94,13 +97,14 @@ private:
 
     static StorageStatus ValidateDatabaseFile(
         const std::string& databaseFile,
-        int* schemaVersion = nullptr
+        const std::string& key = std::string()
     );
 
     static StorageStatus CopyDatabaseSnapshot(
         Database& source,
         const std::string& destination,
-        const BackupCreateOptions& options
+        const BackupCreateOptions& options,
+        const std::string& key
     );
 
     WorkspaceService& workspace_;

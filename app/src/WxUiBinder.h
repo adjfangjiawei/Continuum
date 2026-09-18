@@ -89,6 +89,7 @@ private:
 
     void OnUiChange(wxThreadEvent& event);
     void OnTimer(wxTimerEvent& event);
+    void OnRootDestroyed(wxWindowDestroyEvent& event);
     void OnSearch(wxCommandEvent& event);
     void OnScanSource(wxCommandEvent& event);
     void OnCancelJob(wxCommandEvent& event);

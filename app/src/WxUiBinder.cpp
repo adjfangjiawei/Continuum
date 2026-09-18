@@ -173,12 +173,22 @@ UiOperationResult WxUiBinder::Attach(
         this
     );
 
+    root_->Bind(
+        wxEVT_DESTROY,
+        &WxUiBinder::OnRootDestroyed,
+        this
+    );
+
     UiEventBus::Instance().Start(root_);
 
     BindCommands();
     RefreshAll();
 
-    refreshTimer_.Start(2000);
+    /*
+     * 数据变化由 UiEventBus 立即驱动刷新。定时器只负责兜底同步，
+     * 不应每两秒执行十余条统计 SQL 并持续与后台解析线程争锁。
+     */
+    refreshTimer_.Start(10000);
 
     return UiOperationResult::Ok(
         "wxWidgets 页面数据绑定已启动"
@@ -195,6 +205,12 @@ void WxUiBinder::Detach()
         root_->Unbind(
             wxEVT_CONTINUUM_UI_CHANGE,
             &WxUiBinder::OnUiChange,
+            this
+        );
+
+        root_->Unbind(
+            wxEVT_DESTROY,
+            &WxUiBinder::OnRootDestroyed,
             this
         );
     }
@@ -274,6 +290,11 @@ void WxUiBinder::BindCommands()
     if (auto* query =
             FindAs<wxTextCtrl>("search.query"))
     {
+        query->Unbind(
+            wxEVT_TEXT_ENTER,
+            &WxUiBinder::OnSearch,
+            this
+        );
         query->Bind(
             wxEVT_TEXT_ENTER,
             &WxUiBinder::OnSearch,
@@ -284,6 +305,11 @@ void WxUiBinder::BindCommands()
     if (auto* button =
             FindAs<wxButton>("search.execute"))
     {
+        button->Unbind(
+            wxEVT_BUTTON,
+            &WxUiBinder::OnSearch,
+            this
+        );
         button->Bind(
             wxEVT_BUTTON,
             &WxUiBinder::OnSearch,
@@ -294,6 +320,11 @@ void WxUiBinder::BindCommands()
     if (auto* button =
             FindAs<wxButton>("sources.scan"))
     {
+        button->Unbind(
+            wxEVT_BUTTON,
+            &WxUiBinder::OnScanSource,
+            this
+        );
         button->Bind(
             wxEVT_BUTTON,
             &WxUiBinder::OnScanSource,
@@ -304,6 +335,11 @@ void WxUiBinder::BindCommands()
     if (auto* button =
             FindAs<wxButton>("jobs.cancel"))
     {
+        button->Unbind(
+            wxEVT_BUTTON,
+            &WxUiBinder::OnCancelJob,
+            this
+        );
         button->Bind(
             wxEVT_BUTTON,
             &WxUiBinder::OnCancelJob,
@@ -314,6 +350,11 @@ void WxUiBinder::BindCommands()
     if (auto* button =
             FindAs<wxButton>("jobs.retry"))
     {
+        button->Unbind(
+            wxEVT_BUTTON,
+            &WxUiBinder::OnRetryJob,
+            this
+        );
         button->Bind(
             wxEVT_BUTTON,
             &WxUiBinder::OnRetryJob,
@@ -324,6 +365,11 @@ void WxUiBinder::BindCommands()
     if (auto* button =
             FindAs<wxButton>("backups.create"))
     {
+        button->Unbind(
+            wxEVT_BUTTON,
+            &WxUiBinder::OnCreateBackup,
+            this
+        );
         button->Bind(
             wxEVT_BUTTON,
             &WxUiBinder::OnCreateBackup,
@@ -398,26 +444,100 @@ void WxUiBinder::RefreshDashboard()
         std::to_string(snapshot.queuedJobs)
     );
 
-    SetText(
-        "dashboard.backups",
-        std::to_string(
-            UiDataService::Instance()
-                .ListBackups()
-                .size()
-        )
-    );
+    if (FindControl("dashboard.backups") != nullptr)
+    {
+        SetText(
+            "dashboard.backups",
+            std::to_string(
+                UiDataService::Instance()
+                    .BackupCount()
+            )
+        );
+    }
 
     const auto security =
         UiDataService::Instance().Security();
 
-    SetText(
-        "dashboard.security",
+    const std::string securityText =
         security.sqlCipherAvailable
             ? (
                 "SQLCipher " +
                 security.sqlCipherVersion
             )
-            : "普通 SQLite（未加密）"
+            : "普通 SQLite（未加密）";
+
+    SetText(
+        "dashboard.security",
+        securityText
+    );
+
+    SetText(
+        "app.security_status",
+        securityText
+    );
+
+    SetText(
+        "app.workspace_status",
+        snapshot.workspaceDirectory.empty()
+            ? "工作区不可用"
+            : snapshot.workspaceDirectory
+    );
+
+    SetText(
+        "app.database_status",
+        snapshot.databasePath.empty()
+            ? "数据库不可用"
+            : "●  数据库已连接"
+    );
+
+    SetText(
+        "app.jobs_status",
+        "后台任务 " +
+            std::to_string(snapshot.queuedJobs)
+    );
+
+    const std::string workerText =
+        snapshot.backgroundWorkerRunning
+            ? (
+                snapshot.lastError.empty()
+                    ? "后台服务正在运行"
+                    : "后台服务错误：" +
+                        snapshot.lastError
+            )
+            : "后台服务未运行";
+
+    SetText(
+        "dashboard.worker_status",
+        workerText
+    );
+
+    SetText(
+        "dashboard.search_status",
+        "全文索引文档 " +
+            std::to_string(
+                snapshot.searchDocuments
+            ) +
+            "，等待索引 " +
+            std::to_string(
+                snapshot.pendingSearchItems
+            )
+    );
+
+    SetText(
+        "app.index_status",
+        snapshot.lastError.empty()
+            ? (
+                "●  已索引 " +
+                std::to_string(
+                    snapshot.searchDocuments
+                ) +
+                "，等待 " +
+                std::to_string(
+                    snapshot.pendingSearchItems
+                )
+            )
+            : "索引/后台错误：" +
+                snapshot.lastError
     );
 }
 
@@ -571,6 +691,9 @@ void WxUiBinder::RefreshJobs()
         return;
     }
 
+    const std::string selectedId =
+        SelectedListId("jobs.list");
+
     const auto jobs =
         UiDataService::Instance().ListJobs(500);
 
@@ -620,6 +743,19 @@ void WxUiBinder::RefreshJobs()
             5,
             Wx(job.errorMessage)
         );
+
+        if (!selectedId.empty() &&
+            job.id == selectedId)
+        {
+            list->SetItemState(
+                row,
+                wxLIST_STATE_SELECTED |
+                    wxLIST_STATE_FOCUSED,
+                wxLIST_STATE_SELECTED |
+                    wxLIST_STATE_FOCUSED
+            );
+            list->EnsureVisible(row);
+        }
     }
 
     list->Thaw();
@@ -765,6 +901,27 @@ void WxUiBinder::OnUiChange(
         RefreshDashboard();
         break;
     }
+}
+
+void WxUiBinder::OnRootDestroyed(
+    wxWindowDestroyEvent& event
+)
+{
+    /*
+     * wxEVT_DESTROY 也可能由子窗口向上传播。
+     * 只有实际销毁对象就是当前根窗口时才解除绑定状态。
+     */
+    if (event.GetEventObject() == root_)
+    {
+        refreshTimer_.Stop();
+        UiEventBus::Instance().Stop();
+
+        root_ = nullptr;
+        commandsBound_ = false;
+        lastSearchQuery_.clear();
+    }
+
+    event.Skip();
 }
 
 void WxUiBinder::OnTimer(wxTimerEvent&)

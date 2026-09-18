@@ -169,7 +169,8 @@ public:
 
     StorageStatus ExecuteJob(
         const JobRecord& job,
-        const std::string& actor = "worker"
+        const std::string& actor = "worker",
+        bool manageJobState = true
     );
 
     int ExecutePending(

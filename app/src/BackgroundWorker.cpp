@@ -206,6 +206,71 @@ StorageStatus BackgroundWorker::Start(
         return schemaStatus;
     }
 
+    /*
+     * 当前后台执行器是进程内单例。启动新线程前仍处于
+     * running 的任务只能来自上一次异常退出，必须恢复，
+     * 否则它们永远不会再次被领取。
+     */
+    const auto recoveryStatus =
+        database_->Transaction([&]() {
+            sqlite3* handle = database_->Handle();
+
+            Statement recover(
+                handle,
+                "UPDATE jobs SET "
+                "state='retry', "
+                "progress=0, "
+                "error_message='上次运行被中断，已自动重试', "
+                "completed_at=NULL "
+                "WHERE state='running';"
+            );
+
+            if (!recover.IsValid())
+            {
+                return SqliteError(
+                    handle,
+                    recover.Status(),
+                    "无法准备中断任务恢复"
+                );
+            }
+
+            if (sqlite3_step(recover.Get()) !=
+                SQLITE_DONE)
+            {
+                return SqliteError(
+                    handle,
+                    sqlite3_errcode(handle),
+                    "无法恢复中断任务"
+                );
+            }
+
+            const int recovered =
+                sqlite3_changes(handle);
+
+            if (recovered == 0)
+            {
+                return StorageStatus::Ok();
+            }
+
+            return AuditRepository(*database_).Append(
+                "background-worker",
+                "job",
+                "recover_interrupted",
+                "job_queue",
+                "default",
+                "{\"count\":" +
+                    std::to_string(recovered) +
+                    "}"
+            );
+        });
+
+    if (!recoveryStatus.success)
+    {
+        workspace_ = nullptr;
+        database_ = nullptr;
+        return recoveryStatus;
+    }
+
     stopRequested_.store(false);
     wakeRequested_.store(true);
 
@@ -957,6 +1022,52 @@ StorageStatus BackgroundWorker::ExecuteParseJob(
         );
     }
 
+    const std::string fileId =
+        ExtractJsonString(
+            claimed.job.payload,
+            "file_id"
+        );
+
+    const std::string expectedFingerprint =
+        ExtractJsonString(
+            claimed.job.payload,
+            "fingerprint"
+        );
+
+    if (fileId.empty() ||
+        expectedFingerprint.empty())
+    {
+        return StorageStatus::Error(
+            SQLITE_CONSTRAINT,
+            "解析任务缺少 file_id 或 fingerprint"
+        );
+    }
+
+    const auto file =
+        workspace_->Files().FindById(
+            fileId,
+            false
+        );
+
+    if (!file)
+    {
+        /*
+         * 文件已经删除或不再可用。该版本任务无需重试，
+         * 否则它会在队列中反复失败。
+         */
+        return StorageStatus::Ok();
+    }
+
+    if (file->fingerprint != expectedFingerprint)
+    {
+        /*
+         * 这是旧版本任务。当前版本在扫描时会生成自己的
+         * 确定性解析任务，因此旧任务应安全结束，而不是
+         * 解析与任务载荷不一致的版本。
+         */
+        return StorageStatus::Ok();
+    }
+
     ParseService parser(
         *database_,
         workspace_->Files()
@@ -964,7 +1075,8 @@ StorageStatus BackgroundWorker::ExecuteParseJob(
 
     return parser.ExecuteJob(
         claimed.job,
-        "background-worker"
+        "background-worker",
+        false
     );
 }
 
@@ -1240,12 +1352,12 @@ StorageStatus BackgroundWorker::FinishJob(
     return status;
 }
 
-void BackgroundWorker::SynchronizeSearchIndex()
+bool BackgroundWorker::SynchronizeSearchIndex()
 {
     if (database_ == nullptr ||
         stopRequested_.load())
     {
-        return;
+        return false;
     }
 
     SearchService search(*database_);
@@ -1257,7 +1369,7 @@ void BackgroundWorker::SynchronizeSearchIndex()
     {
         std::lock_guard<std::mutex> lock(stateMutex_);
         status_.lastError = availability.message;
-        return;
+        return false;
     }
 
     const auto summary = search.SyncPending(
@@ -1265,19 +1377,32 @@ void BackgroundWorker::SynchronizeSearchIndex()
         "background-worker"
     );
 
-    std::lock_guard<std::mutex> lock(stateMutex_);
-
-    status_.indexedDocuments +=
-        static_cast<std::uint64_t>(
-            std::max(0, summary.indexed)
-        );
-
-    if (summary.failed > 0 &&
-        !summary.errors.empty())
     {
-        status_.lastError =
-            summary.errors.front();
+        std::lock_guard<std::mutex> lock(stateMutex_);
+
+        status_.indexedDocuments +=
+            static_cast<std::uint64_t>(
+                std::max(0, summary.indexed)
+            );
+
+        if (summary.failed > 0 &&
+            !summary.errors.empty())
+        {
+            status_.lastError =
+                summary.errors.front();
+        }
+        else if (summary.visited > 0)
+        {
+            status_.lastError.clear();
+        }
     }
+
+    /*
+     * 失败项会留在队列中。返回 false 使 WorkerLoop 进入
+     * 有超时的等待，防止永久失败项导致无间隔满核循环。
+     */
+    return summary.visited > 0 &&
+        summary.failed == 0;
 }
 
 void BackgroundWorker::WorkerLoop()
@@ -1355,8 +1480,11 @@ void BackgroundWorker::WorkerLoop()
 
                 if (pendingBefore > 0)
                 {
-                    performedWork = true;
-                    SynchronizeSearchIndex();
+                    const bool indexProgress =
+                        SynchronizeSearchIndex();
+
+                    performedWork =
+                        performedWork || indexProgress;
                 }
             }
         }
@@ -1413,9 +1541,6 @@ bool BackgroundWorker::WaitUntilIdle(
 
     while (std::chrono::steady_clock::now() < deadline)
     {
-        const bool active =
-            !status_.activeJobId.empty();
-
         lock.unlock();
 
         bool hasJobs = false;
@@ -1432,6 +1557,9 @@ bool BackgroundWorker::WaitUntilIdle(
         }
 
         lock.lock();
+
+        const bool active =
+            !status_.activeJobId.empty();
 
         if (!active &&
             !hasJobs &&

@@ -1,6 +1,7 @@
 #include "BackupService.h"
 
 #include "FileScanner.h"
+#include "SecurityService.h"
 
 #include <algorithm>
 #include <chrono>
@@ -203,6 +204,124 @@ StorageStatus SqliteMessage(
     return StorageStatus::Error(code, message);
 }
 
+StorageStatus ApplyDatabaseKey(
+    sqlite3* database,
+    const std::string& key
+)
+{
+    if (database == nullptr)
+    {
+        return StorageStatus::Error(
+            SQLITE_MISUSE,
+            "备份数据库句柄为空"
+        );
+    }
+
+    if (key.empty())
+    {
+        return StorageStatus::Ok();
+    }
+
+    char* quotedKey = sqlite3_mprintf(
+        "%Q",
+        key.c_str()
+    );
+
+    if (quotedKey == nullptr)
+    {
+        return StorageStatus::Error(
+            SQLITE_NOMEM,
+            "无法构造数据库密钥"
+        );
+    }
+
+    const std::string sql =
+        "PRAGMA key = " +
+        std::string(quotedKey) +
+        ";";
+
+    sqlite3_free(quotedKey);
+
+    char* error = nullptr;
+
+    const int result = sqlite3_exec(
+        database,
+        sql.c_str(),
+        nullptr,
+        nullptr,
+        &error
+    );
+
+    if (result != SQLITE_OK)
+    {
+        std::string message =
+            "无法为备份数据库应用密钥";
+
+        if (error != nullptr)
+        {
+            message += ": ";
+            message += error;
+            sqlite3_free(error);
+        }
+
+        return StorageStatus::Error(
+            result,
+            message
+        );
+    }
+
+    if (error != nullptr)
+    {
+        sqlite3_free(error);
+    }
+
+    return StorageStatus::Ok();
+}
+
+StorageStatus LoadExistingWorkspaceKey(
+    const WorkspaceService& workspace,
+    std::string& key
+)
+{
+    key.clear();
+
+    if (!DatabaseSecurity::IsSqlCipherAvailable())
+    {
+        return StorageStatus::Ok();
+    }
+
+    SecureKeyStore keyStore(
+        workspace.WorkspaceDirectory()
+    );
+
+    if (!keyStore.Exists())
+    {
+        return StorageStatus::Ok();
+    }
+
+    const auto status =
+        keyStore.LoadDatabaseKey(key);
+
+    if (!status.success)
+    {
+        return StorageStatus::Error(
+            status.code,
+            "无法加载现有工作区数据库密钥: " +
+                status.message
+        );
+    }
+
+    if (key.empty())
+    {
+        return StorageStatus::Error(
+            SQLITE_AUTH,
+            "工作区数据库密钥为空"
+        );
+    }
+
+    return StorageStatus::Ok();
+}
+
 void RemoveDatabaseSidecars(
     const std::filesystem::path& databasePath
 )
@@ -220,7 +339,58 @@ void RemoveDatabaseSidecars(
         databasePath.u8string() + "-shm",
         error
     );
+
 }
+
+/*
+ * RestoreBackup 会在替换数据库前停止后台线程。
+ *
+ * 如果恢复流程提前失败，但工作区已经成功重新打开，则函数退出
+ * 时应恢复原本正在运行的后台服务。否则应用表面上仍可查询数据，
+ * 但扫描、解析和全文索引会永久停止，直到应用重启。
+ */
+class RestoreWorkerGuard final
+{
+public:
+    RestoreWorkerGuard(
+        WorkspaceService& workspace,
+        bool restartRequired
+    )
+        : workspace_(workspace),
+          restartRequired_(restartRequired)
+    {
+    }
+
+    ~RestoreWorkerGuard()
+    {
+        if (!restartRequired_ ||
+            !workspace_.IsInitialized() ||
+            BackgroundWorker::Instance().IsRunning())
+        {
+            return;
+        }
+
+        /*
+         * 析构函数不能返回错误。显式成功路径仍会检查 Start()
+         * 的返回值；这里负责恢复失败出口的尽力重启。
+         */
+        BackgroundWorker::Instance().Start(
+            workspace_
+        );
+    }
+
+    RestoreWorkerGuard(
+        const RestoreWorkerGuard&
+    ) = delete;
+
+    RestoreWorkerGuard& operator=(
+        const RestoreWorkerGuard&
+    ) = delete;
+
+private:
+    WorkspaceService& workspace_;
+    bool restartRequired_;
+};
 
 }
 
@@ -353,7 +523,8 @@ std::string BackupService::BackupRoot() const
 StorageStatus BackupService::CopyDatabaseSnapshot(
     Database& source,
     const std::string& destination,
-    const BackupCreateOptions& options
+    const BackupCreateOptions& options,
+    const std::string& key
 )
 {
     if (!source.IsOpen())
@@ -389,6 +560,18 @@ StorageStatus BackupService::CopyDatabaseSnapshot(
         }
 
         return status;
+    }
+
+    const auto keyStatus =
+        ApplyDatabaseKey(
+            destinationHandle,
+            key
+        );
+
+    if (!keyStatus.success)
+    {
+        sqlite3_close_v2(destinationHandle);
+        return keyStatus;
     }
 
     sqlite3_busy_timeout(
@@ -530,7 +713,7 @@ StorageStatus BackupService::CopyDatabaseSnapshot(
 
 StorageStatus BackupService::ValidateDatabaseFile(
     const std::string& databaseFile,
-    int* schemaVersion
+    const std::string& key
 )
 {
     sqlite3* handle = nullptr;
@@ -557,6 +740,18 @@ StorageStatus BackupService::ValidateDatabaseFile(
         }
 
         return status;
+    }
+
+    const auto keyStatus =
+        ApplyDatabaseKey(
+            handle,
+            key
+        );
+
+    if (!keyStatus.success)
+    {
+        sqlite3_close_v2(handle);
+        return keyStatus;
     }
 
     sqlite3_stmt* statement = nullptr;
@@ -610,53 +805,6 @@ StorageStatus BackupService::ValidateDatabaseFile(
             "备份数据库完整性检查返回: " +
                 check
         );
-    }
-
-    if (schemaVersion != nullptr)
-    {
-        statement = nullptr;
-
-        result = sqlite3_prepare_v2(
-            handle,
-            "PRAGMA user_version;",
-            -1,
-            &statement,
-            nullptr
-        );
-
-        if (result != SQLITE_OK)
-        {
-            const auto status = SqliteMessage(
-                handle,
-                result,
-                "无法读取备份数据库版本"
-            );
-
-            sqlite3_close_v2(handle);
-            return status;
-        }
-
-        result = sqlite3_step(statement);
-
-        if (result == SQLITE_ROW)
-        {
-            *schemaVersion =
-                sqlite3_column_int(statement, 0);
-        }
-        else
-        {
-            const auto status = SqliteMessage(
-                handle,
-                result,
-                "读取备份数据库版本失败"
-            );
-
-            sqlite3_finalize(statement);
-            sqlite3_close_v2(handle);
-            return status;
-        }
-
-        sqlite3_finalize(statement);
     }
 
     sqlite3_close_v2(handle);
@@ -824,6 +972,10 @@ StorageStatus BackupService::ReadManifest(
     record.createdAt = values["created_at"];
     record.databaseSha256 =
         values["database_sha256"];
+    record.schemaVersion =
+        values["schema_version"].empty()
+            ? 1
+            : std::stoi(values["schema_version"]);
 
     try
     {
@@ -834,10 +986,7 @@ StorageStatus BackupService::ReadManifest(
                 )
             );
 
-        record.schemaVersion =
-            std::stoi(
-                values["schema_version"]
-            );
+
     }
     catch (const std::exception&)
     {
@@ -863,6 +1012,20 @@ BackupResult BackupService::CreateBackup(
             "工作区尚未初始化"
         );
 
+        return result;
+    }
+
+    std::string backupKey;
+
+    const auto keyStatus =
+        LoadExistingWorkspaceKey(
+            workspace_,
+            backupKey
+        );
+
+    if (!keyStatus.success)
+    {
+        result.status = keyStatus;
         return result;
     }
 
@@ -967,7 +1130,8 @@ BackupResult BackupService::CreateBackup(
         CopyDatabaseSnapshot(
             workspace_.GetDatabase(),
             databaseFile.u8string(),
-            options
+            options,
+            backupKey
         );
 
     if (!copyStatus.success)
@@ -990,7 +1154,7 @@ BackupResult BackupService::CreateBackup(
     const auto validationStatus =
         ValidateDatabaseFile(
             record.databaseFile,
-            &record.schemaVersion
+            backupKey
         );
 
     if (!validationStatus.success)
@@ -1125,6 +1289,27 @@ StorageStatus BackupService::ValidateBackup(
 ) const
 {
     BackupRecord record;
+    std::string backupKey;
+
+    const auto keyStatus =
+        LoadExistingWorkspaceKey(
+            workspace_,
+            backupKey
+        );
+
+    if (!keyStatus.success)
+    {
+        if (output != nullptr)
+        {
+            record.directory = backupDirectory;
+            record.valid = false;
+            record.validationMessage =
+                keyStatus.message;
+            *output = record;
+        }
+
+        return keyStatus;
+    }
 
     auto status = ReadManifest(
         backupDirectory,
@@ -1210,22 +1395,10 @@ StorageStatus BackupService::ValidateBackup(
 
     if (status.success)
     {
-        int actualSchemaVersion = 0;
-
         status = ValidateDatabaseFile(
             record.databaseFile,
-            &actualSchemaVersion
+            backupKey
         );
-
-        if (status.success &&
-            actualSchemaVersion !=
-                record.schemaVersion)
-        {
-            status = StorageStatus::Error(
-                SQLITE_CORRUPT,
-                "备份数据库版本与清单不一致"
-            );
-        }
     }
 
     record.valid = status.success;
@@ -1238,6 +1411,63 @@ StorageStatus BackupService::ValidateBackup(
     }
 
     return status;
+}
+
+std::uint64_t BackupService::CountBackups() const
+{
+    const std::filesystem::path root =
+        std::filesystem::u8path(BackupRoot());
+
+    std::error_code error;
+
+    if (!std::filesystem::exists(root, error) ||
+        error)
+    {
+        return 0;
+    }
+
+    std::uint64_t count = 0;
+
+    for (std::filesystem::directory_iterator iterator(
+             root,
+             std::filesystem::directory_options::
+                 skip_permission_denied,
+             error
+         ), end;
+         iterator != end;
+         iterator.increment(error))
+    {
+        if (error)
+        {
+            error.clear();
+            continue;
+        }
+
+        if (!iterator->is_directory(error) || error)
+        {
+            error.clear();
+            continue;
+        }
+
+        const std::string name =
+            iterator->path().filename().u8string();
+
+        /*
+         * 只统计 CreateBackup() 已正式提交的目录。
+         * .partial 和 rollback 文件均不会满足该前缀。
+         */
+        if (name.rfind("backup-", 0) == 0 &&
+            (
+                name.size() < 8 ||
+                name.substr(name.size() - 8) !=
+                    ".partial"
+            ))
+        {
+            ++count;
+        }
+    }
+
+    return count;
 }
 
 std::vector<BackupRecord>
@@ -1328,21 +1558,98 @@ StorageStatus BackupService::PruneBackups(
         );
     }
 
-    auto records = ListBackups();
+    const std::filesystem::path root =
+        std::filesystem::u8path(BackupRoot());
 
     std::error_code error;
 
-    for (std::size_t index =
-             static_cast<std::size_t>(
-                 retainLatest
-             );
-         index < records.size();
+    if (!std::filesystem::exists(root, error))
+    {
+        return error
+            ? FileError(
+                SQLITE_IOERR,
+                "无法读取备份根目录",
+                error
+            )
+            : StorageStatus::Ok();
+    }
+
+    std::vector<std::filesystem::path> directories;
+
+    for (std::filesystem::directory_iterator iterator(
+             root,
+             std::filesystem::directory_options::
+                 skip_permission_denied,
+             error
+         ), end;
+         iterator != end;
+         iterator.increment(error))
+    {
+        if (error)
+        {
+            return FileError(
+                SQLITE_IOERR,
+                "无法枚举备份目录",
+                error
+            );
+        }
+
+        if (!iterator->is_directory(error))
+        {
+            if (error)
+            {
+                return FileError(
+                    SQLITE_IOERR,
+                    "无法读取备份目录项目",
+                    error
+                );
+            }
+
+            continue;
+        }
+
+        const std::string name =
+            iterator->path().filename().u8string();
+
+        if (name.rfind("backup-", 0) != 0)
+        {
+            continue;
+        }
+
+        if (name.size() >= 8 &&
+            name.substr(name.size() - 8) ==
+                ".partial")
+        {
+            continue;
+        }
+
+        directories.push_back(iterator->path());
+    }
+
+    /*
+     * 备份目录名以可排序时间戳开头，降序即由新到旧。
+     */
+    std::sort(
+        directories.begin(),
+        directories.end(),
+        [](const std::filesystem::path& first,
+           const std::filesystem::path& second) {
+            return first.filename().u8string() >
+                second.filename().u8string();
+        }
+    );
+
+    const std::size_t firstToRemove =
+        static_cast<std::size_t>(retainLatest);
+
+    for (std::size_t index = firstToRemove;
+         index < directories.size();
          ++index)
     {
+        error.clear();
+
         std::filesystem::remove_all(
-            std::filesystem::u8path(
-                records[index].directory
-            ),
+            directories[index],
             error
         );
 
@@ -1351,7 +1658,9 @@ StorageStatus BackupService::PruneBackups(
             return FileError(
                 SQLITE_IOERR,
                 "无法删除过期备份 " +
-                    records[index].id,
+                    directories[index]
+                        .filename()
+                        .u8string(),
                 error
             );
         }
@@ -1389,13 +1698,17 @@ StorageStatus BackupService::RestoreBackup(
         );
     }
 
-    if (record.schemaVersion >
-        workspace_.GetDatabase().UserVersion())
-    {
-        return StorageStatus::Error(
-            SQLITE_ERROR,
-            "备份数据库版本高于当前应用支持版本"
+    std::string databaseKey;
+
+    const auto keyStatus =
+        LoadExistingWorkspaceKey(
+            workspace_,
+            databaseKey
         );
+
+    if (!keyStatus.success)
+    {
+        return keyStatus;
     }
 
     const std::string workspaceDirectory =
@@ -1429,6 +1742,12 @@ StorageStatus BackupService::RestoreBackup(
         BackgroundWorker::Instance().IsRunning();
 
     BackgroundWorker::Instance().Stop();
+
+    RestoreWorkerGuard workerGuard(
+        workspace_,
+        workerWasRunning &&
+            options.restartBackgroundWorker
+    );
 
     AuditRepository(
         workspace_.GetDatabase()
@@ -1474,7 +1793,8 @@ StorageStatus BackupService::RestoreBackup(
         {
             const auto reopen =
                 workspace_.Initialize(
-                    workspaceDirectory
+                    workspaceDirectory,
+                    databaseKey
                 );
 
             if (workerWasRunning &&
@@ -1506,8 +1826,9 @@ StorageStatus BackupService::RestoreBackup(
     if (error)
     {
         workspace_.Initialize(
-            workspaceDirectory
-        );
+                    workspaceDirectory,
+                    databaseKey
+                );
 
         return FileError(
             SQLITE_IOERR,
@@ -1516,11 +1837,9 @@ StorageStatus BackupService::RestoreBackup(
         );
     }
 
-    int restoredVersion = 0;
-
     status = ValidateDatabaseFile(
         restoreTemporary.u8string(),
-        &restoredVersion
+        databaseKey
     );
 
     if (!status.success)
@@ -1531,8 +1850,9 @@ StorageStatus BackupService::RestoreBackup(
         );
 
         workspace_.Initialize(
-            workspaceDirectory
-        );
+                    workspaceDirectory,
+                    databaseKey
+                );
 
         return StorageStatus::Error(
             status.code,
@@ -1556,8 +1876,9 @@ StorageStatus BackupService::RestoreBackup(
         );
 
         workspace_.Initialize(
-            workspaceDirectory
-        );
+                    workspaceDirectory,
+                    databaseKey
+                );
 
         return FileError(
             SQLITE_IOERR,
@@ -1593,8 +1914,9 @@ StorageStatus BackupService::RestoreBackup(
         }
 
         workspace_.Initialize(
-            workspaceDirectory
-        );
+                    workspaceDirectory,
+                    databaseKey
+                );
 
         return FileError(
             SQLITE_IOERR,
@@ -1604,8 +1926,9 @@ StorageStatus BackupService::RestoreBackup(
     }
 
     status = workspace_.Initialize(
-        workspaceDirectory
-    );
+                    workspaceDirectory,
+                    databaseKey
+                );
 
     if (!status.success)
     {
@@ -1632,8 +1955,9 @@ StorageStatus BackupService::RestoreBackup(
             {
                 const auto rollbackOpen =
                     workspace_.Initialize(
-                        workspaceDirectory
-                    );
+                    workspaceDirectory,
+                    databaseKey
+                );
 
                 if (!rollbackOpen.success)
                 {
@@ -1688,7 +2012,8 @@ StorageStatus BackupService::RestoreBackup(
             if (!rollbackError)
             {
                 workspace_.Initialize(
-                    workspaceDirectory
+                    workspaceDirectory,
+                    databaseKey
                 );
             }
         }
