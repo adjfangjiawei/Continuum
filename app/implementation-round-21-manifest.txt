@@ -1,0 +1,44 @@
+续证 Continuum 程序实现第 21 轮
+
+代码目录：D:\UnknownSoftware\app
+本轮范围：UI 数据桥接与应用服务门面
+
+已实现：
+1. UiDataService 统一应用服务门面
+2. 工作区及后台服务初始化
+3. 仪表盘真实统计数据
+4. 业务对象列表、保存、软删除和恢复
+5. 待审证据列表和审查状态更新
+6. 数据源列表、保存、启停
+7. 数据源扫描任务提交
+8. 全文搜索统一入口
+9. 后台任务列表
+10. 后台任务取消和重试
+11. 后台工作线程状态查询
+12. 备份创建、列表和校验
+13. 备份恢复
+14. 安全能力诊断
+15. UI 数据变更订阅与通知
+16. 监听器异常隔离
+17. 统一 UI 操作结果
+18. 对象、数据源、扫描、搜索、任务和备份集成测试
+
+独立编译状态：跳过独立编译
+独立编译说明：当前环境缺少 SQLite3 开发包
+测试状态：跳过测试
+测试说明：当前环境缺少 SQLite3 开发包
+完整构建状态：跳过完整构建
+完整构建说明：当前 WSL 缺少 wxWidgets 或 SQLite3 开发包；独立结构校验已通过
+
+文件摘要：
+CMakeLists.txt | 2100 bytes | SHA256 f81bd27c51a70d635a99f98f97cea5b50251bb450a2bfc7ae58895250e2eec3d
+src/UiDataService.h | 5016 bytes | SHA256 84693fbbf45787e6f169fab379950a48454addaba87b35906d23cf3d4b64164c
+src/UiDataService.cpp | 19914 bytes | SHA256 31ba00aa06d1bc173a3a03d17e94f9e3c64867393ffd986da72cd43654401390
+tests/UiDataServiceTests.cpp | 6521 bytes | SHA256 f4e9c5753fa213fcd149fb65f1bf80b73129737e783fd300a2bb4a325751c2ae
+
+界面状态：P01-P17、M01-M12、D01-D15 已完成。
+后端状态：存储、扫描、解析、搜索、任务、备份和安全服务已具备。
+桥接状态：UI 可通过 UiDataService 访问全部主要后端能力。
+程序总体状态：尚未全部完成。
+尚待实现：具体页面控件事件绑定、页面刷新适配器、Windows 子进程强化、端到端 GUI 测试和 Windows 安装发布配置。
+下一轮：分析现有 Pages/SystemPages/Dialog 源码结构，生成 wxWidgets 页面数据绑定适配器和统一 UI 事件总线。

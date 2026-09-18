@@ -1,0 +1,55 @@
+Continuum UI 控件绑定覆盖率报告
+
+生成时间：2026-09-18T14:42:06
+扫描源码数量：12
+预期绑定数量：38
+已覆盖数量：0
+未覆盖数量：38
+自动新增数量：0
+覆盖率：0.00%
+绑定是否完整：否
+
+已覆盖绑定：
+
+未覆盖绑定：
+- dashboard.active_objects
+- dashboard.evidence_review
+- dashboard.sources
+- dashboard.files
+- dashboard.jobs
+- dashboard.backups
+- dashboard.security
+- search.query
+- search.execute
+- search.results
+- search.status
+- sources.list
+- sources.scan
+- jobs.list
+- jobs.cancel
+- jobs.retry
+- backups.list
+- backups.create
+- backups.status
+- objects.list
+- objects.id
+- objects.type
+- objects.title
+- objects.description
+- objects.status
+- objects.priority
+- objects.owner
+- objects.time_precision
+- objects.new
+- objects.save
+- objects.delete
+- objects.restore
+- objects.status_message
+- evidence.review_list
+- evidence.verify
+- evidence.reject
+- evidence.needs_review
+- evidence.status_message
+
+自动接线记录：
+- 本轮没有发现新的高置信度接线

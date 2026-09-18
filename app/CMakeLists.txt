@@ -43,6 +43,10 @@ add_executable(
     src/BackupService.cpp
     src/ExternalDocumentService.cpp
     src/SecurityService.cpp
+    src/UiDataService.cpp
+    src/WxUiBinder.cpp
+    src/WxRecordController.cpp
+    src/UiEventBus.cpp
 )
 
 target_include_directories(

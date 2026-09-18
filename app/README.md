@@ -37,19 +37,15 @@
 
 配置工程：
 
-    cmake -S D:\UnknownSoftware\app ^
-      -B D:\UnknownSoftware\app\build\windows-release ^
-      -G Ninja ^
-      -DCMAKE_BUILD_TYPE=Release ^
-      -DCMAKE_TOOLCHAIN_FILE=C:\path\to\vcpkg\scripts\buildsystems\vcpkg.cmake
+    cmake -S D:\UnknownSoftware\app       -B D:\UnknownSoftware\app\build\windows-debug    -G Ninja   -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_TOOLCHAIN_FILE=D:\windowsvcpkg\vcpkg\scripts\buildsystems\vcpkg.cmake
 
 构建：
 
-    cmake --build D:\UnknownSoftware\app\build\windows-release --parallel
+    cmake --build D:\UnknownSoftware\app\build\windows-debug --parallel
 
 程序位置通常为：
 
-    D:\UnknownSoftware\app\build\windows-release\Continuum.exe
+    D:\UnknownSoftware\app\build\windows-debug\Continuum.exe
 
 ## 设计文件
 

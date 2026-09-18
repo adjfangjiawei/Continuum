@@ -6,6 +6,9 @@
 #include <wx/image.h>
 #include "WorkspaceService.h"
 #include "BackgroundWorker.h"
+#include "UiDataService.h"
+#include "WxUiBinder.h"
+#include "WxRecordController.h"
 
 namespace continuum
 {
@@ -48,6 +51,37 @@ bool ContinuumApp::OnInit()
         continuum::WorkspaceService::Instance().Shutdown();
         return false;
     }
+
+
+    // CONTINUUM_WX_UI_BINDER_STARTUP
+    CallAfter([]() {
+        wxWindow* root =
+            wxTheApp != nullptr
+                ? wxTheApp->GetTopWindow()
+                : nullptr;
+
+        if (root != nullptr)
+        {
+            continuum::WxUiBinder::Instance().Attach(
+                root
+            );
+        }
+    });
+
+
+    // CONTINUUM_RECORD_CONTROLLER_STARTUP
+    CallAfter([]() {
+        wxWindow* root =
+            wxTheApp != nullptr
+                ? wxTheApp->GetTopWindow()
+                : nullptr;
+
+        if (root != nullptr)
+        {
+            continuum::WxRecordController::
+                Instance().Attach(root);
+        }
+    });
 
 return true;
 }

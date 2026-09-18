@@ -1,0 +1,47 @@
+续证 Continuum 程序实现第 22 轮
+
+代码目录：D:\UnknownSoftware\app
+本轮范围：wxWidgets UI 事件总线与页面数据绑定框架
+
+已实现：
+1. UiEventBus 后端到 GUI 事件总线
+2. wxQueueEvent 跨线程安全投递
+3. UiChangeEvent 类型化事件负载
+4. 监听器启动、停止和自动取消订阅
+5. WxUiBinder 页面绑定单例
+6. 根窗口递归控件发现
+7. wxWindow::SetName 控件绑定约定
+8. 仪表盘真实统计刷新
+9. SQLCipher 安全状态展示
+10. 搜索输入和结果列表绑定
+11. 数据源列表和扫描命令绑定
+12. 后台任务列表绑定
+13. 后台任务取消和重试绑定
+14. 备份列表和创建命令绑定
+15. 页面定时刷新
+16. 数据变更定向刷新
+17. 应用启动后自动附加绑定器
+18. 延迟创建页面重新发现机制
+19. UiDataService 安全类型依赖修复
+
+独立编译状态：未执行
+独立编译说明：当前环境缺少 C++ 编译器或 wxWidgets 开发包
+完整构建状态：跳过完整构建
+完整构建说明：当前 WSL 缺少 wxWidgets 或 SQLite3 开发包；静态结构校验已通过
+
+文件摘要：
+CMakeLists.txt | 2146 bytes | SHA256 9df1a89104676ce226d4a86d47a0be8e845c5d4ff2ac0634ed3529cdca439aa6
+src/App.cpp | 1467 bytes | SHA256 b341096fa9a2d2439877e345b3ab27f42865deb6fd45e3cfe1ed2653b8d8c1c0
+src/UiDataService.h | 5045 bytes | SHA256 af9b9d89063b5203337ab93674064acd19d71af2f1c1e28a6daad33059cebd38
+src/UiEventBus.h | 573 bytes | SHA256 891a72eb48a6a9d32fefe1db41052723fa5002b3eead7211632f7e979b360825
+src/UiEventBus.cpp | 1511 bytes | SHA256 73c6bf8544d4281493327351368999b68467f45a0fb95bcf5a267fcc86c5da8b
+src/WxUiBinder.h | 2267 bytes | SHA256 dbbc68b9362efcc9b65a645030ad56c86770212fd42b22d03a329eb0085d820e
+src/WxUiBinder.cpp | 16839 bytes | SHA256 72246a5872681ff6ee75029ee6b2e91b91a866912430363c987bf8f0de625241
+tests/UiEventBusTests.cpp | 1347 bytes | SHA256 4d8b3bd40f1a6a36468ad86b751f411b1df8970f76b9141f9b9015dbec82992e
+
+界面状态：P01-P17、M01-M12、D01-D15 已完成。
+后端状态：存储、扫描、解析、搜索、任务、备份和安全服务已具备。
+UI 桥接状态：事件总线和通用页面绑定框架已完成。
+程序总体状态：尚未全部完成。
+尚待实现：为既有页面控件设置绑定名称、对象编辑和证据审查页面逐项接线、Windows 子进程强制终止、GUI 端到端测试及 Windows 安装发布配置。
+下一轮：自动扫描现有页面源码，为仪表盘、搜索、数据源、任务和备份页面写入控件绑定名称，并补充对象与证据页面控制器。

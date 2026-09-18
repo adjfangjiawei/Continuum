@@ -1,0 +1,41 @@
+续证 Continuum 程序实现第 23 轮
+
+代码目录：D:\UnknownSoftware\app
+本轮范围：业务对象与证据审查页面控制器
+
+已实现：
+1. WxRecordController 页面控制器
+2. 业务对象真实列表加载
+3. 对象选择后表单回填
+4. 新建对象和自动编号
+5. 对象标题及默认字段验证
+6. 对象保存
+7. 对象软删除确认
+8. 对象恢复
+9. 已删除对象列表显示
+10. 证据待审列表
+11. 证据确认操作
+12. 证据驳回操作
+13. 证据标记待复核操作
+14. UiChangeEvent 定向刷新
+15. 延迟页面控件重新发现
+16. 应用启动后自动接入控制器
+17. 对象服务集成测试
+
+独立编译状态：未执行
+独立编译说明：当前环境缺少 g++ 或 wxWidgets 开发包
+完整构建状态：跳过完整构建
+完整构建说明：当前 WSL 缺少 wxWidgets 或 SQLite3 开发包；静态结构校验已通过
+
+文件摘要：
+CMakeLists.txt | 2177 bytes | SHA256 b3f2b0d7cd56154afb481dc4abb1704fda5f4dc863bc7ad01598fb017cff298d
+src/App.cpp | 1835 bytes | SHA256 2e154ccdca921927c495033492113f00bf75e456a59cac6d1edd4b127c30b4c7
+src/WxRecordController.h | 2630 bytes | SHA256 ecca0d629dbf74b88e843fce7c22d972178f63eeb3602b681773e5f18293ffc3
+src/WxRecordController.cpp | 18000 bytes | SHA256 2293c856149e29976337612023e8ddd20315e29472d91651a462b3bf2a8bb197
+tests/WxRecordControllerTests.cpp | 2528 bytes | SHA256 a89d72fc370791f0755c1ed1fc3656fc884300d6e65ec1cd4c019a5b969993be
+
+后端状态：主要业务服务已完成。
+UI 桥接状态：仪表盘、搜索、数据源、任务、备份、对象和证据控制器已完成。
+程序总体状态：尚未全部完成。
+尚待实现：既有页面实际控件 SetName 接线、Windows 子进程强制终止、GUI 端到端测试、Windows 原生构建及安装发布配置。
+下一轮：扫描 Pages、SystemPages 和 Dialogs 源码，自动写入控件绑定名称，并补充绑定覆盖率报告。
